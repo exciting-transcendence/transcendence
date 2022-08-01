@@ -1,6 +1,8 @@
 # transcendence
 즐~~~~~거운 웹서비스
 
+<br>fronend, backend 디렉토리에서 npm install
+
 개발모드:
 `docker-compose -f docker-compose-dev.yml up --build`
 
