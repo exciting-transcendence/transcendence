@@ -21,7 +21,7 @@ export class AuthController {
 		if (!user) {
 			user = await this.userService.create(id, username)
 		}
-		return user
+		return this.userService.issueToken(user)
 	  }
 
 }
