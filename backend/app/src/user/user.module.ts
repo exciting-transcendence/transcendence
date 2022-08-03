@@ -6,6 +6,7 @@ import { FtStrategy } from './ft.strategy';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { User } from './entity/user.entity';
       signOptions: { expiresIn: '600s' },
     })
   ],
-  providers: [UserService, FtStrategy],
+  providers: [UserService, FtStrategy, JwtStrategy],
   controllers: [UserController, AuthController],
   exports: [UserService]
 })
