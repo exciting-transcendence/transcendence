@@ -20,7 +20,6 @@ export class UserService {
 		let user = new User;
 		user.intra_id = intra_id;
 		user.intra_username = intra_username;
-		user.access_token = this.jwtService.sign({intra_id});
 		return this.userRepository.save(user).catch(err => {
 			if (err.code = 23505)
 			{
@@ -39,5 +38,11 @@ export class UserService {
 
 	async remove(id: string): Promise<void> {
 		await this.userRepository.delete(id);
+	}
+
+	async issueToken(user: User) {
+		let id = user.intra_id
+		user.access_token = this.jwtService.sign({id})
+		return user
 	}
 }

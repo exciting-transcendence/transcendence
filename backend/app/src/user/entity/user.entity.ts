@@ -11,7 +11,7 @@ export class User {
   @Column()
   intra_username: string;
 
-  @Column()
+  @Column({ nullable: true })
   access_token: string;
 
   @Column({ default: true })
