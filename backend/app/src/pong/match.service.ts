@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { Socket } from 'socket.io'
 
+type UserSocket = Socket & { uid: number }
+
 type MatchData = {
   uid: number
-  socket: Socket
+  socket: UserSocket
 }
 
 @Injectable()
