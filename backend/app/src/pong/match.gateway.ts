@@ -80,10 +80,23 @@ export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
     manager.game.changePaddleVelocity(side, direction)
   }
 
+  @SubscribeMessage('spectator')
+  handleSpectator(
+    @MessageBody() message: { gameId: number },
+    @ConnectedSocket() client: UserSocket,
+  ) {
+    console.log(message)
+    const manager = this.pongService.getGameByGameId(Number(message.gameId))
+    manager?.addSpectator(client)
+  }
+
   handleDisconnect(client: UserSocket) {
     this.matchService.removeFromQueue(client)
-    const { manager, side } = this.pongService.getGameByUser(client.uid)
-    manager?.game.forceSetWinner(side === 'left' ? 'right' : 'left')
+    const gameInfo = this.pongService.getGameByUser(client.uid)
+    if (gameInfo) {
+      const { manager, side } = gameInfo
+      manager.game.forceSetWinner(side === 'left' ? 'right' : 'left')
+    }
   }
 
   handleConnection(client: UserSocket) {

@@ -35,10 +35,6 @@ export class MatchService {
   }
 
   removeFromQueue(player: Socket) {
-    console.log(
-      'before remove',
-      this.quickQueue.map((elem) => elem.uid),
-    )
     this.quickQueue.splice(
       this.quickQueue.findIndex((p) => p.socket.id === player.id),
       1,
@@ -46,10 +42,6 @@ export class MatchService {
     this.rankedQueue.splice(
       this.rankedQueue.findIndex((p) => p.socket.id === player.id),
       1,
-    )
-    console.log(
-      'after remove',
-      this.quickQueue.map((elem) => elem.uid),
     )
   }
 }

@@ -269,6 +269,7 @@ class PongManager {
   private leftTimer: NodeJS.Timer
   private rightTimer: NodeJS.Timer
   private gameTimer: NodeJS.Timer
+  private spectators: { timer: NodeJS.Timer; socket: UserSocket }[] = []
   private gameEndCallback
 
   game: Pong
@@ -292,13 +293,13 @@ class PongManager {
 
   startGame() {
     this.leftUser.emit('gameStart', {
-      side: 'left',
-      opponent: this.rightUser.uid,
+      left: this.leftUser.uid,
+      right: this.rightUser.uid,
       gameId: this.gameId,
     })
     this.rightUser.emit('gameStart', {
-      side: 'right',
-      opponent: this.leftUser.uid,
+      left: this.leftUser.uid,
+      right: this.rightUser.uid,
       gameId: this.gameId,
     })
     this.game.start()
@@ -322,6 +323,10 @@ class PongManager {
     this.rightUser.emit('render', this.game)
     this.leftUser.emit('gameEnd', winner)
     this.rightUser.emit('gameEnd', winner)
+    this.spectators.forEach((elem) => {
+      elem.socket.emit('gameEnd', winner)
+      elem.socket.disconnect()
+    })
     this.leftUser.disconnect()
     this.rightUser.disconnect()
 
@@ -337,6 +342,20 @@ class PongManager {
         uid: winnerSide === 'left' ? this.leftUser.uid : this.rightUser.uid,
       })
     }
+  }
+
+  addSpectator(socket: UserSocket) {
+    socket.emit('gameStart', {
+      left: this.leftUser.uid,
+      right: this.rightUser.uid,
+      gameId: this.gameId,
+    })
+    this.spectators.push({
+      socket,
+      timer: setInterval(() => {
+        socket.emit('render', this.game)
+      }, CONSTANTS.UPDATE_INTERVAL),
+    })
   }
 }
 
