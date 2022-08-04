@@ -16,6 +16,7 @@ import { jwtConstants } from 'src/configs/jwttoken.config'
 export type MatchMessage = {
   mode: PongMode
   matchType: PongMatchType
+  matchTarget?: number
 }
 
 type UserSocket = Socket & { uid: number }
@@ -41,15 +42,22 @@ export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
     @MessageBody() message: MatchMessage,
     @ConnectedSocket() client: UserSocket,
   ) {
-    console.log(`connected: ${client.uid}`)
     let match: { left: MatchData; right: MatchData } | null = null
     if (message.matchType === 'quick') {
       match = this.matchService.matchQuick({ uid: client.uid, socket: client })
-    } else {
+    } else if (message.matchType === 'ranked') {
       match = this.matchService.matchRanked({
         uid: client.uid,
         socket: client,
       })
+    } else if (message.matchType === 'private') {
+      match = this.matchService.matchPrivate(
+        {
+          uid: client.uid,
+          socket: client,
+        },
+        message.matchTarget,
+      )
     }
     if (match) {
       this.pongService.createGame(
@@ -85,7 +93,6 @@ export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
     @MessageBody() message: { gameId: number },
     @ConnectedSocket() client: UserSocket,
   ) {
-    console.log(message)
     const manager = this.pongService.getGameByGameId(Number(message.gameId))
     manager?.addSpectator(client)
   }
