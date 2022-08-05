@@ -1,62 +1,73 @@
 import { Injectable } from '@nestjs/common'
 import { Socket } from 'socket.io'
+import { PongMode } from './constants'
 
 type UserSocket = Socket & { uid: number }
 
-type MatchData = {
-  uid: number
-  socket: UserSocket
-}
-
 @Injectable()
 export class MatchService {
-  private readonly quickQueue: MatchData[] = []
-  private readonly rankedQueue: MatchData[] = []
-  private readonly privateMap: Map<number, MatchData> = new Map()
+  private readonly quickQueue: {
+    easy: UserSocket[]
+    medium: UserSocket[]
+    hard: UserSocket[]
+  } = { easy: [], medium: [], hard: [] }
+  private readonly rankedQueue: UserSocket[] = []
+  private readonly privateMap: Map<
+    number,
+    { mode: PongMode; player: UserSocket }
+  > = new Map()
 
-  matchRanked(player: MatchData): { left: MatchData; right: MatchData } | null {
-    this.rankedQueue.push(player)
-    if (this.rankedQueue.length >= 2) {
-      const left = this.rankedQueue.shift()
-      const right = this.rankedQueue.shift()
+  match(queue: UserSocket[]): { left: UserSocket; right: UserSocket } | null {
+    if (queue.length >= 2) {
+      const left = queue.shift()
+      const right = queue.shift()
       return { left, right }
     }
     return null
   }
 
-  matchQuick(player: MatchData): { left: MatchData; right: MatchData } | null {
-    this.quickQueue.push(player)
-    if (this.quickQueue.length >= 2) {
-      const left = this.quickQueue.shift()
-      const right = this.quickQueue.shift()
-      return { left, right }
-    }
-    return null
+  matchRanked(
+    player: UserSocket,
+  ): { left: UserSocket; right: UserSocket } | null {
+    this.rankedQueue.push(player)
+    return this.match(this.rankedQueue)
+  }
+
+  matchQuick(
+    player: UserSocket,
+    mode: PongMode,
+  ): { left: UserSocket; right: UserSocket } | null {
+    this.quickQueue[mode].push(player)
+    return this.match(this.quickQueue[mode])
   }
 
   matchPrivate(
-    player: MatchData,
+    player: UserSocket,
+    mode?: PongMode,
     opponent?: number,
-  ): { left: MatchData; right: MatchData } | null {
+  ): { left: UserSocket; right: UserSocket; mode: PongMode } | null {
     console.log(player.uid, opponent)
     if (opponent && this.privateMap.has(opponent)) {
-      const left = this.privateMap.get(opponent)
+      const owner = this.privateMap.get(opponent)
       this.privateMap.delete(opponent)
-      return { left, right: player }
+      return { left: owner.player, right: player, mode: owner.mode }
     } else {
-      this.privateMap.set(player.uid, player)
+      this.privateMap.set(player.uid, { player, mode })
       return null
     }
   }
 
-  removeFromQueue(player: Socket) {
-    this.quickQueue.splice(
-      this.quickQueue.findIndex((p) => p.socket.id === player.id),
-      1,
-    )
+  removeFromQueue(player: UserSocket) {
+    for (const queue of Object.values(this.quickQueue)) {
+      queue.splice(
+        queue.findIndex((p) => p.id === player.id),
+        1,
+      )
+    }
     this.rankedQueue.splice(
-      this.rankedQueue.findIndex((p) => p.socket.id === player.id),
+      this.rankedQueue.findIndex((p) => p.id === player.id),
       1,
     )
+    this.privateMap.delete(player.uid)
   }
 }

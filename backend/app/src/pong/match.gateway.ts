@@ -14,17 +14,13 @@ import * as jwt from 'jsonwebtoken'
 import { jwtConstants } from 'src/configs/jwttoken.config'
 
 export type MatchMessage = {
-  mode: PongMode
+  mode?: PongMode
   matchType: PongMatchType
   matchTarget?: number
 }
 
 type UserSocket = Socket & { uid: number }
 
-type MatchData = {
-  uid: number
-  socket: UserSocket
-}
 type PongKeyEvent = {
   key: 'up' | 'down'
   isDown: boolean
@@ -42,29 +38,25 @@ export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
     @MessageBody() message: MatchMessage,
     @ConnectedSocket() client: UserSocket,
   ) {
-    let match: { left: MatchData; right: MatchData } | null = null
+    let match: { left: UserSocket; right: UserSocket; mode?: PongMode } | null =
+      null
     if (message.matchType === 'quick') {
-      match = this.matchService.matchQuick({ uid: client.uid, socket: client })
+      match = this.matchService.matchQuick(client, message.mode)
     } else if (message.matchType === 'ranked') {
-      match = this.matchService.matchRanked({
-        uid: client.uid,
-        socket: client,
-      })
+      message.mode = 'medium'
+      match = this.matchService.matchRanked(client)
     } else if (message.matchType === 'private') {
       match = this.matchService.matchPrivate(
-        {
-          uid: client.uid,
-          socket: client,
-        },
+        client,
+        message.mode,
         message.matchTarget,
       )
+      if (match) {
+        message.mode = match.mode
+      }
     }
     if (match) {
-      this.pongService.createGame(
-        match.left.socket,
-        match.right.socket,
-        message.mode,
-      )
+      this.pongService.createGame(match.left, match.right, message.mode)
     }
   }
 
