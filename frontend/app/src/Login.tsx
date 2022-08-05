@@ -6,6 +6,8 @@ import Nav from './Nav'
 import FriendView from './FriendView'
 import UserSet from './UserSet'
 import axios from 'axios'
+import { Profile } from './components/Profile'
+import { mockUser } from './mock/mockUser'
 
 const Loged = () => {
   const [state, setState] = useState(false)
@@ -28,6 +30,10 @@ const Loged = () => {
             <Route path="/friend" element={<FriendView />}>
               ddd
             </Route>
+            <Route
+              path="/Profile"
+              element={<Profile user={mockUser} />}
+            ></Route>
           </Routes>
         </>
       ) : (
@@ -50,11 +56,11 @@ const Login = () => {
   const code = currentUrl.searchParams.get('code')
   const sessionStorage = window.sessionStorage
   if (state === false) {
-    if (sessionStorage.getItem('login')) setState(true)
+    if (sessionStorage.getItem('key')) setState(true)
     else if (code) {
       const url = `api/auth/ft/callback?code=${code}`
       axios.get(url).then((res) => {
-        sessionStorage.setItem('login', res.data['access_token'])
+        sessionStorage.setItem('key', res.data['access_token'])
         setState(true)
       })
     }
