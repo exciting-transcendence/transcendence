@@ -139,7 +139,7 @@ const UserSet = ({ handleClick }: any) => {
             />
             <FormControlLabel
               value="설정안함"
-              control={<Radio checked={true} />}
+              control={<Radio />}
               label="설정안함"
               onChange={() => handleAuthSet('설정안함')}
             />
