@@ -8,13 +8,13 @@ import {
 } from '@mui/material'
 import { User } from '../data/User.dto'
 import { ProfileBase } from './Profile'
-import { IconButtonWrap } from './IconButtonWrap'
 import {
-  Block,
-  PersonAdd,
-  PersonRemove,
-  RadioButtonUnchecked,
-} from '@mui/icons-material'
+  AddFriendButton,
+  RemoveFriendButton,
+  BlockButton,
+  UnblockButton,
+  MessageButton,
+} from './userActions'
 
 type userStatus = 'DEFAULT' | 'BLOCKED' | 'FRIEND'
 const getStatus = (user: User, refUser: User): userStatus => {
@@ -27,49 +27,16 @@ const getStatus = (user: User, refUser: User): userStatus => {
   }
 }
 
-const AddFriendButton = () => (
-  <IconButtonWrap
-    title="add to friend"
-    icon={<PersonAdd />}
-    onClick={() => alert('pressed add friend button')}
-  />
-)
-
-const RemoveFriendButton = () => {
-  return (
-    <IconButtonWrap
-      title="remove from friend"
-      icon={<PersonRemove />}
-      onClick={() => alert('pressed remove friend button')}
-    />
-  )
-}
-
-const BlockButton = () => {
-  return (
-    <IconButtonWrap
-      title="Block"
-      icon={<Block />}
-      onClick={() => alert('pressed block button')}
-    />
-  )
-}
-
-const UnblockButton = () => {
-  return (
-    <IconButtonWrap
-      title="Unblock"
-      icon={<RadioButtonUnchecked />}
-      onClick={() => alert('pressed unblock button')}
-    />
-  )
-}
-
 const Actions = ({ status }: { status: userStatus }) => {
+  if (status === 'BLOCKED') {
+    return <UnblockButton />
+  }
+
   return (
     <ButtonGroup>
       {status === 'FRIEND' ? <RemoveFriendButton /> : <AddFriendButton />}
-      {status === 'BLOCKED' ? <UnblockButton /> : <BlockButton />}
+      <BlockButton />
+      <MessageButton />
     </ButtonGroup>
   )
 }
