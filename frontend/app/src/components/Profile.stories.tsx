@@ -7,7 +7,7 @@ import { Profile } from './Profile'
 import { User } from '../data/User.dto'
 
 export default {
-  title: 'Profile',
+  title: 'Profile/Profile',
   component: Profile,
 } as ComponentMeta<typeof Profile>
 
