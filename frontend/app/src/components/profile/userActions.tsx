@@ -6,50 +6,42 @@ import {
   PersonRemove,
 } from '@mui/icons-material'
 
-export const AddFriendButton = () => (
+interface onClickProps {
+  onClick: (...args: unknown[]) => void
+}
+
+export const AddFriendButton = ({ onClick }: onClickProps) => (
   <IconButtonWrap
     title="add to friend"
     icon={<PersonAdd />}
-    onClick={() => alert('pressed add friend button')}
+    onClick={onClick}
   />
 )
 
-export const RemoveFriendButton = () => {
+export const RemoveFriendButton = ({ onClick }: onClickProps) => {
   return (
     <IconButtonWrap
       title="remove from friend"
       icon={<PersonRemove />}
-      onClick={() => alert('pressed remove friend button')}
+      onClick={onClick}
     />
   )
 }
 
-export const BlockButton = () => {
-  return (
-    <IconButtonWrap
-      title="Block"
-      icon={<Block />}
-      onClick={() => alert('pressed block button')}
-    />
-  )
+export const BlockButton = ({ onClick }: onClickProps) => {
+  return <IconButtonWrap title="Block" icon={<Block />} onClick={onClick} />
 }
 
-export const UnblockButton = () => {
-  return (
-    <IconButtonWrap
-      title="Unblock"
-      icon={<Block />}
-      onClick={() => alert('pressed unblock button')}
-    />
-  )
+export const UnblockButton = ({ onClick }: onClickProps) => {
+  return <IconButtonWrap title="Unblock" icon={<Block />} onClick={onClick} />
 }
 
-export const MessageButton = () => {
+export const MessageButton = ({ onClick }: onClickProps) => {
   return (
     <IconButtonWrap
       title="Send Direct Message"
       icon={<LocalPostOffice />}
-      onClick={() => alert('pressed direct message button')}
+      onClick={onClick}
     />
   )
 }

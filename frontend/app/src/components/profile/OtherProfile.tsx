@@ -29,14 +29,20 @@ const getStatus = (user: User, refUser: User): userStatus => {
 
 const Actions = ({ status }: { status: userStatus }) => {
   if (status === 'BLOCKED') {
-    return <UnblockButton />
+    return <UnblockButton onClick={() => alert('pressed unblock button')} />
   }
 
   return (
     <ButtonGroup>
-      {status === 'FRIEND' ? <RemoveFriendButton /> : <AddFriendButton />}
-      <BlockButton />
-      <MessageButton />
+      {status === 'FRIEND' ? (
+        <RemoveFriendButton
+          onClick={() => alert('pressed remove friend button')}
+        />
+      ) : (
+        <AddFriendButton onClick={() => alert('pressed add friend button')} />
+      )}
+      <BlockButton onClick={() => alert('pressed block button')} />
+      <MessageButton onClick={() => alert('pressed direct message button')} />
     </ButtonGroup>
   )
 }
