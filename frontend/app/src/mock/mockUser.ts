@@ -1,4 +1,4 @@
-import { User } from '../data/User.dto'
+import { User } from 'data/User.dto'
 
 export const mockUser: User = {
   id: 'exampleID',

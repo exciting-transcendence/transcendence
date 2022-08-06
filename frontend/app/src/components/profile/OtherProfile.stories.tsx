@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import { blockedUser, friendUser, mockUser } from '../mock/mockUser'
+import { blockedUser, friendUser, mockUser } from 'mock/mockUser'
 import { OtherProfile } from './OtherProfile'
 
 export default {

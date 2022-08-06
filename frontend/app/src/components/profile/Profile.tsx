@@ -1,5 +1,5 @@
 import { Avatar, Card, CardContent, Grid, Typography } from '@mui/material'
-import { Stat, User } from '../data/User.dto'
+import { Stat, User } from 'data/User.dto'
 import { UserStatus } from './UserStatus'
 
 const StatDisplay = ({ stat }: { stat: Stat }) => {
