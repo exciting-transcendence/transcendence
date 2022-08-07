@@ -21,7 +21,7 @@ export class UserService {
   async create(userData: RegisterUserDto): Promise<User> {
     const user = new User()
 
-    user.avata = userData.avata
+    user.avatar = userData.avatar
     user.nickname = userData.nickname
     user.twoFactor = userData.twoFactor
     user.isActive = true
