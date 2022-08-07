@@ -1,4 +1,4 @@
-import { IconButtonWrap } from './IconButtonWrap'
+import { IconButtonWrap } from '../utils/IconButtonWrap'
 import {
   Block,
   LocalPostOffice,
