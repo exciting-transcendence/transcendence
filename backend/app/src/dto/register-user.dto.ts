@@ -1,9 +1,6 @@
-import { IsBoolean, IsNumber, IsString, IsUrl } from 'class-validator'
+import { IsBoolean, IsString, IsUrl } from 'class-validator'
 
 export class RegisterUserDto {
-  @IsNumber()
-  uid: number
-
   @IsBoolean()
   twoFactor: boolean
 

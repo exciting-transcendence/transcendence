@@ -1,6 +1,5 @@
-import axios from 'axios'
-import React, { useState, useEffect, useRef } from 'react'
-
+import React, { useState, useRef, ChangeEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 //css
 import styled from 'styled-components'
 import Box from '@mui/material/Box'
@@ -153,3 +152,99 @@ const UserSet = ({ handleClick }: any) => {
   )
 }
 export default UserSet
+
+type TwoFactorOptions = 'google' | 'none'
+
+function TwoFactorButton(props: {
+  value: TwoFactorOptions
+  setValue: (value: TwoFactorOptions) => void
+}) {
+  return (
+    <RadioGroup
+      row
+      aria-aria-labelledby="enable-2fa-radio-buttons-group"
+      name="enable-2fa-radio-buttons-group"
+      value={props.value}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        props.setValue(e.target.value as TwoFactorOptions)
+      }}
+    >
+      <FormControlLabel value="none" control={<Radio />} label="해제" />
+      <FormControlLabel
+        value="google"
+        control={<Radio />}
+        label="Google Authenticator"
+      />
+    </RadioGroup>
+  )
+}
+
+function NickNameInput(props: {
+  value: string
+  setValue: (value: string) => void
+}) {
+  return (
+    <TextField
+      label="닉네임"
+      variant="standard"
+      value={props.value}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        props.setValue(e.target.value)
+      }}
+    />
+  )
+}
+
+export function RegisterUser() {
+  const [nickname, setNickname] = useState('')
+  const [twoFactorKind, setTwoFactorKind]: [TwoFactorOptions, any] =
+    useState('none')
+  const [avata, _setAvata] = useState(
+    'https://i0.wp.com/42place.innovationacademy.kr/wp-content/uploads/2021/12/2.jpg?resize=500%2C500&ssl=1',
+  )
+  const navigate = useNavigate()
+
+  const handleSubmit = async () => {
+    const res = await fetch('/api/auth/ft/register', {
+      method: 'PUT',
+      body: JSON.stringify({
+        nickname,
+        avata,
+        twoFactor: twoFactorKind === 'none' ? false : true,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${window.sessionStorage.getItem('temp_token')}`,
+      },
+    })
+    const data = await res.json()
+    console.log(data)
+  }
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Log>
+        <Box
+          component="form"
+          sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }}
+          noValidate
+          autoComplete="off"
+        >
+          <div>
+            <NickNameInput value={nickname} setValue={setNickname} />
+          </div>
+        </Box>
+        <div style={{ textAlign: 'center' }}>
+          <Img src={avata} />
+        </div>
+        <FormControl>
+          <FormLabel>2차 인증(2FA) 설정</FormLabel>
+          <TwoFactorButton value={twoFactorKind} setValue={setTwoFactorKind} />
+        </FormControl>
+        <Button variant="outlined" onClick={handleSubmit}>
+          설정 완료
+        </Button>
+      </Log>
+    </ThemeProvider>
+  )
+}

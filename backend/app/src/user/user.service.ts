@@ -4,6 +4,7 @@ import { User } from './user.entity'
 import { Repository } from 'typeorm'
 import { JwtService } from '@nestjs/jwt'
 import { UserPayload } from 'src/configs/jwt-token.config'
+import { RegisterUserDto } from 'src/dto/register-user.dto'
 
 @Injectable()
 export class UserService {
@@ -17,16 +18,12 @@ export class UserService {
     return await this.userRepository.find()
   }
 
-  async create(
-    avata: string,
-    nickname: string,
-    twoFactor: boolean,
-  ): Promise<User> {
+  async create(userData: RegisterUserDto): Promise<User> {
     const user = new User()
 
-    user.avata = avata
-    user.nickname = nickname
-    user.twoFactor = twoFactor
+    user.avata = userData.avata
+    user.nickname = userData.nickname
+    user.twoFactor = userData.twoFactor
     user.isActive = true
 
     return await this.userRepository.save(user)
@@ -40,11 +37,11 @@ export class UserService {
     await this.userRepository.delete({ uid })
   }
 
-  issueToken(user: User) {
+  issueToken(user: User, twoFactorPassed: boolean): string {
     const payload: UserPayload = {
       uidType: 'user',
       uid: user.uid,
-      twoFactorPassed: !user.twoFactor,
+      twoFactorPassed,
     }
     return this.jwtService.sign(payload)
   }

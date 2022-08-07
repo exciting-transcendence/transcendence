@@ -14,10 +14,14 @@ export class FtOauthService {
   ) {}
 
   async create(intraUid: number) {
-    const ftOauth = new FtUser()
+    const ftUser = new FtUser()
 
-    ftOauth.uid = intraUid
-    return this.ftOauthRepository.save(ftOauth)
+    ftUser.uid = intraUid
+    return await this.ftOauthRepository.save(ftUser)
+  }
+
+  async save(ftUser: FtUser) {
+    return await this.ftOauthRepository.save(ftUser)
   }
 
   async findOne(intraUid: number) {

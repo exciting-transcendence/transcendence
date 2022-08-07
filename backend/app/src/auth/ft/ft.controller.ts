@@ -5,6 +5,7 @@ import { FtOauthService } from './ft-oauth.service'
 import { UseGuards } from '@nestjs/common'
 import { FtGuard } from './ft.strategy'
 import { JwtFtGuard } from './jwt-ft.strategy'
+import { RegisterUserDto } from 'src/dto/register-user.dto'
 
 @Controller('api/auth/ft')
 export class FtController {
@@ -33,7 +34,7 @@ export class FtController {
     if (ftUser.user) {
       url.searchParams.append(
         'access_token',
-        this.userService.issueToken(ftUser.user),
+        this.userService.issueToken(ftUser.user, !ftUser.user.twoFactor),
       )
       if (ftUser.user.twoFactor) {
         url.searchParams.append('done', '0')
@@ -55,19 +56,16 @@ export class FtController {
     }
   }
 
-  // @Put('/register')
-  // @UseGuards(JwtFtGuard)
-  // async register(@Req() req: any, @Body() body: any) {
-  //   const { uid } = req.user
-  //   const user = await this.userService.create('')
-  //   if (ftUser) {
-  //     ftUser.user.password = password
-  //     await this.userService.update(ftUser.user)
-  //   }
-  //   return {
-  //     code: 200,
-  //   }
-  // }
+  @Put('/register')
+  @UseGuards(JwtFtGuard)
+  async register(@Req() req: any, @Body() body: RegisterUserDto) {
+    const { uid } = req.user
+    const user = await this.userService.create(body)
+    const ftUser = await this.ftOauthService.findOne(uid)
 
-  //}
+    ftUser.user = user
+    await this.ftOauthService.save(ftUser)
+
+    return { access_token: this.userService.issueToken(user, !user.twoFactor) }
+  }
 }
