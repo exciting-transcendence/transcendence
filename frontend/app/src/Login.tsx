@@ -2,6 +2,11 @@ import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import UserSet, { RegisterUser } from './UserSet'
 import styled from 'styled-components'
+import Nav from './Nav'
+import FriendView from './FriendView'
+import axios from 'axios'
+import { Profile } from './components/Profile'
+import { mockUser } from './mock/mockUser'
 
 const CenterAlignedDiv = styled.div`
   display: flex;
