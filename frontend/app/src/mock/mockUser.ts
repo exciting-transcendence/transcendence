@@ -30,3 +30,5 @@ export const friendUser: User = {
   friends: [],
   blocks: [],
 }
+
+export const mockUsers = [mockUser, blockedUser, friendUser]
