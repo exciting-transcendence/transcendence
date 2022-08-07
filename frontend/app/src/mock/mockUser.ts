@@ -3,7 +3,7 @@ import { User } from 'data/User.dto'
 export const mockUser: User = {
   id: 'exampleID',
   name: 'Example User',
-  avatar: 'https://picsum.photos/200',
+  avatar: `https://picsum.photos/seed/${Math.random()}/200`,
   status: 'ONLINE',
   friends: ['friendID'],
   blocks: ['blockedID'],
@@ -19,6 +19,7 @@ export const blockedUser: User = {
   ...mockUser,
   id: 'blockedID',
   name: 'Blocked User',
+  avatar: `https://picsum.photos/seed/${Math.random()}/200`,
   friends: [],
   blocks: [],
 }
@@ -27,6 +28,7 @@ export const friendUser: User = {
   ...mockUser,
   id: 'friendID',
   name: 'Friend User',
+  avatar: `https://picsum.photos/seed/${Math.random()}/200`,
   friends: [],
   blocks: [],
 }
