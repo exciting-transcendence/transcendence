@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import Pong from './Pong'
 import RowRadioButtonsGroup from './GameOption'
-import Button from '@mui/material/Button'
+import { Button } from '@mui/material'
 import GameList from './GameList'
 
 const Grid = styled.div`
@@ -40,7 +40,7 @@ const Profile = styled.div`
   text-align: center;
 `
 
-const GameView = () => {
+export const GameView = () => {
   const [state, setState] = useState('watching')
   const handleClick = () => {
     setState('joingame')
@@ -68,4 +68,3 @@ const GameView = () => {
     </>
   )
 }
-export default GameView

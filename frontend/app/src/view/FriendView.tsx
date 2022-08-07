@@ -11,7 +11,7 @@ const FriendProfile = styled.div`
 const Div = styled.div`
   width: 50%;
 `
-const FriendView = () => {
+export const FriendView = () => {
   const [id, setId] = useState('')
   const clickFriend = (userId: string) => {
     setId(userId)
@@ -37,4 +37,3 @@ const FriendView = () => {
     </>
   )
 }
-export default FriendView
