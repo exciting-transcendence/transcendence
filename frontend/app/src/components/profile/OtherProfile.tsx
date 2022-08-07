@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material'
 import { User } from 'data/User.dto'
-import { ProfileBase } from './Profile'
+import { Profile } from './Profile'
 import {
   AddFriendButton,
   RemoveFriendButton,
@@ -56,7 +56,7 @@ export const OtherProfile = ({ user, refUser }: Props) => {
 
   return (
     <Card sx={{ maxWidth: 400 }}>
-      <ProfileBase user={user} />
+      <Profile user={user} />
       <Typography align="center">{`status: ${status}`}</Typography>
       <CardActionArea>
         <Grid container justifyContent="right">

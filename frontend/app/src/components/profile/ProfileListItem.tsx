@@ -1,16 +1,18 @@
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
 import { User } from 'data/User.dto'
+import { AvatarWithStatus } from './Profile'
 
 interface Props {
   user: User
+  onClick?: () => void
 }
-export const ProfileListItem = ({ user }: Props) => {
-  const { id, avatar, name } = user
+export const ProfileListItem = ({ user, onClick }: Props) => {
+  const { id, avatar, name, status } = user
 
   return (
-    <ListItem>
+    <ListItem button onClick={onClick}>
       <ListItemAvatar>
-        <Avatar src={avatar} />
+        <AvatarWithStatus status={status} avatar={avatar} />
       </ListItemAvatar>
       <ListItemText primary={name} secondary={id} />
     </ListItem>
