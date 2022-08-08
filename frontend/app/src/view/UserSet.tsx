@@ -111,16 +111,7 @@ const UserSet = ({ handleClick }: any) => {
         <div style={{ textAlign: 'center' }}>
           <Img src={files.imgUrl} />
         </div>
-        <input
-          ref={imgInput}
-          type="file"
-          accept="image/*"
-          onChange={onLoadFile}
-          style={{ display: 'none' }}
-        />
-        <Button variant="outlined" onClick={() => imgInput.current?.click()}>
-          이미지 업로드
-        </Button>
+
         <FormControl>
           <FormLabel id="demo-radio-buttons-group-label">
             2차 인증 설정
@@ -153,11 +144,9 @@ const UserSet = ({ handleClick }: any) => {
 }
 export default UserSet
 
-type TwoFactorOptions = 'google' | 'none'
-
 function TwoFactorButton(props: {
-  value: TwoFactorOptions
-  setValue: (value: TwoFactorOptions) => void
+  value: string
+  setValue: (value: boolean) => void
 }) {
   return (
     <RadioGroup
@@ -166,15 +155,12 @@ function TwoFactorButton(props: {
       name="enable-2fa-radio-buttons-group"
       value={props.value}
       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        props.setValue(e.target.value as TwoFactorOptions)
+        const enableTwoFactor = e.target.value === 'enable'
+        props.setValue(enableTwoFactor)
       }}
     >
-      <FormControlLabel value="none" control={<Radio />} label="해제" />
-      <FormControlLabel
-        value="google"
-        control={<Radio />}
-        label="Google Authenticator"
-      />
+      <FormControlLabel value="disable" control={<Radio />} label="해제" />
+      <FormControlLabel value="enable" control={<Radio />} label="설정" />
     </RadioGroup>
   )
 }
@@ -197,8 +183,7 @@ function NickNameInput(props: {
 
 export function RegisterUser() {
   const [nickname, setNickname] = useState('')
-  const [twoFactorKind, setTwoFactorKind]: [TwoFactorOptions, any] =
-    useState('none')
+  const [enableTwoFactor, setEnableTwoFactor] = useState(false)
   const [avatar, _setavatar] = useState(
     'https://i0.wp.com/42place.innovationacademy.kr/wp-content/uploads/2021/12/2.jpg?resize=500%2C500&ssl=1',
   )
@@ -210,7 +195,7 @@ export function RegisterUser() {
       body: JSON.stringify({
         nickname,
         avatar,
-        twoFactor: twoFactorKind === 'none' ? false : true,
+        twoFactor: enableTwoFactor,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -239,7 +224,10 @@ export function RegisterUser() {
         </div>
         <FormControl>
           <FormLabel>2차 인증(2FA) 설정</FormLabel>
-          <TwoFactorButton value={twoFactorKind} setValue={setTwoFactorKind} />
+          <TwoFactorButton
+            value={enableTwoFactor ? 'enable' : 'disable'}
+            setValue={setEnableTwoFactor}
+          />
         </FormControl>
         <Button variant="outlined" onClick={handleSubmit}>
           설정 완료
