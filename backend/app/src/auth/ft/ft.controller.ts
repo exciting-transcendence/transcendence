@@ -14,7 +14,7 @@ export class FtController {
     private readonly ftOauthService: FtOauthService,
   ) {}
 
-  @Get('/')
+  @Get()
   @UseGuards(FtGuard)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async auth() {}

@@ -1,9 +1,20 @@
-import { Controller, Put, UseGuards, Req, Delete, Get } from '@nestjs/common'
+import {
+  Controller,
+  Put,
+  UseGuards,
+  Req,
+  Delete,
+  Get,
+  Query,
+  UnauthorizedException,
+} from '@nestjs/common'
 
 import { TwoFactorService } from './two-factor.service'
 import { UserService } from 'user/user.service'
-import { JwtFtGuard } from './ft/jwt-ft.strategy'
-import { JwtUserGuard } from './jwt.strategy'
+import {
+  JwtAfterTwoFactorUserGuard,
+  JwtBeforeTwoFactorUserGuard,
+} from './jwt.strategy'
 
 @Controller('api/auth')
 export class AuthController {
@@ -13,7 +24,7 @@ export class AuthController {
   ) {}
 
   @Put('/2fa')
-  @UseGuards(JwtUserGuard)
+  @UseGuards(JwtBeforeTwoFactorUserGuard)
   async enable(@Req() req: any) {
     const { uid } = req.user
 
@@ -23,7 +34,7 @@ export class AuthController {
   }
 
   @Delete('/2fa')
-  @UseGuards(JwtUserGuard)
+  @UseGuards(JwtAfterTwoFactorUserGuard)
   async disable(@Req() req: any) {
     const { uid } = req.user
 
@@ -31,12 +42,20 @@ export class AuthController {
   }
 
   @Get('/2fa')
-  @UseGuards(JwtFtGuard)
-  async verify(@Req() req: any) {
+  @UseGuards(JwtBeforeTwoFactorUserGuard)
+  async verify(@Req() req: any, @Query('token') token: string) {
     const { uid } = req.user
 
-    return {
-      verified: await this.twoFactorService.verify(uid, req.query.token),
+    const verified = await this.twoFactorService.verify(uid, token)
+
+    if (verified) {
+      const user = await this.userService.findOne(uid)
+
+      return {
+        access_token: this.userService.issueToken(user, true),
+      }
+    } else {
+      throw new UnauthorizedException()
     }
   }
 }
