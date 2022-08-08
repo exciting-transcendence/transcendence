@@ -5,6 +5,8 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 import { v4 as uuidv4 } from 'uuid';
 import { BadRequestException } from '@nestjs/common';
 
+const MEGA_BYTES = 1000 * 1000
+
 const storage = (folder: string): multer.StorageEngine => {
 	fs.mkdirSync(folder, { recursive: true });
 
@@ -33,7 +35,7 @@ export const multerOptions = (folder: string) => {
 		  }	  
 	},
 	limits: {
-		fileSize: 8 * 10000000
+		fileSize: 8 * MEGA_BYTES
 	},
   };
 
