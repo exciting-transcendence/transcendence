@@ -1,12 +1,22 @@
-import FriendList from './FriendList'
-import React, { useState } from 'react'
-import { Grid, List, Container, Divider } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { Grid, List, Divider, Input } from '@mui/material'
 import { mockRefUser, mockUsers } from 'mock/mockUser'
 import { Profile, OtherProfile, ProfileListItem } from 'components'
 import { User } from 'data/User.dto'
+import fuzzysort from 'fuzzysort'
 
-const selectUser = (users: User[], refUser: User, id: string) => {
+const findUser = (users: User[], text: string) => {
+  return fuzzysort.go(text, users, { key: 'id' })
+}
+
+interface Props {
+  users: User[]
+  refUser: User
+  id: string
+}
+const ProfileDisplay = ({ users, refUser, id }: Props) => {
   const currentUser = users.find((user) => user.id === id)
+
   if (currentUser) {
     return <OtherProfile user={currentUser} refUser={refUser} />
   } else {
@@ -17,17 +27,34 @@ const selectUser = (users: User[], refUser: User, id: string) => {
 export const FriendView = () => {
   const users = mockUsers // TODO: get users from backend
   const refUser = mockRefUser // TODO: get user from backend
+  const [searchedUsers, setSearchedUsers] = useState(users)
 
   const [id, setId] = useState(refUser.id)
+  const [text, setText] = useState('')
+
+  useEffect(() => {
+    const result = findUser(users, text).map((r) => r.obj)
+    if (text) {
+      setSearchedUsers(result)
+    } else {
+      setSearchedUsers(users)
+    }
+  }, [text])
 
   return (
     <Grid container justifyContent="space-between">
       <Grid item xs={6}>
+        <Input
+          placeholder="인트라 아이디를 입력하세요"
+          onChange={(e) => setText(e.target.value)}
+          value={text}
+          autoFocus
+        />
         <List>
           <ProfileListItem user={refUser} onClick={() => setId(refUser.id)} />
           <Divider />
-          {users.map((u) => (
-            <ProfileListItem user={u} onClick={() => setId(u.id)} />
+          {searchedUsers.map((u) => (
+            <ProfileListItem key={u.id} user={u} onClick={() => setId(u.id)} />
           ))}
         </List>
       </Grid>
@@ -37,7 +64,7 @@ export const FriendView = () => {
         style={{ marginRight: '-1px' }}
       />
       <Grid item xs={6}>
-        {selectUser(users, refUser, id)}
+        <ProfileDisplay users={users} refUser={refUser} id={id} />
       </Grid>
     </Grid>
   )
