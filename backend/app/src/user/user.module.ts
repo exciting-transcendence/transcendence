@@ -14,6 +14,7 @@ import { jwtConstants } from 'configs/jwt-token.config'
     }),
   ],
   providers: [UserService],
+  controllers: [],
   exports: [UserService],
 })
 export class UserModule {}

@@ -151,7 +151,7 @@ function TwoFactorButton(props: {
   return (
     <RadioGroup
       row
-      aria-aria-labelledby="enable-2fa-radio-buttons-group"
+      aria-labelledby="enable-2fa-radio-buttons-group"
       name="enable-2fa-radio-buttons-group"
       value={props.value}
       onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -181,16 +181,19 @@ function NickNameInput(props: {
   )
 }
 
-export function RegisterUser() {
+export function RegisterUser(props: {
+  setIsLoggedIn: (value: boolean) => void
+}) {
   const [nickname, setNickname] = useState('')
   const [enableTwoFactor, setEnableTwoFactor] = useState(false)
   const [avatar, _setavatar] = useState(
     'https://i0.wp.com/42place.innovationacademy.kr/wp-content/uploads/2021/12/2.jpg?resize=500%2C500&ssl=1',
   )
+
   const navigate = useNavigate()
 
-  const handleSubmit = async () => {
-    const res = await fetch('/api/auth/ft/register', {
+  const handleSubmit = () => {
+    fetch('/api/auth/ft/register', {
       method: 'PUT',
       body: JSON.stringify({
         nickname,
@@ -202,8 +205,23 @@ export function RegisterUser() {
         Authorization: `Bearer ${window.sessionStorage.getItem('temp_token')}`,
       },
     })
-    const data = await res.json()
-    console.log(data)
+      .then(async (res) => {
+        if (!res.ok) {
+          return Promise.reject(res)
+        }
+        const { access_token } = await res.json()
+        if (enableTwoFactor) {
+          window.sessionStorage.setItem('temp_token', access_token)
+          navigate('/two-factor')
+        } else {
+          props.setIsLoggedIn(true)
+          window.sessionStorage.setItem('access_token', access_token)
+          navigate('/')
+        }
+      })
+      .catch((_) => {
+        navigate('/')
+      })
   }
 
   return (

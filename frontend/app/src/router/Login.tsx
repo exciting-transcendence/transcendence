@@ -2,12 +2,12 @@ import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import UserSet, { RegisterUser } from 'view/UserSet'
 import styled from 'styled-components'
-import Nav from './Nav'
-import FriendView from './FriendView'
-import axios from 'axios'
-import { Profile } from './components/profile/Profile'
-import { mockUser } from './mock/mockUser'
-import QrPage from './towFactor'
+// import Nav from './Nav'
+// import FriendView from 'FriendView'
+// import axios from 'axios'
+// import { Profile } from 'components/profile/Profile'
+// import { mockUser } from 'mock/mockUser'
+import QrPage from 'view/twoFactor'
 
 const CenterAlignedDiv = styled.div`
   display: flex;
@@ -48,7 +48,7 @@ function ProcessLogin(props: { setIsLoggedIn: (value: boolean) => void }) {
       window.sessionStorage.setItem('temp_token', accessToken)
 
       if (reason === 'twofactor') {
-        navigate('/twofactor')
+        navigate('/two-factor')
       } else if (reason === 'register') {
         navigate('/register')
       }
@@ -64,15 +64,17 @@ export function LoginRouter(props: {
     <Routes>
       <Route path="/" element={<LoginButton />} />
       <Route
-        path="/"
-        element={<QrPage setIsLoggedIn={props.setIsLoggedIn} />}
-      />
-      <Route
         path="/login"
         element={<ProcessLogin setIsLoggedIn={props.setIsLoggedIn} />}
       />
-      <Route path="/register" element={<RegisterUser />} />
-      <Route path="/twofactor" element={<QrPage />} />
+      <Route
+        path="/register"
+        element={<RegisterUser setIsLoggedIn={props.setIsLoggedIn} />}
+      />
+      <Route
+        path="/two-factor"
+        element={<QrPage setIsLoggedIn={props.setIsLoggedIn} />}
+      />
     </Routes>
   )
 }
