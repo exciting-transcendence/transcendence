@@ -1,6 +1,6 @@
 import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
-import UserSet, { RegisterUser } from 'view/UserSet'
+import { RegisterUser } from 'view/RegisterUser'
 import styled from 'styled-components'
 // import Nav from './Nav'
 // import FriendView from 'FriendView'
