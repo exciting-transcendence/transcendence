@@ -3,17 +3,15 @@ import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { mockUser } from 'mock/mockUser'
-import { ProfileCard } from './Profile'
+import { Profile } from './Profile'
 import { User } from 'data/User.dto'
 
 export default {
   title: 'Profile/Profile',
-  component: ProfileCard,
-} as ComponentMeta<typeof ProfileCard>
+  component: Profile,
+} as ComponentMeta<typeof Profile>
 
-const Template: ComponentStory<typeof ProfileCard> = (args) => (
-  <ProfileCard {...args} />
-)
+const Template: ComponentStory<typeof Profile> = (args) => <Profile {...args} />
 
 export const Default = Template.bind({})
 Default.args = { user: mockUser }
@@ -21,4 +19,4 @@ Default.args = { user: mockUser }
 export const Playing = Template.bind({})
 Playing.args = { user: { ...mockUser, status: 123 } as User }
 
-// FIXME: 이름 ProfileCard로 변경
+// FIXME: 이름 Profile로 변경
