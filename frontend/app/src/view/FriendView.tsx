@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Grid, List, Divider, Input } from '@mui/material'
 import { mockRefUser, mockUsers } from 'mock/mockUser'
 import { Profile, OtherProfile, ProfileListItem } from 'components'
@@ -6,7 +6,7 @@ import { User } from 'data/User.dto'
 import fuzzysort from 'fuzzysort'
 
 const findUser = (users: User[], text: string) => {
-  return fuzzysort.go(text, users, { key: 'id' })
+  return fuzzysort.go(text, users, { key: 'id' }).map((r) => r.obj)
 }
 
 interface Props {
@@ -27,19 +27,14 @@ const ProfileDisplay = ({ users, refUser, id }: Props) => {
 export const FriendView = () => {
   const users = mockUsers // TODO: get users from backend
   const refUser = mockRefUser // TODO: get user from backend
-  const [searchedUsers, setSearchedUsers] = useState(users)
 
   const [id, setId] = useState(refUser.id)
   const [text, setText] = useState('')
 
-  useEffect(() => {
-    const result = findUser(users, text).map((r) => r.obj)
-    if (text) {
-      setSearchedUsers(result)
-    } else {
-      setSearchedUsers(users)
-    }
-  }, [text])
+  const searchedUsers = useMemo(
+    () => (text ? findUser(users, text) : users),
+    [text],
+  )
 
   return (
     <Grid container justifyContent="space-between">
