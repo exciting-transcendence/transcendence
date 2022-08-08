@@ -2,6 +2,12 @@ import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import UserSet, { RegisterUser } from 'view/UserSet'
 import styled from 'styled-components'
+import Nav from './Nav'
+import FriendView from './FriendView'
+import axios from 'axios'
+import { Profile } from './components/profile/Profile'
+import { mockUser } from './mock/mockUser'
+import QrPage from './towFactor'
 
 const CenterAlignedDiv = styled.div`
   display: flex;
@@ -58,11 +64,15 @@ export function LoginRouter(props: {
     <Routes>
       <Route path="/" element={<LoginButton />} />
       <Route
+        path="/"
+        element={<QrPage setIsLoggedIn={props.setIsLoggedIn} />}
+      />
+      <Route
         path="/login"
         element={<ProcessLogin setIsLoggedIn={props.setIsLoggedIn} />}
       />
       <Route path="/register" element={<RegisterUser />} />
-      <Route path="/twofactor" element={<h1> NOT IMPLEMENTED. </h1>} />
+      <Route path="/twofactor" element={<QrPage />} />
     </Routes>
   )
 }
