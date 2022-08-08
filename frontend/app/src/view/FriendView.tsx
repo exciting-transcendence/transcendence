@@ -63,23 +63,4 @@ export const FriendView = () => {
       </Grid>
     </Grid>
   )
-  // return (
-  //   <>
-  //     {id ? (
-  //       <FriendProfile>
-  //         <Div>
-  //           <FriendList clickFriend={clickFriend} />
-  //         </Div>
-  //         <Div>
-  //           {id}
-  //           {/* <UserProfile user = {id}/> */}
-  //         </Div>
-  //       </FriendProfile>
-  //     ) : (
-  //       <>
-  //         <FriendList clickFriend={clickFriend} />
-  //       </>
-  //     )}
-  //   </>
-  // )
 }
