@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Grid, List, Divider, Input } from '@mui/material'
+import { Grid, List, Divider, Input, Typography } from '@mui/material'
 import { mockRefUser, mockUsers } from 'mock/mockUser'
 import { Profile, OtherProfile, ProfileListItem } from 'components'
 import { User } from 'data/User.dto'
@@ -30,15 +30,15 @@ export const FriendView = () => {
 
   const [id, setId] = useState(refUser.id)
   const [text, setText] = useState('')
-
-  const searchedUsers = useMemo(
-    () => (text ? findUser(users, text) : users),
-    [text],
-  )
+  const seenUsers = text ? findUser(users, text) : users
 
   return (
     <Grid container justifyContent="space-between">
       <Grid item xs={6}>
+        <Typography variant="h5">Profile</Typography>
+        <ProfileListItem user={refUser} onClick={() => setId(refUser.id)} />
+        <Divider />
+        <Typography variant="h5">Friends</Typography>
         <Input
           placeholder="인트라 아이디를 입력하세요"
           onChange={(e) => setText(e.target.value)}
@@ -46,9 +46,7 @@ export const FriendView = () => {
           autoFocus
         />
         <List>
-          <ProfileListItem user={refUser} onClick={() => setId(refUser.id)} />
-          <Divider />
-          {searchedUsers.map((u) => (
+          {seenUsers.map((u) => (
             <ProfileListItem key={u.id} user={u} onClick={() => setId(u.id)} />
           ))}
         </List>
