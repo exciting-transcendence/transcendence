@@ -16,11 +16,12 @@ export class ChatService {
     const item: ChatroomStatusDto = {
       roomId: this.maxRoomId.toString(),
       roomName: roomDto.roomName,
-      ownerId: roomDto.ownerId,
-      adminId: [roomDto.ownerId],
-      joinedUsers: [roomDto.ownerId],
+      ownerUid: roomDto.ownerUid,
+      adminUid: [roomDto.ownerUid],
+      joinedUsers: [roomDto.ownerUid],
     }
     this.channels.push(item)
+    return item
   }
   /*
   enterChatroom(client: Socket, roomId: string) {
