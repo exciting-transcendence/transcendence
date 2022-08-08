@@ -19,15 +19,15 @@ export class ChatGateway {
   clients = []
 
   afterInit(server: Server) {
-    console.log('chat:', 'new server')
+    console.log('chat: new server')
   }
 
   handleConnection(client: Socket) {
-    console.log('chat:', 'new connection')
+    console.log('chat: new connection')
   }
 
   handleDisconnect(client: Socket) {
-    console.log('chat:', 'disconnected')
+    console.log('chat: disconnected')
   }
 
   @SubscribeMessage(chatEvent.SEND)
@@ -41,8 +41,7 @@ export class ChatGateway {
     @MessageBody() msg: ChatMessageDto,
   ) {
     const { senderUid, msgContent, roomId } = msg
-    console.log(JSON.stringify(msg))
-    console.log('chat:', senderUid + '(' + client.id + ') sent: ' + msgContent)
+    console.log(`chat: ${senderUid} sent ${msgContent}`)
     this.broadcastMessage(client, msg)
   }
 
@@ -68,7 +67,7 @@ export class ChatGateway {
   ) {
     const { senderUid, roomId } = data
     client.join(roomId)
-    console.log('chat:', senderUid + ' has entered to ' + roomId)
+    console.log(`chat: ${senderUid} has entered to ${roomId}`)
     this.emitNotice(roomId, senderUid, 'join')
     this.clients.push(client)
   }
