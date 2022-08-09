@@ -92,25 +92,19 @@ export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
   }
 
   handleConnection(client: UserSocket) {
-    const authString = client.handshake.headers.authorization
+    const { token } = client.handshake.auth
 
-    if (!authString) {
-      client.disconnect()
-      return
-    }
-
-    const accessToken = authString.split(' ')[1]
-    if (!accessToken) {
+    if (token === undefined) {
       client.disconnect()
       return
     }
 
     try {
-      const decoded = jwt.verify(
-        accessToken,
-        jwtConstants.secret,
-      ) as jwt.JwtPayload
-      client.uid = Number(decoded.id)
+      const decoded = jwt.verify(token, jwtConstants.secret) as jwt.JwtPayload
+      if (decoded.uidType !== 'user' || decoded.twoFactorPassed !== true) {
+        client.disconnect()
+        return
+      }
     } catch {
       client.disconnect()
     }
