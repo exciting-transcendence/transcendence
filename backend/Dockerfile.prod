@@ -1,6 +1,8 @@
 FROM node:lts-alpine3.15
 
+COPY avatar /srv/uploads/avatar
 COPY app /app
+
 WORKDIR /app
 
 RUN npm install

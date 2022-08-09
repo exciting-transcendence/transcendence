@@ -24,8 +24,9 @@ export class AvatarController {
   @Bind(UploadedFile())
   @UseGuards(JwtFtGuard)
   async upload(@UploadedFile() file: any) {
-    if (!file)
+    if (!file) {
       throw new BadRequestException()
+    }
     return { filename: file.filename }
   }
 
