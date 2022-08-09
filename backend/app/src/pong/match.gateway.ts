@@ -22,8 +22,7 @@ export type MatchMessage = {
 type UserSocket = Socket & { uid: number }
 
 type PongKeyEvent = {
-  key: 'up' | 'down'
-  isDown: boolean
+  key: 'up' | 'down' | 'stop'
 }
 
 @WebSocketGateway({ namespace: 'api/pong/match', cors: ['*'] })
@@ -71,13 +70,7 @@ export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
       return
     }
 
-    let direction: 'up' | 'down' | 'stop'
-    if (!message.isDown) {
-      direction = 'stop'
-    } else {
-      direction = message.key
-    }
-    manager.game.changePaddleVelocity(side, direction)
+    manager.game.changePaddleVelocity(side, message.key)
   }
 
   @SubscribeMessage('spectator')
