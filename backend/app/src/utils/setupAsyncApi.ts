@@ -7,9 +7,17 @@ import {
 
 export async function setupAsyncApi(app: INestApplication): Promise<void> {
   const server: AsyncServerObject = {
-    url: 'http://localhost:3000/chat',
+    url: 'http://localhost:3000/api/chat?query={uid}',
     protocol: 'socket.io',
     protocolVersion: '4',
+    description:
+      'handshake의 **auth**에 **jwt token**을 담아주면 해당 내용으로 client의 uid를 구분합니다.',
+    variables: {
+      uid: {
+        description: '테스트를 위해 url query로 uid를 넣을 수 있습니다',
+        default: '1',
+      },
+    },
   }
 
   const options = new AsyncApiDocumentBuilder()

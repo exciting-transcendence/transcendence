@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common'
-import { ChatroomDto, ChatroomStatusDto } from './chat.dto'
+import { ChatRoomDto, ChatRoomStatusDto } from './chat.dto'
 
 @Injectable()
 export class ChatService {
   private maxRoomId = 0
-  private channels: ChatroomStatusDto[] = []
+  private channels: ChatRoomStatusDto[] = []
 
   getAllChatrooms() {
     return this.channels
   }
 
-  createChatroom(roomDto: ChatroomDto) {
+  createChatroom(roomDto: ChatRoomDto) {
     console.log(this.maxRoomId)
     this.maxRoomId++
-    const item: ChatroomStatusDto = {
+    const item: ChatRoomStatusDto = {
       roomId: this.maxRoomId.toString(),
       roomName: roomDto.roomName,
       ownerUid: roomDto.ownerUid,

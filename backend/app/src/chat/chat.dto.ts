@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export class ChatroomDto {
+export class ChatRoomDto {
   @ApiProperty()
   roomName: string
   // TODO: roomType<public|private|protected>
@@ -9,7 +9,7 @@ export class ChatroomDto {
   ownerUid: number
 }
 
-export class ChatroomStatusDto extends ChatroomDto {
+export class ChatRoomStatusDto extends ChatRoomDto {
   @ApiProperty()
   roomId: string
   @ApiProperty()
@@ -19,8 +19,11 @@ export class ChatroomStatusDto extends ChatroomDto {
 }
 
 export class ChatMessageDto {
-  @ApiProperty({ description: '유저id' })
-  senderUid: number
+  @ApiProperty({
+    description: '메시지 작성자의 유저id.\n발신땐 불필요',
+    nullable: true,
+  })
+  senderUid?: number
   @ApiProperty({ description: '메시지 본문' })
   msgContent: string
   @ApiProperty({ description: '채팅방id' })

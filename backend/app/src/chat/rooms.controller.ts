@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body } from '@nestjs/common'
-import { ChatroomDto, ChatroomStatusDto } from './chat.dto'
+import { ChatRoomDto, ChatRoomStatusDto } from './chat.dto'
 import { ChatService } from './chat.service'
 import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger'
 
@@ -9,7 +9,7 @@ export class RoomsController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('/list')
-  @ApiOkResponse({ type: ChatroomStatusDto, isArray: true })
+  @ApiOkResponse({ type: ChatRoomStatusDto, isArray: true })
   getChatroomList() {
     return this.chatService.getAllChatrooms()
   }
@@ -17,9 +17,9 @@ export class RoomsController {
   @Post('/create')
   @ApiCreatedResponse({
     description: '새로운 채팅방 생성',
-    type: ChatroomStatusDto,
+    type: ChatRoomStatusDto,
   })
-  createChatroom(@Body() roomdto: ChatroomDto) {
+  createChatroom(@Body() roomdto: ChatRoomDto) {
     return this.chatService.createChatroom(roomdto)
   }
 }
