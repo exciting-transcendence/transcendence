@@ -11,7 +11,6 @@ import FormControl from '@mui/material/FormControl'
 import Radio from '@mui/material/Radio'
 import FormLabel from '@mui/material/FormLabel'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { Avatar } from '@mui/material'
 
 const theme = createTheme({
   palette: {
