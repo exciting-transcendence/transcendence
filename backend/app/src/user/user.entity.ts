@@ -14,16 +14,16 @@ export class User {
   nickname: string
 
   @Column({ default: Status.OFFLINE })
-  status: Status;
+  status: Status
 
   @Column()
   avatar: string
 
   @Column('int', { array: true, default: [] })
-  friends: number[];
+  friends: number[]
 
   @Column('int', { array: true, default: [] })
-  blocks: number[];
+  blocks: number[]
 
   @OneToOne(() => Stat, { cascade: true })
   @JoinColumn()
