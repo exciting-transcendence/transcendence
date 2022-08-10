@@ -25,7 +25,7 @@ type PongKeyEvent = {
   key: 'up' | 'down' | 'stop'
 }
 
-@WebSocketGateway({ namespace: 'api/pong/match', cors: ['*'] })
+@WebSocketGateway({ namespace: 'api/pong', cors: ['*'] })
 export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
   constructor(
     private matchService: MatchService,
@@ -105,6 +105,7 @@ export class MatchGateWay implements OnGatewayDisconnect, OnGatewayConnection {
         client.disconnect()
         return
       }
+      client.uid = decoded.uid
     } catch {
       client.disconnect()
     }
