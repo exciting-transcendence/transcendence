@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { MainRouter, LoginRouter } from 'router'
 
 export function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
 
   useEffect(() => {
     if (window.sessionStorage.getItem('access_token')) {

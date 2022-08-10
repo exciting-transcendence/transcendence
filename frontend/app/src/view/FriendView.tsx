@@ -43,6 +43,8 @@ export const FriendView = () => {
           placeholder="인트라 아이디를 입력하세요"
           onChange={(e) => setText(e.target.value)}
           value={text}
+          fullWidth={true}
+          color="success"
           autoFocus
         />
         <List>
