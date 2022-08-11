@@ -38,7 +38,7 @@ export const AvatarWithStatus = ({
 }
 
 export const Profile = ({ user }: Props) => {
-  const { id, stat, avatar, name, status } = user
+  const { uid, stat, avatar, nickname, status } = user
 
   return (
     <>
@@ -46,8 +46,8 @@ export const Profile = ({ user }: Props) => {
         <AvatarWithStatus avatar={avatar} status={status} radius={120} />
       </Grid>
       <Grid container justifyContent="center" alignItems="flex-end" gap={1}>
-        <Typography variant="h5">{name}</Typography>
-        <Typography>{id}</Typography>
+        <Typography variant="h5">{nickname}</Typography>
+        <Typography>{status}</Typography>
       </Grid>
       <Grid container justifyContent="center" gap={3}>
         <StatDisplay stat={stat} />

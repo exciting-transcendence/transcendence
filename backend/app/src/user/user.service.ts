@@ -22,13 +22,13 @@ export class UserService {
   async create(userData: RegisterUserDto): Promise<User> {
     const user = new User()
     const stat = new Stat()
-  
+    console.log(stat)
     user.avatar = userData.avatar
     user.nickname = userData.nickname
     user.twoFactor = userData.twoFactor
     user.isActive = true
     user.stat = stat
-
+    console.log(user)
     // tmp dummy user for testing
     const user1 = new User()
     const user2 = new User()
@@ -64,20 +64,21 @@ export class UserService {
 
   async findOneByUid(uid: number): Promise<User> {
     return await this.userRepository
-    .createQueryBuilder('user')
-    .select([
-      'user.uid',
-      'user.nickname',
-      'user.avatar',
-      'user.status',
-      'user.friends',
-      'user.blocks',
-      'stat.win',
-      'stat.lose',
-      'stat.rating'])
-    .innerJoin('user.stat', 'stat')
-    .where('user.uid = :uid', { uid })
-    .getOne()
+      .createQueryBuilder('user')
+      .select([
+        'user.uid',
+        'user.nickname',
+        'user.avatar',
+        'user.status',
+        'user.friends',
+        'user.blocks',
+        'stat.win',
+        'stat.lose',
+        'stat.rating',
+      ])
+      .innerJoin('user.stat', 'stat')
+      .where('user.uid = :uid', { uid })
+      .getOne()
   }
 
   async remove(uid: number): Promise<void> {
