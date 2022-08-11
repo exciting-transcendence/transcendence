@@ -292,12 +292,12 @@ class PongManager {
   }
 
   startGame() {
-    this.leftUser.emit('gameStart', {
+    this.leftUser.emit('gameInfo', {
       left: this.leftUser.uid,
       right: this.rightUser.uid,
       gameId: this.gameId,
     })
-    this.rightUser.emit('gameStart', {
+    this.rightUser.emit('gameInfo', {
       left: this.leftUser.uid,
       right: this.rightUser.uid,
       gameId: this.gameId,
@@ -345,7 +345,7 @@ class PongManager {
   }
 
   addSpectator(socket: UserSocket) {
-    socket.emit('gameStart', {
+    socket.emit('gameInfo', {
       left: this.leftUser.uid,
       right: this.rightUser.uid,
       gameId: this.gameId,
@@ -384,7 +384,9 @@ export class PongService {
     this.gamesByGameId.set(gameId, gameManager)
     this.gamesByUser.set(leftUser.uid, { manager: gameManager, side: 'left' })
     this.gamesByUser.set(rightUser.uid, { manager: gameManager, side: 'right' })
-    gameManager.startGame()
+    setTimeout(() => {
+      gameManager.startGame()
+    }, CONSTANTS.GAME_START_DELAY)
   }
 
   deleteGame(gameId: number) {

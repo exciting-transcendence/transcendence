@@ -21,3 +21,6 @@ export const MAX_SHOOT_RIGHT_UP_DEGREE = 70
 export const UPDATE_INTERVAL = 1000 / 60
 
 export const MAX_SCORE = 5
+
+// seconds
+export const GAME_START_DELAY = 5
