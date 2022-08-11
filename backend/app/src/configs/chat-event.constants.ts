@@ -5,4 +5,6 @@ export const chatEvent = {
   SEND: 'SEND',
   RECEIVE: 'RECEIVE',
   NOTICE: 'NOTICE',
+  ADD_ADMIN: 'ADD_ADMIN',
+  REMOVE_ADMIN: 'REMOVE_ADMIN',
 }

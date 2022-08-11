@@ -8,7 +8,7 @@ import {
 import { AsyncApiPub, AsyncApiService, AsyncApiSub } from 'nestjs-asyncapi'
 import { Server, Socket } from 'socket.io'
 import { chatEvent } from 'configs/chat-event.constants'
-import { ChatMessageDto } from './chat.dto'
+import { ChatMessageDto, UserInRoomDto } from './chat.dto'
 import { ChatService } from './chat.service'
 import { UserService } from 'user/user.service'
 
@@ -83,6 +83,7 @@ export class ChatGateway {
   ) {
     // TODO: 유효한 roomId인지 확인
     // TODO: banned 여부 확인
+    this.chatService.addUserToRoom(client.data.uid, roomId)
     client.join(roomId)
     console.log(`chat: ${client.data.uid} has entered to ${roomId}`)
     this.emitNotice(client, roomId, 'join')
@@ -131,5 +132,35 @@ export class ChatGateway {
   ) {
     const newRoom = this.chatService.createChatroom(client.data.uid, title)
     this.onJoinRoom(client, newRoom.roomId)
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.ADD_ADMIN,
+    summary: 'uid를 roomId의 admin에 추가',
+    message: { name: 'data', payload: { type: UserInRoomDto } },
+  })
+  @SubscribeMessage(chatEvent.ADD_ADMIN)
+  async onAddAdmin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: UserInRoomDto,
+  ) {
+    // TODO: client가 admin인지 여부 확인
+    // TODO: 새 admin이 현재 chatroom의 참가자인지 확인
+    this.chatService.addUserAsAdmin(data.uid, data.roomId)
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.REMOVE_ADMIN,
+    summary: 'uid를  roomId의 admin에서 삭제',
+    message: { name: 'data', payload: { type: UserInRoomDto } },
+  })
+  @SubscribeMessage(chatEvent.REMOVE_ADMIN)
+  async onRemoveAdmin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: UserInRoomDto,
+  ) {
+    // TODO: client가 admin인지 여부 확인
+    // TODO: 새 admin이 현재 chatroom의 참가자인지 확인
+    this.chatService.removeUserAsAdmin(data.uid, data.roomId)
   }
 }

@@ -29,3 +29,10 @@ export class ChatMessageDto {
   @ApiProperty({ description: '채팅방id' })
   roomId: string
 }
+
+export class UserInRoomDto {
+  @ApiProperty()
+  roomId: string
+  @ApiProperty()
+  uid: number
+}
