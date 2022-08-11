@@ -40,4 +40,12 @@ export class ChatService {
     const idx = this.channels[roomId].adminUid.indexOf(uid)
     this.channels[roomId].adminUid.splice(idx, 1)
   }
+
+  isAdmin(uid: number, roomId: number) {
+    return this.channels[roomId].adminUid.includes(uid)
+  }
+
+  isJoined(uid: number, roomId: number) {
+    return this.channels[roomId].joinedUsers.includes(uid)
+  }
 }

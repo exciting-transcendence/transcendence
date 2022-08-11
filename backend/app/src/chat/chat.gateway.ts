@@ -33,7 +33,7 @@ export class ChatGateway {
     // FIXME: prod에선 쿼리로부터 uid를 확인할 필요 없음
     const token = client.handshake.auth.token
     if (token === undefined) {
-      client.data.uid = client.handshake.query.uid
+      client.data.uid = Number(client.handshake.query.uid)
     } else {
       client.data.uid = this.userService.getUidFromToken(token)
     }
@@ -145,9 +145,12 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: UserInRoomDto,
   ) {
-    // TODO: client가 admin인지 여부 확인
-    // TODO: 새 admin이 현재 chatroom의 참가자인지 확인
-    this.chatService.addUserAsAdmin(data.uid, data.roomId)
+    // client가 현재 admin이고, 새 admin이 현재 chatroom의 참가자라면
+    if (
+      this.chatService.isAdmin(client.data.uid, data.roomId) &&
+      this.chatService.isJoined(data.uid, data.roomId)
+    )
+      this.chatService.addUserAsAdmin(data.uid, data.roomId)
   }
 
   @AsyncApiPub({
@@ -160,8 +163,11 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: UserInRoomDto,
   ) {
-    // TODO: client가 admin인지 여부 확인
-    // TODO: 새 admin이 현재 chatroom의 참가자인지 확인
-    this.chatService.removeUserAsAdmin(data.uid, data.roomId)
+    // client가 현재 admin이고, 새 admin이 현재 chatroom의 참가자라면
+    if (
+      this.chatService.isAdmin(client.data.uid, data.roomId) &&
+      this.chatService.isJoined(data.uid, data.roomId)
+    )
+      this.chatService.removeUserAsAdmin(data.uid, data.roomId)
   }
 }
