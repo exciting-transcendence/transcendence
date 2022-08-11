@@ -24,24 +24,21 @@ export class ChatGateway {
 
   clients = []
 
-  afterInit(server: Server) {
-    console.log('chat: new server')
-  }
-
   handleConnection(client: Socket) {
-    console.log('chat: new connection')
     // FIXME: prod에선 쿼리로부터 uid를 확인할 필요 없음
+    // TODO: change user status to online
     const token = client.handshake.auth.token
     if (token === undefined) {
       client.data.uid = Number(client.handshake.query.uid)
     } else {
       client.data.uid = this.userService.getUidFromToken(token)
     }
-    console.log('uid: ' + client.data.uid)
+    console.log(`chat: uid ${client.data.uid} connected.`)
   }
 
   handleDisconnect(client: Socket) {
-    console.log('chat: disconnected')
+    // TODO: change user status to offline
+    console.log(`chat: uid ${client.data.uid} disconnected`)
   }
 
   @SubscribeMessage(chatEvent.SEND)
