@@ -10,6 +10,13 @@ export interface Stat {
   rating: number
 }
 
+// export interface User {
+//   uid: number
+//   nickname: string
+//   avatar: string
+//   isActive: boolean
+// }
+
 export interface User {
   id: userID
   name: string

@@ -23,8 +23,10 @@ export class AvatarController {
   )
   @Bind(UploadedFile())
   @UseGuards(JwtFtGuard)
-  async upload(@UploadedFile() file: any) {
-    if (!file) throw new BadRequestException()
+  async upload(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException()
+    }
     return { filename: file.filename }
   }
 
