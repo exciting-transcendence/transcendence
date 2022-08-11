@@ -9,12 +9,16 @@ import { AsyncApiPub, AsyncApiService, AsyncApiSub } from 'nestjs-asyncapi'
 import { Server, Socket } from 'socket.io'
 import { chatEvent } from 'configs/chat-event.constants'
 import { ChatMessageDto } from './chat.dto'
+import { ChatService } from './chat.service'
 import { UserService } from 'user/user.service'
 
 @AsyncApiService()
 @WebSocketGateway({ namespace: 'api/chat', cors: true })
 export class ChatGateway {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly chatService: ChatService,
+  ) {}
   @WebSocketServer()
   server: Server
 
@@ -26,11 +30,13 @@ export class ChatGateway {
 
   handleConnection(client: Socket) {
     console.log('chat: new connection')
-    let token = client.handshake.auth.token
+    // FIXME: prod에선 쿼리로부터 uid를 확인할 필요 없음
+    const token = client.handshake.auth.token
     if (token === undefined) {
-      token = client.handshake.query.token
+      client.data.uid = client.handshake.query.uid
+    } else {
+      client.data.uid = this.userService.getUidFromToken(token)
     }
-    client.data.uid = this.userService.getUidFromToken(token)
     console.log('uid: ' + client.data.uid)
   }
 
@@ -111,5 +117,19 @@ export class ChatGateway {
       msgContent: msg,
     }
     this.server.to(roomId).emit(chatEvent.NOTICE, data)
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.CREATE,
+    summary: '새로운 채팅방 생성',
+    message: { name: 'room_title', payload: { type: String } },
+  })
+  @SubscribeMessage(chatEvent.CREATE)
+  async onCreateRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() title: string,
+  ) {
+    const newRoom = this.chatService.createChatroom(client.data.uid, title)
+    this.onJoinRoom(client, newRoom.roomId)
   }
 }
