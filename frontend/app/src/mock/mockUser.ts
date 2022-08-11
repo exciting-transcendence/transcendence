@@ -7,7 +7,7 @@ enum USER_ID {
 }
 const mockUserGen = (params: Partial<User>): User => {
   return {
-    uid: USER_ID.U1,
+    uid: USER_ID.DefaultUser,
     nickname: 'Example User',
     status: 'ONLINE',
     friends: [],
@@ -25,13 +25,13 @@ const mockUserGen = (params: Partial<User>): User => {
 export const mockUser = mockUserGen({})
 
 export const mockRefUser = mockUserGen({
-  uid: USER_ID.U2,
+  uid: USER_ID.RefUser,
   nickname: 'This is your profile',
 })
 
 export const blockedUser = mockUserGen({
   ...mockUser,
-  uid: USER_ID.U3,
+  uid: USER_ID.BlockedUser,
   nickname: 'Blocked User',
   status: 'OFFLINE',
   friends: [],
@@ -40,7 +40,7 @@ export const blockedUser = mockUserGen({
 
 export const friendUser = mockUserGen({
   ...mockUser,
-  uid: USER_ID.U4,
+  uid: USER_ID.FriendUser,
   nickname: 'Friend User',
   status: 'GAME',
   friends: [],
