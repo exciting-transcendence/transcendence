@@ -13,7 +13,7 @@ export class ChatService {
   createChatroom(creator: number, roomTitle: string) {
     this.maxRoomId++
     const item: ChatRoomStatusDto = {
-      roomId: this.maxRoomId.toString(),
+      roomId: this.maxRoomId,
       roomName: roomTitle,
       ownerUid: creator,
       adminUid: [creator],
@@ -23,15 +23,15 @@ export class ChatService {
     return item
   }
 
-  addUserToRoom(uid, roomId) {
+  addUserToRoom(uid: number, roomId: number) {
     this.channels[roomId].joinedUsers.push(uid)
   }
 
-  addUserAsAdmin(uid, roomId) {
+  addUserAsAdmin(uid: number, roomId: number) {
     this.channels[roomId].adminUid.push(uid)
   }
 
-  removeUserAsAdmin(uid, roomId) {
+  removeUserAsAdmin(uid: number, roomId: number) {
     const idx = this.channels[roomId].adminUid.indexOf(uid)
     this.channels[roomId].adminUid.splice(idx, 1)
   }

@@ -75,16 +75,16 @@ export class ChatGateway {
     channel: chatEvent.JOIN,
     summary: '채팅방에 참가',
     description: 'user가 채팅방에 새로 입장. 알림메시지를 모든 구성원에게 전송',
-    message: { name: 'roomId', payload: { type: String } },
+    message: { name: 'roomId', payload: { type: Number } },
   })
   async onJoinRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() roomId: string,
+    @MessageBody() roomId: number,
   ) {
     // TODO: 유효한 roomId인지 확인
     // TODO: banned 여부 확인
     this.chatService.addUserToRoom(client.data.uid, roomId)
-    client.join(roomId)
+    client.join(roomId.toString())
     console.log(`chat: ${client.data.uid} has entered to ${roomId}`)
     this.emitNotice(client, roomId, 'join')
   }
@@ -94,13 +94,13 @@ export class ChatGateway {
     channel: chatEvent.LEAVE,
     summary: '채팅방에서 나가기',
     description: 'user가 채팅방에서 나감. 알림메시지를 모든 구성원에게 전송',
-    message: { name: 'roomId', payload: { type: String } },
+    message: { name: 'roomId', payload: { type: Number } },
   })
   async onLeaveRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() roomId: string,
+    @MessageBody() roomId: number,
   ) {
-    client.leave(roomId)
+    client.leave(roomId.toString())
     console.log(`chat: ${client.data.uid} leaved ${roomId}`)
     this.emitNotice(client, roomId, 'leave')
   }
@@ -111,13 +111,13 @@ export class ChatGateway {
     description: 'user 입장, 퇴장 등의 메시지',
     message: { name: 'data', payload: { type: ChatMessageDto } },
   })
-  async emitNotice(client, roomId: string, msg: string) {
+  async emitNotice(client, roomId: number, msg: string) {
     const data: ChatMessageDto = {
       roomId: roomId,
       senderUid: client.data.uid,
       msgContent: msg,
     }
-    this.server.to(roomId).emit(chatEvent.NOTICE, data)
+    this.server.to(roomId.toString()).emit(chatEvent.NOTICE, data)
   }
 
   @AsyncApiPub({
