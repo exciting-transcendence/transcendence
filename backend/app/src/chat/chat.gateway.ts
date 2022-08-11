@@ -100,6 +100,7 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() roomId: number,
   ) {
+    this.chatService.removeUserFromRoom(client.data.uid, roomId)
     client.leave(roomId.toString())
     console.log(`chat: ${client.data.uid} leaved ${roomId}`)
     this.emitNotice(client, roomId, 'leave')

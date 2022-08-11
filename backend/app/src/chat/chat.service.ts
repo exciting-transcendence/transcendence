@@ -27,6 +27,11 @@ export class ChatService {
     this.channels[roomId].joinedUsers.push(uid)
   }
 
+  removeUserFromRoom(uid: number, roomId: number) {
+    const idx = this.channels[roomId].joinedUsers.indexOf(uid)
+    this.channels[roomId].joinedUsers.splice(idx, 1)
+  }
+
   addUserAsAdmin(uid: number, roomId: number) {
     this.channels[roomId].adminUid.push(uid)
   }
