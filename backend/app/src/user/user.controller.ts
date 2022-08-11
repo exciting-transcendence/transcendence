@@ -19,17 +19,6 @@ export class UserController {
     return (await this.userService.findOneByNickname(nickname)) === null
   }
 
-  @Get('/me')
-  @UseGuards(JwtAfterTwoFactorUserGuard)
-  async getUserByNickname(@Req() req: any) {
-    const { uid } = req.user
-    const user = await this.userService.findOneByUid(uid)
-    if (!user) {
-      throw new NotFoundException()
-    }
-    return user
-  }
-
   @Get('/:uid')
   @UseGuards(JwtAfterTwoFactorUserGuard)
   async getUserByUid(@Param('uid') uid: number) {

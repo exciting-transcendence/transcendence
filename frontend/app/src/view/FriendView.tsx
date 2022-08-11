@@ -7,16 +7,16 @@ import fuzzysort from 'fuzzysort'
 import axios from 'axios'
 
 const findUser = (users: User[], text: string) => {
-  return fuzzysort.go(text, users, { key: 'id' }).map((r) => r.obj)
+  return fuzzysort.go(text, users, { key: 'nickname' }).map((r) => r.obj)
 }
 
 interface Props {
   users: User[]
   refUser: User
-  id: string
+  uid: number
 }
-const ProfileDisplay = ({ users, refUser, id }: Props) => {
-  const currentUser = users.find((user) => user.id === id)
+const ProfileDisplay = ({ users, refUser, uid }: Props) => {
+  const currentUser = users.find((user) => user.uid === uid)
 
   if (currentUser) {
     return <OtherProfile user={currentUser} refUser={refUser} />
@@ -28,22 +28,21 @@ const ProfileDisplay = ({ users, refUser, id }: Props) => {
 export const FriendView = () => {
   const [refUser, setRefUser] = useState(mockRefUser)
   const token = window.localStorage.getItem('access_token')
-  // axios
-  //   .get('/api/user/4', {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //   .then((res) => {
-  //     setRefUser(res.data)
-  //     console.log(res.data)
-  //   })
-  //   .catch((err) => console.log(err))
-  const [id, setId] = useState(refUser.id)
+  const [id, setId] = useState(refUser.uid)
   const [text, setText] = useState('')
   const [users, setUsers] = useState(mockUsers)
   const seenUsers = text ? findUser(users, text) : users
   // useEffect(() => {
+  //   axios
+  //     .get('/api/user/4', {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       setRefUser(res.data)
+  //     })
+  //     .catch((err) => console.log(err))
   //   axios
   //     .get('/api/user', {
   //       headers: {
@@ -61,7 +60,7 @@ export const FriendView = () => {
         <Typography variant="h5" padding="1rem">
           My Profile
         </Typography>
-        <ProfileListItem user={refUser} onClick={() => setId(refUser.id)} />
+        <ProfileListItem user={refUser} onClick={() => setId(refUser.uid)} />
         <Divider />
         <Typography variant="h5" padding="1rem">
           Friends
@@ -76,7 +75,11 @@ export const FriendView = () => {
         />
         <List>
           {seenUsers.map((u) => (
-            <ProfileListItem key={u.id} user={u} onClick={() => setId(u.id)} />
+            <ProfileListItem
+              key={u.uid}
+              user={u}
+              onClick={() => setId(u.uid)}
+            />
           ))}
         </List>
       </Grid>
@@ -86,7 +89,7 @@ export const FriendView = () => {
         style={{ marginRight: '-1px' }}
       />
       <Grid item xs={8} padding="100px">
-        <ProfileDisplay users={users} refUser={refUser} id={id} />
+        <ProfileDisplay users={users} refUser={refUser} uid={id} />
       </Grid>
     </Grid>
   )
