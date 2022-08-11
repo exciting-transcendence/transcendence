@@ -1,9 +1,9 @@
 import { User } from 'data/User.dto'
 enum USER_ID {
-  U1 = 1,
-  U2,
-  U3,
-  U4,
+  DefaultUser,
+  RefUser,
+  BlockedUser,
+  FriendUser,
 }
 const mockUserGen = (params: Partial<User>): User => {
   return {
