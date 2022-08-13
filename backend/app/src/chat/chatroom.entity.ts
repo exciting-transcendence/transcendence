@@ -17,12 +17,18 @@ export class ChatRoom {
   name: string
 
   @Column({ default: RoomType.PUBLIC })
-  type: RoomType
+  roomtype: RoomType
 
   @Column({ nullable: true })
   password: string
 
-  @ManyToMany(() => ChatUser)
+  @Column('int', { array: true, default: [] })
+  bannedIds: number[]
+
+  @Column('int', { array: true, default: [] })
+  mutedIds: number[]
+
+  @ManyToMany(() => ChatUser, { cascade: true })
   @JoinTable()
   chatUser: ChatUser[]
 }
