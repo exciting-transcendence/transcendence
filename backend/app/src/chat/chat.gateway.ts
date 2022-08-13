@@ -74,7 +74,7 @@ export class ChatGateway {
   async broadcastMessage(client, data: ChatMessageDto) {
     // TODO: block 여부 확인
     data.senderUid = client.data.uid
-    client.broadcast.to(data.roomId).emit(chatEvent.RECEIVE, data)
+    client.broadcast.to(data.roomId.toString()).emit(chatEvent.RECEIVE, data)
   }
 
   @SubscribeMessage(chatEvent.JOIN)
