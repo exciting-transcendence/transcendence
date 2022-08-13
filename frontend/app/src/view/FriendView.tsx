@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Grid, List, Divider, Input, Typography } from '@mui/material'
 import { mockRefUser, mockUsers } from 'mock/mockUser'
-import { Profile, OtherProfile, ProfileListItem } from 'components'
+import {
+  Profile,
+  OtherProfile,
+  ProfileListItem,
+  VerticalDivider,
+} from 'components'
 import { User } from 'data'
 import fuzzysort from 'fuzzysort'
 import axios from 'axios'
@@ -32,6 +37,7 @@ export const FriendView = () => {
   const [text, setText] = useState('')
   const [users, setUsers] = useState(mockUsers)
   const seenUsers = text ? findUser(users, text) : users
+  // FIXME: use useasync to refactor
   useEffect(() => {
     axios
       .get('/api/user/me', {
@@ -84,11 +90,7 @@ export const FriendView = () => {
           ))}
         </List>
       </Grid>
-      <Divider
-        orientation="vertical"
-        flexItem
-        style={{ marginRight: '-1px' }}
-      />
+      <VerticalDivider />
       <Grid item xs={8} padding="100px">
         <ProfileDisplay users={users} refUser={refUser} uid={id} />
       </Grid>
