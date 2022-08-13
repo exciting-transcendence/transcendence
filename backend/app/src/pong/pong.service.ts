@@ -304,16 +304,18 @@ class PongManager {
       gameId: this.gameId,
       ...this.game,
     })
-    this.game.start()
-    this.leftTimer = setInterval(() => {
-      this.leftUser.emit('render', this.game)
-    }, CONSTANTS.UPDATE_INTERVAL)
-    this.rightTimer = setInterval(() => {
-      this.rightUser.emit('render', this.game)
-    }, CONSTANTS.UPDATE_INTERVAL)
-    this.gameTimer = setInterval(() => {
-      this.updateGame(Date.now())
-    }, CONSTANTS.UPDATE_INTERVAL)
+    setTimeout(() => {
+      this.game.start()
+      this.leftTimer = setInterval(() => {
+        this.leftUser.emit('render', this.game)
+      }, CONSTANTS.UPDATE_INTERVAL)
+      this.rightTimer = setInterval(() => {
+        this.rightUser.emit('render', this.game)
+      }, CONSTANTS.UPDATE_INTERVAL)
+      this.gameTimer = setInterval(() => {
+        this.updateGame(Date.now())
+      }, CONSTANTS.UPDATE_INTERVAL)
+    }, CONSTANTS.GAME_START_DELAY * 1000)
   }
 
   stopGame(winner: { side: 'left' | 'right'; uid: number }) {
@@ -386,9 +388,7 @@ export class PongService {
     this.gamesByGameId.set(gameId, gameManager)
     this.gamesByUser.set(leftUser.uid, { manager: gameManager, side: 'left' })
     this.gamesByUser.set(rightUser.uid, { manager: gameManager, side: 'right' })
-    setTimeout(() => {
-      gameManager.startGame()
-    }, CONSTANTS.GAME_START_DELAY)
+    gameManager.startGame()
   }
 
   deleteGame(gameId: number) {

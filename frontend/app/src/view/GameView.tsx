@@ -51,8 +51,12 @@ export const GameView = () => {
       setState('playing')
     })
     socket?.on('gameEnd', (msg: any) => {
-      console.log(msg)
-      setState('waiting')
+      setPongState((value) => {
+        return { ...value, ...msg }
+      })
+      setTimeout(() => {
+        setState('waiting')
+      }, 3000)
     })
     socket?.on('render', (msg: any) => {
       setPongState((value) => {
