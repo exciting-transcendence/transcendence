@@ -22,8 +22,8 @@ export class ChatService {
     private readonly userService: UserService,
   ) {}
 
-  getAllChatrooms(): Promise<ChatRoom[]> {
-    return this.chatRoomRepository.find({
+  async getAllChatrooms(): Promise<ChatRoom[]> {
+    return await this.chatRoomRepository.find({
       select: ['id', 'name', 'roomtype'],
       where: { roomtype: Not(RoomType.PRIVATE) },
     })
