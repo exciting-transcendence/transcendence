@@ -293,14 +293,16 @@ class PongManager {
 
   startGame() {
     this.leftUser.emit('gameInfo', {
-      left: this.leftUser.uid,
-      right: this.rightUser.uid,
+      leftUser: this.leftUser.uid,
+      rightUser: this.rightUser.uid,
       gameId: this.gameId,
+      ...this.game,
     })
     this.rightUser.emit('gameInfo', {
-      left: this.leftUser.uid,
-      right: this.rightUser.uid,
+      leftUser: this.leftUser.uid,
+      rightUser: this.rightUser.uid,
       gameId: this.gameId,
+      ...this.game,
     })
     this.game.start()
     this.leftTimer = setInterval(() => {

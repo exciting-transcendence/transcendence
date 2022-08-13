@@ -1,6 +1,8 @@
 import { useRef, useEffect } from 'react'
 import Avatar from '@mui/material/Avatar'
 import { Stack, Typography, Divider } from '@mui/material'
+import { withPongProfile } from 'state/pong'
+import { useRecoilValue } from 'recoil'
 
 export type Rect = {
   x: number
@@ -9,37 +11,39 @@ export type Rect = {
   height: number
 }
 
-export type PongUserProps = {
-  nickname: string
-  avatar: string
-  rating: number
-}
-
-export type PongState = {
+export type PongProps = {
   leftPaddle: Rect
   rightPaddle: Rect
   ball: Rect
   leftScore: number
   rightScore: number
-}
-
-export type PongProps = PongState & {
-  leftUser: PongUserProps
-  rightUser: PongUserProps
+  leftUser: number
+  rightUser: number
 }
 
 const drawRect = (ctx: CanvasRenderingContext2D, rect: Rect) => {
   ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
 }
 
+const PongUser = (props: { uid: number }) => {
+  const profile = useRecoilValue(withPongProfile(props.uid))
+
+  return (
+    <Stack>
+      <Typography>{profile.nickname}</Typography>
+      <Avatar src={profile.avatar} />
+      <Typography>{profile.rating}</Typography>
+    </Stack>
+  )
+}
+
 const Pong = (props: PongProps) => {
   const pongCanvas = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    if (pongCanvas.current === null) {
-      return
-    }
-    const ctx = pongCanvas.current.getContext('2d') as CanvasRenderingContext2D
+    const ctx = (pongCanvas.current as HTMLCanvasElement).getContext(
+      '2d',
+    ) as CanvasRenderingContext2D
     ctx.clearRect(0, 0, 600, 600)
     drawRect(ctx, props.leftPaddle)
     drawRect(ctx, props.rightPaddle)
@@ -48,16 +52,21 @@ const Pong = (props: PongProps) => {
 
   return (
     <Stack direction="row">
-      <PongUser {...props.leftUser} />
+      <PongUser uid={props.leftUser} />
       <Stack>
         <Typography>SCORE</Typography>
         <Stack direction="row" divider={<Divider orientation="vertical" />}>
           <Typography>{props.rightScore}</Typography>
           <Typography>{props.leftScore}</Typography>
         </Stack>
-        <canvas width="600" height="600" ref={pongCanvas} />
+        <canvas
+          width="600"
+          height="600"
+          ref={pongCanvas}
+          style={{ border: '1px solid black' }}
+        />
       </Stack>
-      <PongUser {...props.rightUser} />
+      <PongUser uid={props.rightUser} />
     </Stack>
   )
 }

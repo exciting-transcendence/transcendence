@@ -1,12 +1,12 @@
 import { selector, selectorFamily } from 'recoil'
-import { authFetchOption } from './auth'
+import { withAuthFetchOption } from './auth'
 
-export const user = selectorFamily({
-  key: 'User',
+export const withUser = selectorFamily({
+  key: 'WithUser',
   get:
     (uid: number) =>
     async ({ get }) => {
-      const option = get(authFetchOption)
+      const option = get(withAuthFetchOption)
 
       const res = await fetch(`/api/user/${uid}`, {
         ...option,
@@ -21,10 +21,10 @@ export const user = selectorFamily({
     },
 })
 
-export const me = selector({
-  key: 'Me',
+export const withMe = selector({
+  key: 'WithMe',
   get: async ({ get }) => {
-    const option = get(authFetchOption)
+    const option = get(withAuthFetchOption)
     const res = await fetch(`/api/user/me`, {
       ...option,
       method: 'GET',

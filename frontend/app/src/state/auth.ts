@@ -1,23 +1,19 @@
-import { selector } from 'recoil'
+import { selector, selectorFamily } from 'recoil'
 
-export const accessToken = selector({
-  key: 'AccessToken',
-  get: () => {
-    const token = window.localStorage.getItem('access_token')
-    if (token === null) {
-      return ''
-    }
-    return token
+export const withLocalStorage = selectorFamily({
+  key: 'WithLocalStorage',
+  get: (key: string) => () => {
+    return window.localStorage.getItem(key)
   },
-  set: (_, value) => {
-    window.localStorage.setItem('access_token', value as string)
+  set: (key: string) => (_, value) => {
+    return window.localStorage.setItem(key, value as string)
   },
 })
 
-export const authFetchOption = selector({
-  key: 'AuthFetchOption',
+export const withAuthFetchOption = selector({
+  key: 'WithAuthFetchOption',
   get: ({ get }) => {
-    const token = get(accessToken)
+    const token = get(withLocalStorage('access_token'))
     return {
       headers: {
         Authorization: `Bearer ${token}`,
