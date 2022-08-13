@@ -34,7 +34,7 @@ export class ChatService {
   async createChatroom(
     creatorId: number,
     roomTitle: string,
-    roomType: RoomType,
+    roomType?: RoomType,
     password?: string,
   ): Promise<ChatRoom> {
     const room = new ChatRoom()
