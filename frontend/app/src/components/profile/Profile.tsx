@@ -17,12 +17,15 @@ const StatDisplay = ({ stat }: { stat: Stat }) => {
     </>
   )
 }
+interface AvatarWithStatusProps extends Pick<User, 'status' | 'avatar'> {
+  radius?: number
+}
 
 export const AvatarWithStatus = ({
   status,
   avatar,
   radius,
-}: Pick<User, 'status' | 'avatar'> & { radius?: number }) => {
+}: AvatarWithStatusProps) => {
   return (
     <UserStatus
       status={status}
