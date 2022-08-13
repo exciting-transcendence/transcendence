@@ -148,18 +148,21 @@ const Pong = (props: PongProps) => {
   }, [remainTime])
 
   useEffect(() => {
-    const ctx = (pongCanvas.current as HTMLCanvasElement).getContext(
-      '2d',
-    ) as CanvasRenderingContext2D
-    ctx.clearRect(
-      0,
-      0,
-      props.window.height * props.window.ratio,
-      props.window.height,
-    )
-    drawRect(ctx, props.window, props.leftPaddle)
-    drawRect(ctx, props.window, props.rightPaddle)
-    drawRect(ctx, props.window, props.ball)
+    const req = requestAnimationFrame(() => {
+      const ctx = (pongCanvas.current as HTMLCanvasElement).getContext(
+        '2d',
+      ) as CanvasRenderingContext2D
+      ctx.clearRect(
+        0,
+        0,
+        props.window.height * props.window.ratio,
+        props.window.height,
+      )
+      drawRect(ctx, props.window, props.leftPaddle)
+      drawRect(ctx, props.window, props.rightPaddle)
+      drawRect(ctx, props.window, props.ball)
+    })
+    return () => cancelAnimationFrame(req)
   }, [props])
 
   console.log(props)
