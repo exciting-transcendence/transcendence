@@ -21,10 +21,23 @@ export type PongProps = {
   leftUser: number
   rightUser: number
   winner: string
+  window: {
+    ratio: number
+    height: number
+  }
 }
 
-const drawRect = (ctx: CanvasRenderingContext2D, rect: Rect) => {
-  ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+const drawRect = (
+  ctx: CanvasRenderingContext2D,
+  window: { ratio: number; height: number },
+  rect: Rect,
+) => {
+  ctx.fillRect(
+    rect.x * window.height,
+    rect.y * window.height,
+    rect.width * window.height,
+    rect.height * window.height,
+  )
 }
 
 const PongUser = (props: { uid: number }) => {
@@ -113,8 +126,6 @@ const PongLeftProfile = styled.div`
 const PongCanvas = styled.canvas`
   grid-column: 2 / 5;
   grid-row: </PongGrid></PongGrid> 3 / 4;
-  width: 600px;
-  height: 600px;
   border: 1px solid black;
 `
 
@@ -140,10 +151,15 @@ const Pong = (props: PongProps) => {
     const ctx = (pongCanvas.current as HTMLCanvasElement).getContext(
       '2d',
     ) as CanvasRenderingContext2D
-    ctx.clearRect(0, 0, 600, 600)
-    drawRect(ctx, props.leftPaddle)
-    drawRect(ctx, props.rightPaddle)
-    drawRect(ctx, props.ball)
+    ctx.clearRect(
+      0,
+      0,
+      props.window.height * props.window.ratio,
+      props.window.height,
+    )
+    drawRect(ctx, props.window, props.leftPaddle)
+    drawRect(ctx, props.window, props.rightPaddle)
+    drawRect(ctx, props.window, props.ball)
   }, [props])
 
   console.log(props)
@@ -173,7 +189,11 @@ const Pong = (props: PongProps) => {
         <PongLeftProfile>
           <PongUser uid={props.leftUser} />
         </PongLeftProfile>
-        <PongCanvas width="600" height="600" ref={pongCanvas} />
+        <PongCanvas
+          width={props.window.ratio * props.window.height}
+          height={props.window.height}
+          ref={pongCanvas}
+        />
         <PongRightProfile>
           <PongUser uid={props.rightUser} />
         </PongRightProfile>

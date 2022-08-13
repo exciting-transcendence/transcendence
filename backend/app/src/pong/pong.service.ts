@@ -72,16 +72,16 @@ function reflect(dot: number, mirror: number) {
 
 class Ball extends MoveableRect {
   constructor(difficulty: CONSTANTS.PongMode) {
-    let speedFactor: number
+    let speedFactor = 1
     switch (difficulty) {
       case 'easy':
-        speedFactor = CONSTANTS.EASY_SPEED
+        speedFactor /= CONSTANTS.EASY_SPEED
         break
       case 'medium':
-        speedFactor = CONSTANTS.MEDIUM_SPEED
+        speedFactor /= CONSTANTS.MEDIUM_SPEED
         break
       case 'hard':
-        speedFactor = CONSTANTS.HARD_SPEED
+        speedFactor /= CONSTANTS.HARD_SPEED
         break
     }
 
@@ -156,13 +156,13 @@ class Pong {
     target: 'left' | 'right',
     direction: 'up' | 'down' | 'stop',
   ) {
-    let velocity: number
+    let velocity = 1
     switch (direction) {
       case 'up':
-        velocity = -CONSTANTS.PADDLE_SPEED
+        velocity /= -CONSTANTS.PADDLE_SPEED
         break
       case 'down':
-        velocity = CONSTANTS.PADDLE_SPEED
+        velocity /= CONSTANTS.PADDLE_SPEED
         break
       case 'stop':
         velocity = 0

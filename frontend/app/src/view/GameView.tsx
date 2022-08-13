@@ -107,7 +107,10 @@ export const GameView = () => {
   return (
     <ThemeProvider theme={theme}>
       {state === 'playing' ? (
-        <Pong {...(pongState as PongProps)} />
+        <Pong
+          {...(pongState as PongProps)}
+          window={{ ratio: 16 / 9, height: 450 }}
+        />
       ) : (
         <GamePannel
           requestMatch={(matchData: any) => {
