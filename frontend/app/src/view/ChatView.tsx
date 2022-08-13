@@ -1,11 +1,6 @@
 import React, { useState, FormEvent } from 'react'
 import io, { Socket } from 'socket.io-client'
-import {
-  Message,
-  MessageHandler,
-  ClientToServerEvents,
-  ServerToClientEvents,
-} from 'data'
+import { Message, ClientToServerEvents, ServerToClientEvents } from 'data'
 
 interface FormProps {
   socket: Socket

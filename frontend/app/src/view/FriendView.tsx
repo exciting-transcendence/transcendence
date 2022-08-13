@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Grid, List, Divider, Input, Typography } from '@mui/material'
 import { mockRefUser, mockUsers } from 'mock/mockUser'
 import { Profile, OtherProfile, ProfileListItem } from 'components'
-import { User } from 'data/User.dto'
+import { User } from 'data'
 import fuzzysort from 'fuzzysort'
 import axios from 'axios'
 

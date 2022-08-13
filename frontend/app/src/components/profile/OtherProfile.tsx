@@ -6,7 +6,7 @@ import {
   Grid,
   Typography,
 } from '@mui/material'
-import { User } from 'data/User.dto'
+import { User } from 'data'
 import { Profile } from './Profile'
 import {
   AddFriendButton,

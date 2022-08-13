@@ -1,5 +1,5 @@
 import { Avatar, CardContent, Grid, Typography } from '@mui/material'
-import { Stat, User } from 'data/User.dto'
+import { Stat, User } from 'data'
 import { UserStatus } from '../utils/UserStatus'
 import { Card } from '@mui/material'
 

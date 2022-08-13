@@ -4,7 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react'
 
 import { mockUser } from 'mock/mockUser'
 import { Profile } from './Profile'
-import { User } from 'data/User.dto'
+import { User } from 'data'
 
 export default {
   title: 'Profile/Profile',
