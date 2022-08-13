@@ -1,11 +1,11 @@
 import React, { useState, FormEvent } from 'react'
 import io, { Socket } from 'socket.io-client'
-
-interface ChatMessageDto {
-  senderUid: number
-  msgContent: string
-  roomId: string
-}
+import {
+  Message,
+  MessageHandler,
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from 'data'
 
 interface FormProps {
   socket: Socket
@@ -37,7 +37,7 @@ const MessageForm = ({ socket }: FormProps) => {
   )
 }
 interface MessageListProps {
-  messages: ChatMessageDto[]
+  messages: Message[]
 }
 const MessageList = ({ messages }: MessageListProps) => {
   return (
@@ -51,11 +51,14 @@ const MessageList = ({ messages }: MessageListProps) => {
 
 export const ChatView = () => {
   const token = window.localStorage.getItem('access_token')
-  const socket = io('/api/chat', { auth: { token } })
+  const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+    '/api/chat',
+    { auth: { token } },
+  )
 
-  const [messages, setMessages] = useState<ChatMessageDto[]>([])
+  const [messages, setMessages] = useState<Message[]>([])
 
-  socket.on('RECEIVE', (message: ChatMessageDto) => {
+  socket.on('RECEIVE', (message: Message) => {
     console.log(`Message received: ${message.msgContent}@${message.senderUid}`)
     setMessages([...messages, message])
   })
