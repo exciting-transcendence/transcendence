@@ -16,8 +16,12 @@ dc.sh에서 npm install이 되어있지 않을 때 자동으로 install하는 �
 
 ### swagger
 
-`localhost:3000/api`
+http://localhost:3000/api
 
 ### webscoket api
 
-`localhost:3000/api-ws`
+http://localhost:3000/api-ws
+
+### storybook 컴포넌트 라이브러리
+
+http://localhost:3000/storybook
