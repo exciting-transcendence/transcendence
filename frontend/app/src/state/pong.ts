@@ -6,7 +6,7 @@ export const withPongProfile = selectorFamily({
   get:
     (uid: number) =>
     ({ get }) => {
-      const user: any = get(withUser(uid))
+      const user = get(withUser(uid))
       return {
         avatar: user.avatar,
         nickname: user.nickname,
