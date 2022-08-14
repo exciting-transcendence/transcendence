@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid, List, Divider, Input, Typography } from '@mui/material'
 import {
-  Profile,
+  MyProfile,
   OtherProfile,
   ProfileListItem,
   VerticalDivider,
@@ -24,7 +24,7 @@ const ProfileDisplay = ({ users, refUser, uid }: DisplayProps) => {
   if (currentUser) {
     return <OtherProfile user={currentUser} refUser={refUser} />
   } else {
-    return <Profile user={refUser} />
+    return <MyProfile user={refUser} />
   }
 }
 interface Props {

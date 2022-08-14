@@ -1,7 +1,9 @@
-import { Avatar, CardContent, Grid, Typography } from '@mui/material'
+import { Avatar, Grid, Typography } from '@mui/material'
 import { Stat, User } from 'data'
 import { UserStatus } from '../utils/UserStatus'
-import { Card } from '@mui/material'
+import { ButtonGroup } from '@mui/material'
+import { ChangeAvatarButton, ChangeNickNameButton } from './userActions'
+import { ReactNode } from 'react'
 
 const StatDisplay = ({ stat }: { stat: Stat }) => {
   return (
@@ -40,8 +42,11 @@ export const AvatarWithStatus = ({
   )
 }
 
+interface Props {
+  user: User
+}
 export const Profile = ({ user }: Props) => {
-  const { uid, stat, avatar, nickname: name, status } = user
+  const { uid, stat, avatar, nickname, status } = user
 
   return (
     <>
@@ -49,7 +54,7 @@ export const Profile = ({ user }: Props) => {
         <AvatarWithStatus avatar={avatar} status={status} radius={120} />
       </Grid>
       <Grid container justifyContent="center" alignItems="flex-end" gap={1}>
-        <Typography variant="h5">{name}</Typography>
+        <Typography variant="h5">{nickname}</Typography>
         <Typography>{`#${uid}`}</Typography>
       </Grid>
       <Grid container justifyContent="center" gap={3}>
@@ -59,15 +64,31 @@ export const Profile = ({ user }: Props) => {
   )
 }
 
-interface Props {
-  user: User
+interface ActionsProps {
+  actions: ReactNode
 }
-export const ProfileCard = ({ user }: Props) => {
+export const ProfileActions = ({ actions }: ActionsProps) => {
   return (
-    <Card sx={{ maxWidth: 400 }}>
-      <CardContent>
-        <Profile user={user} />
-      </CardContent>
-    </Card>
+    <Grid container justifyContent="right">
+      {actions}
+    </Grid>
+  )
+}
+
+export const MyProfile = ({ user }: Props) => {
+  // const { uid } = user
+
+  return (
+    <>
+      <Profile user={user} />
+      <ProfileActions
+        actions={
+          <ButtonGroup>
+            <ChangeNickNameButton onClick={() => null} />
+            <ChangeAvatarButton onClick={() => null} />
+          </ButtonGroup>
+        }
+      />
+    </>
   )
 }

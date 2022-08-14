@@ -64,18 +64,3 @@ export const OtherProfile = ({ user, refUser }: Props) => {
     </>
   )
 }
-export const OtherProfileCard = ({ user, refUser }: Props) => {
-  const status = getStatus(user, refUser)
-
-  return (
-    <Card sx={{ maxWidth: 400 }}>
-      <Profile user={user} />
-      <Typography align="center">{`status: ${status}`}</Typography>
-      <CardActionArea>
-        <Grid container justifyContent="right">
-          <Actions status={status} />
-        </Grid>
-      </CardActionArea>
-    </Card>
-  )
-}
