@@ -84,7 +84,7 @@ export class UserService {
 
   async findOneByNickname(nickname: string): Promise<User> {
     if (!nickname) return null
-    if (nickname.length == 0) return null
+    if (nickname.length === 0) return null
     return await this.userRepository
       .createQueryBuilder('user')
       .select([
