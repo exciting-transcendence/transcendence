@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Socket } from 'socket.io'
-
+import { User } from 'user/user.entity'
+import { UserService } from 'user/user.service'
 import * as CONSTANTS from '../configs/pong.config'
 
 class Rect {
@@ -265,7 +266,24 @@ type UserSocket = Socket & {
   uid: number
 }
 
+function estimateWinRate(eloA: number, eloB: number) {
+  const winRateA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400))
+  const winRateB = 1 - winRateA
+  return [winRateA, winRateB]
+}
+
+function recalculateElo(winner: number, loser: number) {
+  const [winnerEstimatedWinRate, loserEstimatedWinRate] = estimateWinRate(
+    winner,
+    loser,
+  )
+  const newWinnerElo = winner + 400 * (1 - winnerEstimatedWinRate)
+  const newLoserElo = loser + 400 * (0 - loserEstimatedWinRate)
+  return [newWinnerElo, newLoserElo]
+}
+
 class PongManager {
+  isRanked: boolean
   private leftTimer: NodeJS.Timer
   private rightTimer: NodeJS.Timer
   private gameTimer: NodeJS.Timer
@@ -278,6 +296,7 @@ class PongManager {
   gameId: number
 
   constructor(
+    isRanked: boolean,
     leftUser: UserSocket,
     rightUser: UserSocket,
     gameId: number,
@@ -289,6 +308,7 @@ class PongManager {
     this.gameId = gameId
     this.game = game
     this.gameEndCallback = gameEndCallback
+    this.isRanked = isRanked
   }
 
   startGame() {
@@ -361,6 +381,8 @@ class PongManager {
 
 @Injectable()
 export class PongService {
+  constructor(private readonly userService: UserService) {}
+
   private nextId = 0
   private readonly gamesByGameId: Map<number, PongManager> = new Map()
   private readonly gamesByUser: Map<
@@ -371,10 +393,12 @@ export class PongService {
   createGame(
     leftUser: UserSocket,
     rightUser: UserSocket,
-    difficulty: 'easy' | 'medium' | 'hard',
+    mode: 'easy' | 'medium' | 'hard' | 'ranked',
   ) {
     const gameId = this.nextId++
+    const difficulty = mode !== 'ranked' ? mode : 'medium'
     const gameManager = new PongManager(
+      mode === 'ranked',
       leftUser,
       rightUser,
       gameId,
@@ -387,9 +411,39 @@ export class PongService {
     gameManager.startGame()
   }
 
-  deleteGame(gameId: number) {
+  async deleteGame(gameId: number) {
     const gameManager = this.gamesByGameId.get(gameId)
     if (gameManager) {
+      const [left, right] = [
+        await this.userService.findOneByUid(gameManager.leftUser.uid),
+        await this.userService.findOneByUid(gameManager.rightUser.uid),
+      ]
+
+      let winner: User, loser: User
+      if (gameManager.game.getWinner() === 'left') {
+        winner = left
+        loser = right
+      } else {
+        winner = right
+        loser = left
+      }
+
+      ++winner.stat.win
+      ++loser.stat.lose
+
+      if (gameManager.isRanked) {
+        const [newWinnerElo, newLoserElo] = recalculateElo(
+          winner.stat.rating,
+          loser.stat.rating,
+        )
+
+        winner.stat.rating = newWinnerElo
+        loser.stat.rating = newLoserElo
+      }
+
+      await this.userService.update(winner)
+      await this.userService.update(loser)
+
       this.gamesByGameId.delete(gameId)
       this.gamesByUser.delete(gameManager.leftUser.uid)
       this.gamesByUser.delete(gameManager.rightUser.uid)
