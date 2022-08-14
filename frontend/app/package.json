@@ -43,6 +43,7 @@
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
     "storybook:container": "start-storybook -p 6006 -s public --loglevel error >/dev/null 2>&1"
+    "chromatic": "npx chromatic"
   },
   "eslintConfig": {
     "extends": [
@@ -87,9 +88,12 @@
     "@storybook/testing-library": "^0.0.13",
     "@types/styled-components": "^5.1.25",
     "babel-plugin-named-exports-order": "^0.0.2",
+    "chromatic": "^6.7.3",
     "prop-types": "^15.8.1",
     "storybook": "^6.5.10",
     "webpack": "^5.74.0"
   },
-  "prettier": "@scarf005/prettier-config-transcendence"
+  "prettier": "@scarf005/prettier-config-transcendence",
+  "readme": "ERROR: No README data found!",
+  "_id": "app@0.1.0"
 }
