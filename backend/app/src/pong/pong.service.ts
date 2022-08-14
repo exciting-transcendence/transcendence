@@ -329,11 +329,7 @@ class PongManager {
     this.rightUser.emit('gameEnd', winner)
     this.spectators.forEach((elem) => {
       elem.socket.emit('gameEnd', winner)
-      elem.socket.disconnect()
     })
-    this.leftUser.disconnect()
-    this.rightUser.disconnect()
-
     this.gameEndCallback(this.gameId)
   }
 
