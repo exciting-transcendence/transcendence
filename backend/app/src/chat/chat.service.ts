@@ -31,6 +31,7 @@ export class ChatService {
     })
   }
 
+  // roomType 은 type 넣는 것이 구현되면 ? 지워야 한다.
   async createChatroom(
     creatorId: number,
     roomTitle: string,
