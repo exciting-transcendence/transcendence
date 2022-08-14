@@ -97,8 +97,8 @@ class Ball extends MoveableRect {
     if (Math.random() < 0.5) speedX = -speedX
 
     super(
-      CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
       CONSTANTS.WINDOW_WIDTH / 2 - CONSTANTS.BALL_SIZE / 2,
+      CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
       CONSTANTS.BALL_SIZE,
       CONSTANTS.BALL_SIZE,
       speedX,
@@ -267,7 +267,7 @@ type UserSocket = Socket & {
 }
 
 function estimateWinRate(eloA: number, eloB: number) {
-  const winRateA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400))
+  const winRateA = 1 / (1 + Math.pow(10, (eloB - eloA) / 40))
   const winRateB = 1 - winRateA
   return [winRateA, winRateB]
 }
@@ -277,8 +277,8 @@ function recalculateElo(winner: number, loser: number) {
     winner,
     loser,
   )
-  const newWinnerElo = winner + 400 * (1 - winnerEstimatedWinRate)
-  const newLoserElo = loser + 400 * (0 - loserEstimatedWinRate)
+  const newWinnerElo = winner + 40 * (1 - winnerEstimatedWinRate)
+  const newLoserElo = loser + 40 * (0 - loserEstimatedWinRate)
   return [newWinnerElo, newLoserElo]
 }
 
@@ -437,8 +437,8 @@ export class PongService {
           loser.stat.rating,
         )
 
-        winner.stat.rating = newWinnerElo
-        loser.stat.rating = newLoserElo
+        winner.stat.rating = Math.round(newWinnerElo)
+        loser.stat.rating = Math.round(newLoserElo)
       }
 
       await this.userService.update(winner)
