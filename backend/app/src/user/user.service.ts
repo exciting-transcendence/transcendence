@@ -77,10 +77,14 @@ export class UserService {
     await this.userRepository.save(user2)
     await this.userRepository.save(user3)
 
-    return await this.userRepository.save(user)
+    return await this.userRepository.save(user).catch(() => {
+      throw new InternalServerErrorException('database error')
+    })
   }
 
   async findOneByNickname(nickname: string): Promise<User> {
+    if (!nickname) return null
+    if (nickname.length == 0) return null
     return await this.userRepository
       .createQueryBuilder('user')
       .select([
@@ -100,11 +104,13 @@ export class UserService {
   }
 
   async update(user: User): Promise<User> {
-    return await this.userRepository.save(user)
+    return await this.userRepository.save(user).catch(() => {
+      throw new InternalServerErrorException('database error')
+    })
   }
 
   async findOneByUid(uid: number): Promise<User> {
-    return await this.userRepository
+    const user = await this.userRepository
       .createQueryBuilder('user')
       .select([
         'user.uid',
@@ -120,14 +126,20 @@ export class UserService {
       .innerJoin('user.stat', 'stat')
       .where('user.uid = :uid', { uid })
       .getOne()
+    if (!user) throw new NotFoundException('User not found')
+    return user
   }
 
   async findSimpleOneByUid(uid: number): Promise<User> {
-    return await this.userRepository.findOneBy({ uid })
+    const user = await this.userRepository.findOneBy({ uid })
+    if (!user) throw new NotFoundException('User not found')
+    return user
   }
 
   async remove(uid: number): Promise<void> {
-    await this.userRepository.delete({ uid })
+    await this.userRepository.delete({ uid }).catch(() => {
+      throw new InternalServerErrorException('database error')
+    })
   }
 
   issueToken(user: User, twoFactorPassed: boolean): string {
