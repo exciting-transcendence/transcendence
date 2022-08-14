@@ -79,7 +79,7 @@ export const ChatView = (prop: { socket: any }) => {
   const updateMyRoom = () => {
     //참여 가능한 룸 리스트
     axios
-      .get('/api/chat/list', {
+      .get('/api/chat/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
