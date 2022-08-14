@@ -3,6 +3,7 @@ import { Socket } from 'socket.io'
 import { User } from 'user/user.entity'
 import { UserService } from 'user/user.service'
 import * as CONSTANTS from '../configs/pong.config'
+import { MatchService } from './match.service'
 
 class Rect {
   x: number
@@ -381,7 +382,10 @@ class PongManager {
 
 @Injectable()
 export class PongService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly matchService: MatchService,
+  ) {}
 
   private nextId = 0
   private readonly gamesByGameId: Map<number, PongManager> = new Map()
@@ -443,6 +447,8 @@ export class PongService {
 
       await this.userService.update(winner)
       await this.userService.update(loser)
+
+      await this.matchService.addMatchResult(winner, loser)
 
       this.gamesByGameId.delete(gameId)
       this.gamesByUser.delete(gameManager.leftUser.uid)
