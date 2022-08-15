@@ -82,11 +82,11 @@ export const RoomOptionSecond = (prop: {
   }
 }
 
-export default function BasicModal(prop: {
+export const BasicModal = (prop: {
   modal: boolean
   setModal: (value: boolean) => void
   socket: any
-}) {
+}) => {
   const [roomType, setRoomType] = useState('Public')
   const [password, setPassword] = useState('')
   const input = useRef<HTMLInputElement>()
