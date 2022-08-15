@@ -1,4 +1,4 @@
-import { Avatar } from '@mui/material'
+import { Avatar, ListItemAvatar } from '@mui/material'
 import { User } from 'data'
 import { UserStatus } from './UserStatus'
 
@@ -19,3 +19,12 @@ export const AvatarWithStatus = ({ status, avatar, radius }: Props) => {
     />
   )
 }
+
+export const ListAvatarWithStatus = ({
+  status,
+  avatar,
+}: Pick<User, 'status' | 'avatar'>) => (
+  <ListItemAvatar>
+    <AvatarWithStatus status={status} avatar={avatar} />
+  </ListItemAvatar>
+)
