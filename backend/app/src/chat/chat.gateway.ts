@@ -61,7 +61,6 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: ChatMessageDto,
   ) {
-    // TODO: sender가 mute상태인지 확인
     console.log(`chat: ${client.data.uid} sent ${data.msgContent}`)
     this.broadcastMessage(client, data)
   }
@@ -88,9 +87,11 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() roomId: number,
   ) {
-    // TODO: 유효한 roomId인지 확인
-    // TODO: banned 여부 확인
-    this.chatService.addUserToRoom(client.data.uid, roomId)
+    try {
+      await this.chatService.addUserToRoom(client.data.uid, roomId)
+    } catch {
+      return
+    }
     client.join(roomId.toString())
     console.log(`chat: ${client.data.uid} has entered to ${roomId}`)
     this.emitNotice(client, roomId, 'join')
