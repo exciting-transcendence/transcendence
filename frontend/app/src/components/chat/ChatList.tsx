@@ -11,9 +11,9 @@ export const ChatList = <T extends Chat>({ chats }: Props<T>) => {
   const groupedChats = groupBySerial(chats, (chat) => chat.senderUid)
   return (
     <List>
-      {groupedChats.map((chats) => (
+      {groupedChats.map((chats, i) => (
         <ChatListItem
-          key={i}
+          key={i} // FIXME: createdAt이 구현되면 이걸로 바꾸기
           user={useUser(chats[0].senderUid)} // TODO: cache user
           messages={chats.map((chat) => chat.msgContent)}
         />
