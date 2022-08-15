@@ -11,7 +11,7 @@ export const ChatList = <T extends Chat>({ chats }: Props<T>) => {
   const groupedChats = groupBySerial(chats, (chat) => chat.senderUid)
   return (
     <List>
-      {groupedChats.map((chats, i) => (
+      {groupedChats.map((chats) => (
         <ChatListItem
           key={i}
           user={useUser(chats[0].senderUid)} // TODO: cache user
