@@ -7,29 +7,7 @@ import { mockUser } from 'mock/mockUser'
 import { useEffect, createContext, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 
-export const SOCKET_EVENT = {
-  JOIN_ROOM: 'JOIN',
-  SEND_MESSAGE: 'SEND',
-  RECEIVE_MESSAGE: 'RECEIVE',
-  NOICE: 'NOTICE',
-  CREATE: 'CREATE',
-}
-
-type Data = {
-  roomId: number
-  senderUid: number
-  msgContent: string
-}
-
-// interface ServerToClientEvents {
-//   noArg: () => void
-//   basicEmit: (a: number, b: string, c: Buffer) => void
-//   withAck: (d: string, callback: (e: number) => void) => void
-// }
-
-// interface ClientToServerEvents {
-//   hello: () => void
-// }
+import { Message, ClientToServerEvents, ServerToClientEvents } from 'data'
 
 export const MainRouter = () => {
   const [socket, setSocket] = useState<Socket>()
