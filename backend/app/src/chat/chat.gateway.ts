@@ -69,8 +69,20 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: ChatMessageDto,
   ) {
-    console.log(`chat: ${client.data.uid} sent ${data.msgContent}`)
-    this.broadcastMessage(client, data)
+    let isMuted: boolean
+    try {
+      isMuted = await this.chatService.isMuted(client.data.uid, data.roomId)
+    } catch (error) {
+      return error
+    }
+    if (!isMuted) {
+      console.log(`chat: ${client.data.uid} sent ${data.msgContent}`)
+      this.broadcastMessage(client, data)
+    } else {
+      console.log(
+        `chat: ${client.data.uid} sent message but is muted in ${data.roomId}`,
+      )
+    }
   }
 
   @AsyncApiSub({
