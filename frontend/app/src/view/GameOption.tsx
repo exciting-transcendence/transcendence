@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState } from 'react'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -8,17 +8,18 @@ import Button from '@mui/material/Button'
 export const PongMatchForm = (props: {
   requestMatch: (matchData: any) => void
 }) => {
-  const [value, setValue] = React.useState('easy')
+  const [gameMode, setGameMode] = useState('classic')
   const submitRanked = () => {
     props.requestMatch({
-      matchType: 'ranked',
+      mode: 'ranked',
+      isPrivate: false,
     })
   }
 
   const submitQuick = () => {
     props.requestMatch({
-      matchType: 'quick',
-      mode: value,
+      mode: gameMode,
+      isPrivate: false,
     })
   }
 
@@ -42,14 +43,22 @@ export const PongMatchForm = (props: {
         row
         aria-labelledby="demo-row-radio-buttons-group-label"
         name="row-radio-buttons-group"
-        value={value}
+        value={gameMode}
         onChange={(e) => {
-          setValue(e.target.value)
+          setGameMode(e.target.value)
         }}
       >
-        <FormControlLabel value="easy" control={<Radio />} label="Easy" />
-        <FormControlLabel value="medium" control={<Radio />} label="Nomal" />
-        <FormControlLabel value="hard" control={<Radio />} label="Hard" />
+        <FormControlLabel value="classic" control={<Radio />} label="Classic" />
+        <FormControlLabel
+          value="speedup"
+          control={<Radio />}
+          label="Speed-up"
+        />
+        <FormControlLabel
+          value="sizedown"
+          control={<Radio />}
+          label="Size-down"
+        />
       </RadioGroup>
     </FormControl>
   )

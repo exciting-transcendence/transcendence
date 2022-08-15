@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Socket } from 'socket.io'
-import { PongMode } from '../configs/pong.config'
 import { Match } from './match.entity'
 import { User } from 'user/user.entity'
 
@@ -13,14 +12,14 @@ export class MatchService {
   @InjectRepository(Match)
   private matchRepository: Repository<Match>
   private readonly quickQueue: {
-    easy: UserSocket[]
-    medium: UserSocket[]
-    hard: UserSocket[]
-  } = { easy: [], medium: [], hard: [] }
+    classic: UserSocket[]
+    speedup: UserSocket[]
+    sizedown: UserSocket[]
+  } = { classic: [], speedup: [], sizedown: [] }
   private readonly rankedQueue: UserSocket[] = []
   private readonly privateMap: Map<
     number,
-    { mode: PongMode; player: UserSocket }
+    { mode: 'classic' | 'speedup' | 'sizedown'; player: UserSocket }
   > = new Map()
 
   match(queue: UserSocket[]): { left: UserSocket; right: UserSocket } | null {
@@ -35,23 +34,30 @@ export class MatchService {
   matchRanked(
     player: UserSocket,
   ): { left: UserSocket; right: UserSocket } | null {
+    this.removeFromQueue(player)
     this.rankedQueue.push(player)
     return this.match(this.rankedQueue)
   }
 
   matchQuick(
     player: UserSocket,
-    mode: PongMode,
+    mode: 'classic' | 'speedup' | 'sizedown',
   ): { left: UserSocket; right: UserSocket } | null {
+    this.removeFromQueue(player)
     this.quickQueue[mode].push(player)
     return this.match(this.quickQueue[mode])
   }
 
   matchPrivate(
     player: UserSocket,
-    mode?: PongMode,
+    mode?: 'classic' | 'speedup' | 'sizedown',
     opponent?: number,
-  ): { left: UserSocket; right: UserSocket; mode: PongMode } | null {
+  ): {
+    left: UserSocket
+    right: UserSocket
+    mode: 'classic' | 'speedup' | 'sizedown'
+  } | null {
+    this.removeFromQueue(player)
     if (opponent && this.privateMap.has(opponent)) {
       const owner = this.privateMap.get(opponent)
       this.privateMap.delete(opponent)
@@ -62,17 +68,18 @@ export class MatchService {
     }
   }
 
+  eraseIf<T>(queue: Array<T>, pred: (value: T) => boolean): void {
+    const index = queue.findIndex(pred)
+    if (index !== -1) {
+      queue.splice(index, 1)
+    }
+  }
+
   removeFromQueue(player: UserSocket) {
     for (const queue of Object.values(this.quickQueue)) {
-      queue.splice(
-        queue.findIndex((p) => p.id === player.id),
-        1,
-      )
+      this.eraseIf(queue, (p) => p.id === player.id)
     }
-    this.rankedQueue.splice(
-      this.rankedQueue.findIndex((p) => p.id === player.id),
-      1,
-    )
+    this.eraseIf(this.rankedQueue, (p) => p.id === player.id)
     this.privateMap.delete(player.uid)
   }
 
@@ -93,7 +100,7 @@ export class MatchService {
       .getMany()
   }
 
-  endMatch(winner: User, loser: User): Promise<Match> {
+  addMatchResult(winner: User, loser: User): Promise<Match> {
     const newMatch = new Match()
     newMatch.winner = winner
     newMatch.loser = loser

@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { Socket } from 'socket.io'
-
+import { User } from 'user/user.entity'
+import { UserService } from 'user/user.service'
 import * as CONSTANTS from '../configs/pong.config'
+import { MatchService } from './match.service'
 
 class Rect {
   x: number
@@ -70,20 +72,15 @@ function reflect(dot: number, mirror: number) {
   return 2 * mirror - dot
 }
 
+function vectorSetLength(x: number, y: number, newLength: number) {
+  const oldLength = Math.sqrt(x * x + y * y)
+
+  return [(x / oldLength) * newLength, (y / oldLength) * newLength]
+}
+
 class Ball extends MoveableRect {
-  constructor(difficulty: CONSTANTS.PongMode) {
-    let speedFactor: number
-    switch (difficulty) {
-      case 'easy':
-        speedFactor = CONSTANTS.EASY_SPEED
-        break
-      case 'medium':
-        speedFactor = CONSTANTS.MEDIUM_SPEED
-        break
-      case 'hard':
-        speedFactor = CONSTANTS.HARD_SPEED
-        break
-    }
+  constructor() {
+    const speedFactor = 1 / CONSTANTS.BALL_SPEED
 
     const theta = toRad(
       Math.random() * CONSTANTS.MAX_SHOOT_RIGHT_UP_DEGREE * 2 -
@@ -95,16 +92,27 @@ class Ball extends MoveableRect {
 
     if (Math.random() < 0.5) speedX = -speedX
 
+    // super(
+    //   CONSTANTS.WINDOW_WIDTH / 2 - CONSTANTS.BALL_SIZE / 2,
+    //   CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
+    //   CONSTANTS.BALL_SIZE,
+    //   CONSTANTS.BALL_SIZE,
+    //   speedX,
+    //   speedY,
+    // )
+
     super(
-      CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
       CONSTANTS.WINDOW_WIDTH / 2 - CONSTANTS.BALL_SIZE / 2,
+      CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
       CONSTANTS.BALL_SIZE,
       CONSTANTS.BALL_SIZE,
-      speedX,
-      speedY,
+      speedFactor,
+      0,
     )
   }
 }
+
+type PongMode = 'classic' | 'speedup' | 'sizedown'
 
 class Pong {
   private ball: Ball
@@ -114,11 +122,12 @@ class Pong {
   private leftScore = 0
   private rightScore = 0
   private lastUpdate = 0
-  private difficulty: CONSTANTS.PongMode
+  private mode: 'classic' | 'speedup' | 'sizedown'
   private winner: 'left' | 'right' | null = null
 
-  constructor(difficulty: CONSTANTS.PongMode) {
-    this.difficulty = difficulty
+  constructor(mode: PongMode) {
+    console.log(`mode: ${mode}`)
+    this.mode = mode
     this.resetState()
   }
 
@@ -127,7 +136,7 @@ class Pong {
   }
 
   resetState() {
-    this.ball = new Ball(this.difficulty)
+    this.ball = new Ball()
     this.leftPaddle = new Paddle(true)
     this.rightPaddle = new Paddle(false)
   }
@@ -156,13 +165,13 @@ class Pong {
     target: 'left' | 'right',
     direction: 'up' | 'down' | 'stop',
   ) {
-    let velocity: number
+    let velocity = 1
     switch (direction) {
       case 'up':
-        velocity = -CONSTANTS.PADDLE_SPEED
+        velocity /= -CONSTANTS.PADDLE_SPEED
         break
       case 'down':
-        velocity = CONSTANTS.PADDLE_SPEED
+        velocity /= CONSTANTS.PADDLE_SPEED
         break
       case 'stop':
         velocity = 0
@@ -204,6 +213,29 @@ class Pong {
         this.leftPaddle.x + this.leftPaddle.width,
       )
       this.ball.speedX = -this.ball.speedX
+      const originalSpeed = Math.sqrt(
+        this.ball.speedX * this.ball.speedX +
+          this.ball.speedY * this.ball.speedY,
+      )
+      const [newSpeedX, newSpeedY] = vectorSetLength(
+        this.ball.speedX,
+        this.ball.speedY + CONSTANTS.PADDLE_FRACTION * this.leftPaddle.speedY,
+        originalSpeed,
+      )
+      this.ball.speedX =
+        newSpeedX *
+        (this.mode === 'speedup' ? CONSTANTS.BALL_SPEED_UP_FACTOR : 1)
+      this.ball.speedY =
+        newSpeedY *
+        (this.mode === 'speedup' ? CONSTANTS.BALL_SPEED_UP_FACTOR : 1)
+
+      if (this.mode === 'sizedown') {
+        const nextHeight =
+          this.leftPaddle.height * CONSTANTS.PADDLE_SIZE_DOWN_FACTOR
+        const difference = this.leftPaddle.height - nextHeight
+        this.leftPaddle.y += difference / 2
+        this.leftPaddle.height = nextHeight
+      }
     }
 
     // 오른쪽 패들 충돌 처리
@@ -213,6 +245,29 @@ class Pong {
         this.rightPaddle.x - this.rightPaddle.width,
       )
       this.ball.speedX = -this.ball.speedX
+      const originalSpeed = Math.sqrt(
+        this.ball.speedX * this.ball.speedX +
+          this.ball.speedY * this.ball.speedY,
+      )
+      const [newSpeedX, newSpeedY] = vectorSetLength(
+        this.ball.speedX,
+        this.ball.speedY + CONSTANTS.PADDLE_FRACTION * this.rightPaddle.speedY,
+        originalSpeed,
+      )
+      this.ball.speedX =
+        newSpeedX *
+        (this.mode === 'speedup' ? CONSTANTS.BALL_SPEED_UP_FACTOR : 1)
+      this.ball.speedY =
+        newSpeedY *
+        (this.mode === 'speedup' ? CONSTANTS.BALL_SPEED_UP_FACTOR : 1)
+
+      if (this.mode === 'sizedown') {
+        const nextHeight =
+          this.rightPaddle.height * CONSTANTS.PADDLE_SIZE_DOWN_FACTOR
+        const difference = this.rightPaddle.height - nextHeight
+        this.rightPaddle.y += difference / 2
+        this.rightPaddle.height = nextHeight
+      }
     }
 
     // 왼쪽 충돌 처리
@@ -265,7 +320,24 @@ type UserSocket = Socket & {
   uid: number
 }
 
+function estimateWinRate(eloA: number, eloB: number) {
+  const winRateA = 1 / (1 + Math.pow(10, (eloB - eloA) / 40))
+  const winRateB = 1 - winRateA
+  return [winRateA, winRateB]
+}
+
+function recalculateElo(winner: number, loser: number) {
+  const [winnerEstimatedWinRate, loserEstimatedWinRate] = estimateWinRate(
+    winner,
+    loser,
+  )
+  const newWinnerElo = winner + 40 * (1 - winnerEstimatedWinRate)
+  const newLoserElo = loser + 40 * (0 - loserEstimatedWinRate)
+  return [newWinnerElo, newLoserElo]
+}
+
 class PongManager {
+  isRanked: boolean
   private leftTimer: NodeJS.Timer
   private rightTimer: NodeJS.Timer
   private gameTimer: NodeJS.Timer
@@ -278,6 +350,7 @@ class PongManager {
   gameId: number
 
   constructor(
+    isRanked: boolean,
     leftUser: UserSocket,
     rightUser: UserSocket,
     gameId: number,
@@ -289,29 +362,34 @@ class PongManager {
     this.gameId = gameId
     this.game = game
     this.gameEndCallback = gameEndCallback
+    this.isRanked = isRanked
   }
 
   startGame() {
-    this.leftUser.emit('gameStart', {
-      left: this.leftUser.uid,
-      right: this.rightUser.uid,
+    this.leftUser.emit('gameInfo', {
+      leftUser: this.leftUser.uid,
+      rightUser: this.rightUser.uid,
       gameId: this.gameId,
+      ...this.game,
     })
-    this.rightUser.emit('gameStart', {
-      left: this.leftUser.uid,
-      right: this.rightUser.uid,
+    this.rightUser.emit('gameInfo', {
+      leftUser: this.leftUser.uid,
+      rightUser: this.rightUser.uid,
       gameId: this.gameId,
+      ...this.game,
     })
-    this.game.start()
-    this.leftTimer = setInterval(() => {
-      this.leftUser.emit('render', this.game)
-    }, CONSTANTS.UPDATE_INTERVAL)
-    this.rightTimer = setInterval(() => {
-      this.rightUser.emit('render', this.game)
-    }, CONSTANTS.UPDATE_INTERVAL)
-    this.gameTimer = setInterval(() => {
-      this.updateGame(Date.now())
-    }, CONSTANTS.UPDATE_INTERVAL)
+    setTimeout(() => {
+      this.game.start()
+      this.leftTimer = setInterval(() => {
+        this.leftUser.emit('render', this.game)
+      }, CONSTANTS.UPDATE_INTERVAL)
+      this.rightTimer = setInterval(() => {
+        this.rightUser.emit('render', this.game)
+      }, CONSTANTS.UPDATE_INTERVAL)
+      this.gameTimer = setInterval(() => {
+        this.updateGame(Date.now())
+      }, CONSTANTS.UPDATE_INTERVAL)
+    }, CONSTANTS.GAME_START_DELAY * 1000)
   }
 
   stopGame(winner: { side: 'left' | 'right'; uid: number }) {
@@ -325,11 +403,7 @@ class PongManager {
     this.rightUser.emit('gameEnd', winner)
     this.spectators.forEach((elem) => {
       elem.socket.emit('gameEnd', winner)
-      elem.socket.disconnect()
     })
-    this.leftUser.disconnect()
-    this.rightUser.disconnect()
-
     this.gameEndCallback(this.gameId)
   }
 
@@ -345,7 +419,7 @@ class PongManager {
   }
 
   addSpectator(socket: UserSocket) {
-    socket.emit('gameStart', {
+    socket.emit('gameInfo', {
       left: this.leftUser.uid,
       right: this.rightUser.uid,
       gameId: this.gameId,
@@ -361,6 +435,11 @@ class PongManager {
 
 @Injectable()
 export class PongService {
+  constructor(
+    private readonly userService: UserService,
+    private readonly matchService: MatchService,
+  ) {}
+
   private nextId = 0
   private readonly gamesByGameId: Map<number, PongManager> = new Map()
   private readonly gamesByUser: Map<
@@ -371,14 +450,15 @@ export class PongService {
   createGame(
     leftUser: UserSocket,
     rightUser: UserSocket,
-    difficulty: 'easy' | 'medium' | 'hard',
+    mode: PongMode | 'ranked',
   ) {
     const gameId = this.nextId++
     const gameManager = new PongManager(
+      mode === 'ranked',
       leftUser,
       rightUser,
       gameId,
-      new Pong(difficulty),
+      new Pong(mode !== 'ranked' ? mode : 'classic'),
       this.deleteGame.bind(this),
     )
     this.gamesByGameId.set(gameId, gameManager)
@@ -387,9 +467,41 @@ export class PongService {
     gameManager.startGame()
   }
 
-  deleteGame(gameId: number) {
+  async deleteGame(gameId: number) {
     const gameManager = this.gamesByGameId.get(gameId)
     if (gameManager) {
+      const [left, right] = [
+        await this.userService.findOneByUid(gameManager.leftUser.uid),
+        await this.userService.findOneByUid(gameManager.rightUser.uid),
+      ]
+
+      let winner: User, loser: User
+      if (gameManager.game.getWinner() === 'left') {
+        winner = left
+        loser = right
+      } else {
+        winner = right
+        loser = left
+      }
+
+      ++winner.stat.win
+      ++loser.stat.lose
+
+      if (gameManager.isRanked) {
+        const [newWinnerElo, newLoserElo] = recalculateElo(
+          winner.stat.rating,
+          loser.stat.rating,
+        )
+
+        winner.stat.rating = Math.round(newWinnerElo)
+        loser.stat.rating = Math.round(newLoserElo)
+      }
+
+      await this.userService.update(winner)
+      await this.userService.update(loser)
+
+      await this.matchService.addMatchResult(winner, loser)
+
       this.gamesByGameId.delete(gameId)
       this.gamesByUser.delete(gameManager.leftUser.uid)
       this.gamesByUser.delete(gameManager.rightUser.uid)

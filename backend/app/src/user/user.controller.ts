@@ -31,20 +31,6 @@ export class UserController {
     return (await this.userService.findOneByNickname(nickname)) === null
   }
 
-  @Get('/test')
-  @ApiOperation({ summary: 'Match entity test API', description: '' })
-  @ApiCreatedResponse({ description: 'match 객체 반환', type: Match })
-  async matchTest(): Promise<Match> {
-    return await this.userService.matchTest()
-  }
-
-  @Get('/test/all')
-  @ApiOperation({ summary: 'Match history API', description: '' })
-  @ApiCreatedResponse({ description: 'Match[]', type: Array<Match> })
-  async getMatchs(): Promise<Match[]> {
-    return this.userService.matchAll()
-  }
-
   @Get('/me')
   @UseGuards(JwtAfterTwoFactorUserGuard)
   @ApiOperation({
@@ -65,7 +51,7 @@ export class UserController {
   @UseGuards(JwtAfterTwoFactorUserGuard)
   @ApiOperation({
     summary: 'Get User data API',
-    description: 'qurry string: uid',
+    description: 'query string: uid',
   })
   @ApiCreatedResponse({ description: 'FindUserDto', type: FindUserDto })
   async getUserByUid(@Param('uid') uid: number): Promise<FindUserDto> {

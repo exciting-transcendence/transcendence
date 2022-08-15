@@ -10,10 +10,12 @@ export class RoomsController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('/list')
+  @UseGuards(JwtAfterTwoFactorUserGuard)
   @ApiOkResponse({ type: ChatRoomStatusDto, isArray: true })
   getChatroomList() {
     return this.chatService.getAllChatrooms()
   }
+
   @Get('/me')
   @UseGuards(JwtAfterTwoFactorUserGuard)
   @ApiOkResponse({ type: ChatRoomStatusDto, isArray: true })
