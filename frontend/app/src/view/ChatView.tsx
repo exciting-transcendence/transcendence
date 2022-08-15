@@ -1,10 +1,10 @@
 import { mapArgsToTypes } from '@storybook/store'
 import axios from 'axios'
 import { useState, useCallback, useEffect, useRef, useContext } from 'react'
-import { ChatRoom } from './ChatRoom'
 import { ChatList } from './ChatList'
 import { MyRoomList } from './MyRoomList'
 import { Grid, List, Divider, Input, Typography, Button } from '@mui/material'
+import BasicModal from './CreateRoomModal'
 
 export const SOCKET_EVENT = {
   JOIN_ROOM: 'JOIN',
@@ -13,6 +13,53 @@ export const SOCKET_EVENT = {
   NOICE: 'NOTICE',
   CREATE: 'CREATE',
 }
+
+const RoomList: Room[] = [
+  {
+    id: 1,
+    name: '방 이름1',
+    roomtype: '1',
+    password: '123',
+    bannedIds: [],
+    mutedIds: [],
+    chatUser: [],
+  },
+  {
+    id: 1,
+    name: '방 이름2',
+    roomtype: '1',
+    password: '123',
+    bannedIds: [],
+    mutedIds: [],
+    chatUser: [],
+  },
+  {
+    id: 1,
+    name: '방 이름3',
+    roomtype: '1',
+    password: '123',
+    bannedIds: [],
+    mutedIds: [],
+    chatUser: [],
+  },
+]
+const myRoomDummy: myRoom[] = [
+  {
+    id: 1,
+    name: '방 이름1',
+    roomtype: '1',
+  },
+  {
+    id: 2,
+    name: '방 이름2',
+    roomtype: '1',
+  },
+  {
+    id: 3,
+    name: '방 이름3',
+    roomtype: '1',
+  },
+]
 
 type Room = {
   id: number
@@ -57,12 +104,12 @@ export const makeMessage = (pongData: any) => {
 }
 
 export const ChatView = (prop: { socket: any }) => {
-  const [roomList, setRoomList] = useState<Room[]>()
+  const [roomList, setRoomList] = useState<Room[]>([])
   const [myRoomList, setMyRoomList] = useState<myRoom[]>([])
   console.log('Chatview')
   const nickname = 'testing'
   const token = window.localStorage.getItem('access_token')
-
+  const [modal, setModal] = useState(false)
   const updateRoom = () => {
     axios
       .get('/api/chat/list', {
@@ -92,35 +139,32 @@ export const ChatView = (prop: { socket: any }) => {
   return (
     <>
       <Grid container justifyContent="space-between">
-        <Grid item xs={4} padding="1rem">
-          <Button style={{ margin: '0.5rem', width: '243px' }}>방만들기</Button>
-          <Button style={{ margin: '0.5rem', width: '243px' }}>
-            방참여하기
+        <Grid item xs={3} padding="1rem">
+          <Button fullWidth={true} onClick={() => setModal(true)}>
+            방만들기
+          </Button>
+          <BasicModal setModal={setModal} modal={modal} socket={prop.socket} />
+          <Button fullWidth={true} onClick={updateRoom}>
+            참여 가능한 방
           </Button>
           <Divider />
-          <MyRoomList room={myRoomList} />
+          <Typography variant="h6" padding="1rem" textAlign="center">
+            참여 중인 채팅 리스트
+          </Typography>
+          <MyRoomList room={myRoomDummy} />
         </Grid>
         <Divider
           orientation="vertical"
           flexItem
           style={{ marginRight: '-1px' }}
         />
-        <Grid item xs={8} padding="100px">
-          {roomList ? (
-            <div>
-              <ChatList list={roomList} />
-              <ChatRoom nickname={nickname} socket={prop.socket} />
-              <button onClick={updateRoom}>참여 가능한 방 리스트</button>
-            </div>
-          ) : (
-            <div
-              className="d-flex flex-column justify-content-center align-items-center vh-100"
-              style={{ width: '50%' }}
-            >
-              <ChatRoom nickname={nickname} socket={prop.socket} />
-              <button onClick={updateRoom}>참여 가능한 방 리스트</button>
-            </div>
-          )}
+        <Grid item xs={9} padding="100px">
+          <div>
+            <Typography variant="h6" padding="1rem" textAlign="center">
+              참여 가능한 채팅 리스트
+            </Typography>
+            <ChatList list={RoomList} socket={prop.socket} />
+          </div>
         </Grid>
       </Grid>
     </>

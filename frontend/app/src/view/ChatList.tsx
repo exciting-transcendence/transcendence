@@ -1,4 +1,9 @@
+import { Socket } from 'dgram'
 import { useState, useCallback, useEffect, useRef, useContext } from 'react'
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
 
 type Room = {
   id: number
@@ -10,12 +15,25 @@ type Room = {
   chatUser: any[]
 }
 
-export const ChatList = (prop: { list: Room[] }) => {
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}))
+
+export const ChatList = (prop: { list: Room[]; socket: any }) => {
+  const joinRoom = (id: number) => {
+    prop.socket.emit('JOIN', { name: { id } })
+  }
   return (
-    <>
-      {prop.list.map((room) => (
-        <div>{room.name}</div>
-      ))}
-    </>
+    <Box sx={{ width: '100%' }}>
+      <Stack spacing={2}>
+        {prop.list.map((chatRoom: Room) => (
+          <Item onClick={() => joinRoom(chatRoom.id)}>{chatRoom.name}</Item>
+        ))}
+      </Stack>
+    </Box>
   )
 }
