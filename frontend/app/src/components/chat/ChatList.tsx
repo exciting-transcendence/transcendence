@@ -4,10 +4,10 @@ import { ChatListItem } from './ChatListItem'
 import { useUser } from 'hook/useUser'
 import { groupBySerial } from 'utility/groupBySerial'
 
-interface Props {
-  chats: Chat[]
+interface Props<T extends Chat> {
+  chats: T[]
 }
-export const ChatList = ({ chats }: Props) => {
+export const ChatList = <T extends Chat>({ chats }: Props<T>) => {
   const groupedChats = groupBySerial(chats, (chat) => chat.senderUid)
   return (
     <List>
