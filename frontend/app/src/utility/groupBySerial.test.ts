@@ -1,4 +1,4 @@
-import { groupBySerial, groupBySerial2 } from './groupBySerial'
+import { groupBySerial } from './groupBySerial'
 
 describe('groupBySerial', () => {
   type testObj = { id: number; name: string }
@@ -12,11 +12,7 @@ describe('groupBySerial', () => {
     const value = expected.flat()
     expect(groupBySerial(value, (it) => it)).toEqual(expected)
   })
-  test('new function', () => {
-    const expected = [[1, 1, 1], [2, 2], [1]]
-    const value = expected.flat()
-    expect(groupBySerial2(value, (it) => it)).toEqual(expected)
-  })
+
   test('objects array', () => {
     const expected: testObj[][] = [
       [
@@ -46,21 +42,5 @@ describe('groupBySerial', () => {
     const value = expected.flat()
 
     expect(groupBySerial(value, (it) => it)).toEqual(expected)
-  })
-  test('new func is faster than older one', () => {
-    const expected = [
-      Array(1512).fill(1),
-      Array(24363).fill(2),
-      Array(1244).fill(3),
-      Array(5213).fill(1),
-    ]
-    const value = expected.flat()
-    const first = Date.now()
-    groupBySerial(value, (it) => it)
-    const middle = Date.now()
-    groupBySerial2(value, (it) => it)
-    const end = Date.now()
-    const [oldTime, newTime] = [middle - first, end - middle]
-    expect(oldTime).toBeLessThan(newTime)
   })
 })
