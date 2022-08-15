@@ -32,7 +32,6 @@ type Data = {
 // }
 
 export const MainRouter = () => {
-  console.log('is loaded?')
   const [socket, setSocket] = useState<Socket>()
   useEffect(() => {
     const socket = io('/api/chat', {

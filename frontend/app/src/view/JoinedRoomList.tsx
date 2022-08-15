@@ -18,7 +18,7 @@ type myRoom = {
   roomtype: string
 }
 
-export const MyRoomList = (prop: { room: myRoom[] }) => {
+export const JoinedRoomList = (prop: { room: myRoom[] }) => {
   return (
     <Box sx={{ width: '100%' }}>
       <Stack spacing={2}>

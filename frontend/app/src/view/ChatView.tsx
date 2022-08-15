@@ -2,7 +2,7 @@ import { mapArgsToTypes } from '@storybook/store'
 import axios from 'axios'
 import { useState, useCallback, useEffect, useRef, useContext } from 'react'
 import { ChatList } from './ChatList'
-import { MyRoomList } from './MyRoomList'
+import { JoinedRoomList } from './JoinedRoomList'
 import { Grid, List, Divider, Input, Typography, Button } from '@mui/material'
 import BasicModal from './CreateRoomModal'
 
@@ -60,6 +60,7 @@ const myRoomDummy: myRoom[] = [
     roomtype: '1',
   },
 ]
+
 type Data = {
   roomId: number
   senderUid: number
@@ -82,37 +83,9 @@ type myRoom = {
   roomtype: string
 }
 
-export const makeMessage = (pongData: any) => {
-  const { senderUid, msgContent, type, roomId } = pongData
-
-  let nicknameLabel
-  let contentLabel = ''
-
-  switch (type) {
-    case SOCKET_EVENT.JOIN_ROOM: {
-      contentLabel = `${senderUid} has joined the room.`
-      break
-    }
-    case SOCKET_EVENT.SEND_MESSAGE: {
-      contentLabel = String(msgContent)
-      nicknameLabel = senderUid
-      break
-    }
-    default:
-  }
-
-  return {
-    senderUid: 2,
-    msgContent: contentLabel,
-    roomId: '03:25',
-  }
-}
-
 export const ChatView = (prop: { socket: any }) => {
-  const [roomList, setRoomList] = useState<Room[]>([])
-  const [myRoomList, setMyRoomList] = useState<myRoom[]>([])
-  console.log('Chatview')
-  const nickname = 'testing'
+  const [chatList, setChatList] = useState<Room[]>([])
+  const [joinedRoomList, setJoinedRoomList] = useState<myRoom[]>([])
   const token = window.localStorage.getItem('access_token')
   const [modal, setModal] = useState(false)
   const updateRoom = () => {
@@ -124,7 +97,7 @@ export const ChatView = (prop: { socket: any }) => {
       })
       .then((res) => {
         console.log(res.data)
-        setRoomList(res.data)
+        setChatList(res.data)
       })
   }
 
@@ -138,7 +111,7 @@ export const ChatView = (prop: { socket: any }) => {
       })
       .then((res) => {
         console.log(res.data)
-        setMyRoomList(res.data)
+        setJoinedRoomList(res.data)
       })
   }
 
@@ -157,7 +130,7 @@ export const ChatView = (prop: { socket: any }) => {
           <Typography variant="h6" padding="1rem" textAlign="center">
             참여 중인 채팅 리스트
           </Typography>
-          <MyRoomList room={myRoomDummy} />
+          <JoinedRoomList room={myRoomDummy} />
         </Grid>
         <Divider
           orientation="vertical"
@@ -169,7 +142,7 @@ export const ChatView = (prop: { socket: any }) => {
             <Typography variant="h6" padding="1rem" textAlign="center">
               참여 가능한 채팅 리스트
             </Typography>
-            <ChatList list={roomList} socket={prop.socket} />
+            <ChatList list={chatList} socket={prop.socket} />
           </div>
         </Grid>
       </Grid>
