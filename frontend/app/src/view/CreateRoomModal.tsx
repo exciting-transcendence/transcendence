@@ -95,6 +95,7 @@ export default function BasicModal(prop: {
     const roomName = input.current?.value
     console.log(roomName)
     prop.socket.emit(SOCKET_EVENT.CREATE, roomName)
+    handleClose()
   }
   return (
     <div>

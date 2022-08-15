@@ -45,9 +45,9 @@ export const MainRouter = () => {
     socket.on('disconnect', () => {
       console.log('socket server disconnected.')
     })
-    socket.on(SOCKET_EVENT.NOICE, (res: Data) =>
-      console.log(`NOTICE EVENT: ${res.msgContent}`),
-    )
+    socket.on(SOCKET_EVENT.NOICE, (res: Data) => {
+      console.log(`NOTICE EVENT: ${res.msgContent}`)
+    })
     socket.on(SOCKET_EVENT.RECEIVE_MESSAGE, (res) => console.log(res))
     return () => {
       socket.disconnect()

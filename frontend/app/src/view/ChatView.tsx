@@ -60,6 +60,11 @@ const myRoomDummy: myRoom[] = [
     roomtype: '1',
   },
 ]
+type Data = {
+  roomId: number
+  senderUid: number
+  msgContent: string
+}
 
 type Room = {
   id: number
@@ -136,6 +141,7 @@ export const ChatView = (prop: { socket: any }) => {
         setMyRoomList(res.data)
       })
   }
+
   return (
     <>
       <Grid container justifyContent="space-between">
@@ -163,7 +169,7 @@ export const ChatView = (prop: { socket: any }) => {
             <Typography variant="h6" padding="1rem" textAlign="center">
               참여 가능한 채팅 리스트
             </Typography>
-            <ChatList list={RoomList} socket={prop.socket} />
+            <ChatList list={roomList} socket={prop.socket} />
           </div>
         </Grid>
       </Grid>
