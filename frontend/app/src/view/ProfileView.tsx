@@ -1,4 +1,3 @@
-import { useRecoilValue } from 'recoil'
 import { Profile } from 'components/profile/Profile'
 import { useUserRequest } from 'hook/useUser'
 import { User } from 'data'
