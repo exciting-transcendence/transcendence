@@ -48,6 +48,7 @@ export const RoomOptionSecond = (prop: {
         row
         aria-labelledby="demo-row-radio-buttons-group-label"
         name="row-radio-buttons-group"
+        value={pwd}
         onChange={(e) => setPwd(e.target.value)}
       >
         <FormControlLabel
