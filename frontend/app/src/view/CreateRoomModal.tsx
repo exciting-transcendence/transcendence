@@ -10,20 +10,7 @@ import {
 import Typography from '@mui/material/Typography'
 import Modal from '@mui/material/Modal'
 import { Socket } from 'socket.io-client'
-
-export const SOCKET_EVENT = {
-  JOIN_ROOM: 'JOIN',
-  SEND_MESSAGE: 'SEND',
-  RECEIVE_MESSAGE: 'RECEIVE',
-  NOICE: 'NOTICE',
-  CREATE: 'CREATE',
-}
-
-type Message = {
-  senderUid: number
-  msgContent: string
-  roomId: string
-}
+import { Message } from 'data'
 
 const style = {
   position: 'absolute',
@@ -95,7 +82,7 @@ export const BasicModal = (prop: {
   const createRoom = () => {
     const roomName = input.current?.value
     console.log(roomName)
-    prop.socket.emit(SOCKET_EVENT.CREATE, roomName)
+    prop.socket.emit('CREATE', roomName)
     handleClose()
   }
   return (

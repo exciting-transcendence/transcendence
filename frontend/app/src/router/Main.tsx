@@ -12,9 +12,12 @@ import { Message, ClientToServerEvents, ServerToClientEvents } from 'data'
 export const MainRouter = () => {
   const [socket, setSocket] = useState<Socket>()
   useEffect(() => {
-    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('/api/chat', {
-      auth: { token: window.localStorage.getItem('access_token') },
-    })
+    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+      '/api/chat',
+      {
+        auth: { token: window.localStorage.getItem('access_token') },
+      },
+    )
     setSocket(socket)
     socket.on('connect', () => {
       console.log('socket server connected.')
@@ -22,10 +25,10 @@ export const MainRouter = () => {
     socket.on('disconnect', () => {
       console.log('socket server disconnected.')
     })
-    socket.on(SOCKET_EVENT.NOICE, (res: Data) => {
+    socket.on('NOTICE', (res: Message) => {
       console.log(`NOTICE EVENT: ${res.msgContent}`)
     })
-    socket.on(SOCKET_EVENT.RECEIVE_MESSAGE, (res) => console.log(res))
+    socket.on('RECEIVE', (res) => console.log(res))
     return () => {
       socket.disconnect()
     }

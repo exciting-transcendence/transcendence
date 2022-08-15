@@ -2,16 +2,7 @@ import { Socket } from 'dgram'
 import { useState, useCallback, useEffect, useRef, useContext } from 'react'
 import { Box, Paper, Stack } from '@mui/material'
 import { styled } from '@mui/material/styles'
-
-type Room = {
-  id: number
-  name: string
-  roomtype: string
-  password: string
-  bannedIds: number[]
-  mutedIds: number[]
-  chatUser: any[]
-}
+import { Room } from 'data'
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',

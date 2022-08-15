@@ -4,7 +4,8 @@ import { useState, useCallback, useEffect, useRef, useContext } from 'react'
 import { ChatList } from './ChatList'
 import { JoinedRoomList } from './JoinedRoomList'
 import { Grid, List, Divider, Input, Typography, Button } from '@mui/material'
-import BasicModal from './CreateRoomModal'
+import { BasicModal } from './CreateRoomModal'
+import { JoinedRoom, Room } from 'data'
 
 export const SOCKET_EVENT = {
   JOIN_ROOM: 'JOIN',
@@ -43,7 +44,7 @@ const RoomList: Room[] = [
     chatUser: [],
   },
 ]
-const myRoomDummy: myRoom[] = [
+const myRoomDummy: JoinedRoom[] = [
   {
     id: 1,
     name: '방 이름1',
@@ -61,31 +62,9 @@ const myRoomDummy: myRoom[] = [
   },
 ]
 
-type Data = {
-  roomId: number
-  senderUid: number
-  msgContent: string
-}
-
-type Room = {
-  id: number
-  name: string
-  roomtype: string
-  password: string
-  bannedIds: number[]
-  mutedIds: number[]
-  chatUser: any[]
-}
-
-type myRoom = {
-  id: number
-  name: string
-  roomtype: string
-}
-
 export const ChatView = (prop: { socket: any }) => {
   const [chatList, setChatList] = useState<Room[]>([])
-  const [joinedRoomList, setJoinedRoomList] = useState<myRoom[]>([])
+  const [joinedRoomList, setJoinedRoomList] = useState<JoinedRoom[]>([])
   const token = window.localStorage.getItem('access_token')
   const [modal, setModal] = useState(false)
   const updateRoom = () => {
