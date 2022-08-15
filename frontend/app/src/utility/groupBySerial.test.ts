@@ -2,7 +2,14 @@ import { groupBySerial } from './groupBySerial'
 
 type testObj = { id: number; name: string }
 
-test('groups work', () => {
+test('simple array', () => {
+  expect(groupBySerial([1, 1, 1, 2, 2, 1], (it) => it)).toEqual([
+    [1, 1, 1],
+    [2, 2],
+    [1],
+  ])
+})
+test('objects array', () => {
   const value: testObj[] = [
     { id: 1, name: 'a' },
     { id: 1, name: 'a' },
