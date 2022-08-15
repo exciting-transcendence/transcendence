@@ -18,7 +18,7 @@ Default.args = {
       msgContent: 'Hello',
     },
     {
-      senderUid: 2,
+      senderUid: 4,
       msgContent: 'Hi',
     },
     {
@@ -26,12 +26,16 @@ Default.args = {
       msgContent: 'How are you?',
     },
     {
-      senderUid: 4,
+      senderUid: 2,
       msgContent: 'asdf',
     },
     {
       senderUid: 2,
       msgContent: 'lorem ipsum',
+    },
+    {
+      senderUid: 4,
+      msgContent: 'what do you say?',
     },
   ],
 }
