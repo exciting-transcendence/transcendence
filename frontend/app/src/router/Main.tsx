@@ -12,7 +12,7 @@ import { Message, ClientToServerEvents, ServerToClientEvents } from 'data'
 export const MainRouter = () => {
   const [socket, setSocket] = useState<Socket>()
   useEffect(() => {
-    const socket = io('/api/chat', {
+    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('/api/chat', {
       auth: { token: window.localStorage.getItem('access_token') },
     })
     setSocket(socket)
