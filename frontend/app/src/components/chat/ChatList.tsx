@@ -1,10 +1,10 @@
 import { List } from '@mui/material'
-import { Message } from 'data'
+import { Chat } from 'data'
 import { ChatListItem } from './ChatListItem'
 import { useUser } from 'hook/useUser'
 
 interface Props {
-  chats: Message[]
+  chats: Chat[]
 }
 export const ChatList = ({ chats }: Props) => {
   return (
@@ -12,7 +12,7 @@ export const ChatList = ({ chats }: Props) => {
       {chats.map((chat, i) => (
         <ChatListItem
           key={i}
-          user={useUser(chat.senderUid)}
+          user={useUser(chat.senderUid)} // TODO: cache user
           messages={[chat.msgContent]}
         />
       ))}

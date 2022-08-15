@@ -11,4 +11,27 @@ const Template: ComponentStory<typeof ChatList> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  chats: [
+    {
+      senderUid: 4,
+      msgContent: 'Hello',
+    },
+    {
+      senderUid: 2,
+      msgContent: 'Hi',
+    },
+    {
+      senderUid: 4,
+      msgContent: 'How are you?',
+    },
+    {
+      senderUid: 4,
+      msgContent: 'asdf',
+    },
+    {
+      senderUid: 2,
+      msgContent: 'lorem ipsum',
+    },
+  ],
+}
