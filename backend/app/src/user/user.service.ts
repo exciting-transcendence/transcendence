@@ -11,13 +11,10 @@ import { JwtService } from '@nestjs/jwt'
 import { UserPayload } from 'configs/jwt-token.config'
 import { RegisterUserDto } from 'dto/register-user.dto'
 import { Stat } from './stat.entity'
-import { Match } from 'pong/match.entity'
-import { MatchService } from 'pong/match.service'
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly matchService: MatchService,
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -83,24 +80,14 @@ export class UserService {
   }
 
   async findOneByNickname(nickname: string): Promise<User> {
-    if (!nickname) return null
-    if (nickname.length == 0) return null
-    return await this.userRepository
+    if (nickname.search(/^\w{2,10}$/) === -1)
+      throw new BadRequestException('Nickname is invalid')
+    const user = await this.userRepository
       .createQueryBuilder('user')
-      .select([
-        'user.uid',
-        'user.nickname',
-        'user.avatar',
-        'user.status',
-        'user.friends',
-        'user.blocks',
-        'stat.win',
-        'stat.lose',
-        'stat.rating',
-      ])
-      .innerJoin('user.stat', 'stat')
       .where('user.nickname = :nickname', { nickname })
       .getOne()
+    if (user) throw new BadRequestException('Nickname already exists')
+    return null
   }
 
   async update(user: User): Promise<User> {
@@ -211,25 +198,13 @@ export class UserService {
     return `${user.nickname} is no longer blocked with ${block.nickname}`
   }
 
-  async matchTest(): Promise<Match> {
-    const user1 = await this.userRepository.findOne({
-      where: { uid: 1 },
-      relations: ['stat'],
-    })
-    const user2 = await this.userRepository.findOne({
-      where: { uid: 2 },
-      relations: ['stat'],
-    })
-    ++user1.stat.win
-    ++user2.stat.lose
-    user1.stat.rating += 20
-    user2.stat.rating -= 20
-    await this.userRepository.save(user1)
-    await this.userRepository.save(user2)
-    return this.matchService.endMatch(user1, user2)
-  }
-
-  async matchAll(): Promise<Match[]> {
-    return await this.matchService.findAll()
+  async findBlockedByUid(uid: number): Promise<number[]> {
+    const user = await this.userRepository.findOne({ where: { uid } })
+    if (!user) throw new NotFoundException('User not found')
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .where(':uid = ANY(user.blocks)', { uid: uid })
+      .getMany()
+    return users.map((user) => user.uid)
   }
 }
