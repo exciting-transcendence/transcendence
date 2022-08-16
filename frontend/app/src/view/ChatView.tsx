@@ -1,11 +1,12 @@
 import { mapArgsToTypes } from '@storybook/store'
 import axios from 'axios'
 import { useState, useCallback, useEffect, useRef, useContext } from 'react'
-import { ChatList } from './ChatList'
+import { ChatRoomList } from './ChatRoomList'
 import { JoinedRoomList } from './JoinedRoomList'
 import { Grid, List, Divider, Input, Typography, Button } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
-import { JoinedRoom, Room } from 'data'
+import { JoinedRoom, Room, Message } from 'data'
+import { ChatList } from 'components/chat/ChatList'
 
 const RoomList: Room[] = [
   {
@@ -54,11 +55,17 @@ const myRoomDummy: JoinedRoom[] = [
   },
 ]
 
+type messages = {
+  [key: number]: { senderUid: number; msgContent: string }[]
+}
+
 export const ChatView = (prop: { socket: any }) => {
-  const [chatList, setChatList] = useState<Room[]>([])
+  const [chatRoomList, setChatRoomList] = useState<Room[]>([])
   const [joinedRoomList, setJoinedRoomList] = useState<JoinedRoom[]>([])
   const token = window.localStorage.getItem('access_token')
   const [modal, setModal] = useState(false)
+  const [messages, setMessages] = useState<messages>()
+  const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
   const updateRoom = () => {
     axios
       .get('/api/chat/list', {
@@ -68,7 +75,7 @@ export const ChatView = (prop: { socket: any }) => {
       })
       .then((res) => {
         console.log(res.data)
-        setChatList(res.data)
+        setChatRoomList(res.data)
       })
   }
 
@@ -85,7 +92,18 @@ export const ChatView = (prop: { socket: any }) => {
         setJoinedRoomList(res.data)
       })
   }
-
+  useEffect(() => {
+    prop.socket.on('RECEIVE', (res: Message) => {
+      console.log(res)
+    })
+    prop.socket.on('NOTICE', (res: Message) => {
+      console.log(`NOTICE EVENT: ${res.msgContent}`)
+      // if (res.senderUid === myuid)
+      //   updateMyRoom()
+    })
+    updateMyRoom()
+    updateRoom()
+  }, [])
   return (
     <>
       <Grid container justifyContent="space-between">
@@ -101,7 +119,7 @@ export const ChatView = (prop: { socket: any }) => {
           <Typography variant="h6" padding="1rem" textAlign="center">
             참여 중인 채팅 리스트
           </Typography>
-          <JoinedRoomList room={myRoomDummy} />
+          <JoinedRoomList room={joinedRoomList} />
         </Grid>
         <Divider
           orientation="vertical"
@@ -109,12 +127,20 @@ export const ChatView = (prop: { socket: any }) => {
           style={{ marginRight: '-1px' }}
         />
         <Grid item xs={9} padding="100px">
-          <div>
-            <Typography variant="h6" padding="1rem" textAlign="center">
-              참여 가능한 채팅 리스트
-            </Typography>
-            <ChatList list={chatList} socket={prop.socket} />
-          </div>
+          {showChat ? (
+            <ChatList chats={[]} />
+          ) : (
+            <div>
+              <Typography variant="h6" padding="1rem" textAlign="center">
+                참여 가능한 채팅 리스트
+              </Typography>
+              <ChatRoomList
+                list={chatRoomList}
+                socket={prop.socket}
+                setShowChat={setShowChat}
+              />
+            </div>
+          )}
         </Grid>
       </Grid>
     </>
