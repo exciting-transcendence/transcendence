@@ -6,9 +6,9 @@ import {
   FormControlLabel,
   RadioGroup,
   Radio,
+  Typography,
+  Modal,
 } from '@mui/material'
-import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
 import { Socket } from 'socket.io-client'
 import { Message } from 'data'
 
