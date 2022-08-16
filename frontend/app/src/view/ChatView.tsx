@@ -7,14 +7,6 @@ import { Grid, List, Divider, Input, Typography, Button } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
 import { JoinedRoom, Room } from 'data'
 
-export const SOCKET_EVENT = {
-  JOIN_ROOM: 'JOIN',
-  SEND_MESSAGE: 'SEND',
-  RECEIVE_MESSAGE: 'RECEIVE',
-  NOICE: 'NOTICE',
-  CREATE: 'CREATE',
-}
-
 const RoomList: Room[] = [
   {
     id: 1,
