@@ -3,14 +3,25 @@ import { Chat } from 'data'
 import { ChatListItem } from './ChatListItem'
 import { useUser } from 'hook/useUser'
 import { groupBySerial } from 'utility/groupBySerial'
+import { io, Socket } from 'socket.io-client'
+import { useState } from 'react'
 
 interface Props<T extends Chat> {
   chats: T[]
+  socket: Socket
+  id: number
 }
-export const ChatList = <T extends Chat>({ chats }: Props<T>) => {
+
+export const ChatList = <T extends Chat>({ chats, socket, id }: Props<T>) => {
   const groupedChats = groupBySerial(chats, (chat) => chat.senderUid)
+  const sendmsg = () => {
+    socket.emit('SEND', {
+      roomId: { id },
+      msgContent: 'what do you say?',
+      createdAt: new Date(),
+    })
+  }
   return (
-<<<<<<< HEAD
     <>
       <List>
         {groupedChats.map((chats, i) => (
@@ -21,23 +32,7 @@ export const ChatList = <T extends Chat>({ chats }: Props<T>) => {
           />
         ))}
       </List>
-      <button type="submit">전송</button>
+      <button onClick={sendmsg}>전송</button>
     </>
-=======
-    <List>
-      {groupedChats.map((chats) => {
-        const first = chats[0]
-        const { createdAt, senderUid } = first
-
-        return (
-          <ChatListItem
-            key={createdAt.toISOString() + first.msgContent}
-            // FIXME: useUser 언젠가는 쓰기 (지금은 백엔드 에러로 storybook에서 실행 안됨)
-            messages={chats.map((chat) => chat.msgContent)}
-          />
-        )
-      })}
-    </List>
->>>>>>> 4e5c0cb767f6c795304d67645f7b73f16975ab0a
   )
 }

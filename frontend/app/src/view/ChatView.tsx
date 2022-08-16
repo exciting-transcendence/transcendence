@@ -56,7 +56,12 @@ const myRoomDummy: JoinedRoom[] = [
 ]
 
 type messages = {
-  [key: number]: { senderUid: number; msgContent: string }[]
+  [roomId: number]: {
+    senderUid: number
+    msgContent: string
+    roomId: number
+    createdAt: Date
+  }[]
 }
 
 export const ChatView = (prop: { socket: any }) => {
@@ -64,7 +69,7 @@ export const ChatView = (prop: { socket: any }) => {
   const [joinedRoomList, setJoinedRoomList] = useState<JoinedRoom[]>([])
   const token = window.localStorage.getItem('access_token')
   const [modal, setModal] = useState(false)
-  const [messages, setMessages] = useState<messages>()
+  const [messages, setMessages] = useState<messages>({})
   const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
   const updateRoom = () => {
     axios
@@ -95,6 +100,16 @@ export const ChatView = (prop: { socket: any }) => {
   useEffect(() => {
     prop.socket.on('RECEIVE', (res: Message) => {
       console.log(res)
+      messages[res.roomId] = [
+        ...messages[res.roomId],
+        {
+          senderUid: res.senderUid,
+          msgContent: res.msgContent,
+          roomId: res.roomId,
+          createdAt: new Date(),
+        },
+      ]
+      setMessages(messages)
     })
     prop.socket.on('NOTICE', (res: Message) => {
       console.log(`NOTICE EVENT: ${res.msgContent}`)
@@ -127,8 +142,12 @@ export const ChatView = (prop: { socket: any }) => {
           style={{ marginRight: '-1px' }}
         />
         <Grid item xs={9} padding="100px">
-          {showChat ? (
-            <ChatList chats={[]} />
+          {showChat.bool ? (
+            <ChatList
+              chats={messages[showChat.roomId]}
+              socket={prop.socket}
+              id={showChat.roomId}
+            />
           ) : (
             <div>
               <Typography variant="h6" padding="1rem" textAlign="center">
