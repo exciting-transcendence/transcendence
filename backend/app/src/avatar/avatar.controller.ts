@@ -32,10 +32,7 @@ export class AvatarController {
   }
 
   @Get(':filename')
-<<<<<<< HEAD
-=======
   @UseGuards(JwtFtGuard)
->>>>>>> 4e5c0cb767f6c795304d67645f7b73f16975ab0a
   async get(@Res() res: Response, @Param() param: FileNameDto) {
     res.download(`/srv/uploads/avatar/${param.filename}`, param.filename)
   }
