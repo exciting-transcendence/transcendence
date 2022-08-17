@@ -19,14 +19,14 @@ print_usage_and_exit() {
 }
 
 setup_dependencies() {
-  test -d $BACKEND_ROOT/node_modules || (cd $BACKEND_ROOT && npm install)
-  test -d $FRONT_ROOT/node_modules || (cd $FRONT_ROOT && npm install)
-  npm install
+  test -d $BACKEND_ROOT/node_modules || (cd $BACKEND_ROOT && npm ci)
+  test -d $FRONT_ROOT/node_modules || (cd $FRONT_ROOT && npm ci)
+  npm ci
 }
 
 run_compose() {
-	local file=$1
-	exec docker-compose -f $file $ARGS
+  local file=$1
+  exec docker-compose -f $file $ARGS
 }
 
 case $TYPE in
@@ -34,9 +34,9 @@ case $TYPE in
     setup_dependencies
     run_compose $DOCKER_COMPOSE_DEV
     ;;
-	bind)
-		run_compose $DOCKER_COMPOSE_BIND
-		;;
+  bind)
+    run_compose $DOCKER_COMPOSE_BIND
+    ;;
   prod)
     run_compose $DOCKER_COMPOSE_PROD
     ;;
@@ -46,4 +46,3 @@ case $TYPE in
 esac
 
 shift
-
