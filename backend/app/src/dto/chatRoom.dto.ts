@@ -3,19 +3,26 @@ import { RoomType } from 'chat/roomtype.enum'
 import { IsEnum, IsNumber, IsString, ValidateIf } from 'class-validator'
 
 export class ChatRoomDto {
-  @ApiProperty({ description: 'CREATE할 때는 자동 생성', required: false })
+  @ApiProperty({
+    description: 'CREATE할 때는 자동 생성, JOIN할 때는 필수',
+    required: false,
+  })
   @IsNumber()
-  roomId: number
+  roomId?: number
 
-  @ApiProperty({ examples: ['test_title'] })
+  @ApiProperty({
+    description: 'CREATE할 때는 필수, JOIN할 때는 필요없음',
+    examples: ['test_title'],
+    required: false,
+  })
   @IsString()
-  roomName: string
+  roomName?: string
 
   @ApiProperty({ enum: RoomType })
   @IsEnum(RoomType)
   roomType: RoomType
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'bcrypted string', required: false })
   @IsString()
   @ValidateIf((o) => o.roomType === RoomType.PROTECTED)
   roomPassword: string

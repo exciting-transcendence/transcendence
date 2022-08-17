@@ -104,20 +104,24 @@ export class ChatGateway {
     channel: chatEvent.JOIN,
     summary: '채팅방에 참가',
     description: 'user가 채팅방에 새로 입장. 알림메시지를 모든 구성원에게 전송',
-    message: { name: 'roomId', payload: { type: Number } },
+    message: { name: 'ChatRoomDto', payload: { type: ChatRoomDto } },
   })
   async onJoinRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() roomId: number,
+    @MessageBody() room: ChatRoomDto,
   ) {
     try {
-      await this.chatService.addUserToRoom(client.data.uid, roomId)
+      await this.chatService.addUserToRoom(
+        client.data.uid,
+        room.roomId,
+        room.roomPassword,
+      )
     } catch (error) {
       return error
     }
-    client.join(roomId.toString())
-    console.log(`chat: ${client.data.uid} has entered to ${roomId}`)
-    this.emitNotice(client, roomId, 'join')
+    client.join(room.roomId.toString())
+    console.log(`chat: ${client.data.uid} has entered to ${room.roomId}`)
+    this.emitNotice(client, room.roomId, 'join')
   }
 
   @SubscribeMessage(chatEvent.LEAVE)
