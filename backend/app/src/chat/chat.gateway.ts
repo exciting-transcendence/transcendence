@@ -15,8 +15,11 @@ import { ChatService } from './chat.service'
 import * as jwt from 'jsonwebtoken'
 import { jwtConstants } from 'configs/jwt-token.config'
 import { ChatRoom } from './chatroom.entity'
+import { UsePipes } from '@nestjs/common'
+import { WSValidationPipe } from 'utils/WSValidationPipe'
 
 @AsyncApiService()
+@UsePipes(new WSValidationPipe())
 @WebSocketGateway({ namespace: 'api/chat', cors: true })
 export class ChatGateway {
   constructor(private readonly chatService: ChatService) {}
