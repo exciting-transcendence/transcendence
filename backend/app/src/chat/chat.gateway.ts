@@ -10,6 +10,7 @@ import { Server, Socket } from 'socket.io'
 import { chatEvent } from 'configs/chat-event.constants'
 import { ChatMessageDto } from 'dto/chatMessage.dto'
 import { UserInRoomDto } from 'dto/userInRoom.dto'
+import { ChatRoomDto } from 'dto/chatRoom.dto'
 import { ChatService } from './chat.service'
 import * as jwt from 'jsonwebtoken'
 import { jwtConstants } from 'configs/jwt-token.config'
@@ -159,20 +160,27 @@ export class ChatGateway {
   @AsyncApiPub({
     channel: chatEvent.CREATE,
     summary: '새로운 채팅방 생성',
-    message: { name: 'room_title', payload: { type: String } },
+    message: { name: 'ChatRoomDto', payload: { type: ChatRoomDto } },
   })
   @SubscribeMessage(chatEvent.CREATE)
   async onCreateRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() title: string,
+    @MessageBody() data: ChatRoomDto,
   ) {
     let newRoom: ChatRoom
     try {
-      newRoom = await this.chatService.createChatroom(client.data.uid, title)
+      newRoom = await this.chatService.createChatroom(
+        client.data.uid,
+        data.roomName,
+        data.roomType,
+        data.roomPassword,
+      )
     } catch (error) {
       return error
     }
-    this.onJoinRoom(client, newRoom.id)
+    client.join(newRoom.id.toString())
+    console.log(`chat: ${client.data.uid} has entered to ${newRoom.id}`)
+    this.emitNotice(client, newRoom.id, 'join')
   }
 
   @AsyncApiPub({
