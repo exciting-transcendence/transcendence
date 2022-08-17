@@ -7,9 +7,9 @@
 - 환경 변수는 `transcendence/dotenv` 서브모듈에 있습니다
 ```bash
 git config -g submodule.recurse true
-git pull
+git submodule update --init --recursive
 ```
-을 하여 서브모듈을 업데이트하세요
+을 하여 서브모듈을 초기화하세요
 
 개발모드:
 `./dc.sh dev up --build`
