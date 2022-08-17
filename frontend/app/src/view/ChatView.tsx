@@ -7,6 +7,9 @@ import { Grid, List, Divider, Input, Typography, Button } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
 import { JoinedRoom, Room, Message } from 'data'
 import { ChatList } from 'components/chat/ChatList'
+import { User } from 'data'
+import { convertToObject } from 'typescript'
+import { array } from 'prop-types'
 
 const RoomList: Room[] = [
   {
@@ -71,6 +74,7 @@ export const ChatView = (prop: { socket: any }) => {
   const [modal, setModal] = useState(false)
   const [messages, setMessages] = useState<messages>({})
   const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
+  const [myUid, setMyUid] = useState<number>()
   const updateRoom = () => {
     axios
       .get('/api/chat/list', {
@@ -79,13 +83,14 @@ export const ChatView = (prop: { socket: any }) => {
         },
       })
       .then((res) => {
-        console.log(res.data)
         setChatRoomList(res.data)
+        setShowChat((showChat) => {
+          return { ...showChat, bool: false }
+        })
       })
   }
 
   const updateMyRoom = () => {
-    //참여 가능한 룸 리스트
     axios
       .get('/api/chat/me', {
         headers: {
@@ -93,32 +98,43 @@ export const ChatView = (prop: { socket: any }) => {
         },
       })
       .then((res) => {
-        console.log(res.data)
         setJoinedRoomList(res.data)
       })
   }
   useEffect(() => {
-    prop.socket.on('RECEIVE', (res: Message) => {
-      console.log(res)
-      messages[res.roomId] = [
-        ...messages[res.roomId],
-        {
-          senderUid: res.senderUid,
-          msgContent: res.msgContent,
-          roomId: res.roomId,
-          createdAt: new Date(),
+    axios
+      .get('/api/user/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      ]
-      setMessages(messages)
+      })
+      .then((res) => {
+        setMyUid(res.data.uid)
+      })
+    prop.socket.on('RECEIVE', (res: Message) => {
+      const id = res.roomId
+      const data = {
+        senderUid: res.senderUid,
+        msgContent: res.msgContent,
+        roomId: id,
+        createdAt: new Date(),
+      }
+      setMessages((messages) => {
+        return {
+          ...messages,
+          [id]: messages[id] ? [...messages[id], data] : [data],
+        }
+      })
     })
     prop.socket.on('NOTICE', (res: Message) => {
-      console.log(`NOTICE EVENT: ${res.msgContent}`)
-      // if (res.senderUid === myuid)
-      //   updateMyRoom()
+      if (res.senderUid === myUid) {
+        updateMyRoom()
+      }
     })
     updateMyRoom()
     updateRoom()
   }, [])
+  console.log(messages)
   return (
     <>
       <Grid container justifyContent="space-between">
@@ -134,7 +150,7 @@ export const ChatView = (prop: { socket: any }) => {
           <Typography variant="h6" padding="1rem" textAlign="center">
             참여 중인 채팅 리스트
           </Typography>
-          <JoinedRoomList room={joinedRoomList} />
+          <JoinedRoomList setShowChat={setShowChat} room={joinedRoomList} />
         </Grid>
         <Divider
           orientation="vertical"
@@ -144,9 +160,9 @@ export const ChatView = (prop: { socket: any }) => {
         <Grid item xs={9} padding="100px">
           {showChat.bool ? (
             <ChatList
-              chats={messages[showChat.roomId]}
+              chats={messages[showChat.roomId] ? messages[showChat.roomId] : []}
               socket={prop.socket}
-              id={showChat.roomId}
+              roomId={showChat.roomId}
             />
           ) : (
             <div>
