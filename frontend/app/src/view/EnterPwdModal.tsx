@@ -46,12 +46,13 @@ export const PwdModal = (prop: {
         if (res.status === 400) {
           setErrMsg('비밀번호가 다릅니다')
           return
+        } else if (res.status === 200) {
+          setErrMsg('OK')
+          handleClose()
+          prop.setShowChat({ bool: true, roomId: prop.roomId })
         }
       },
     )
-    setErrMsg('OK')
-    handleClose()
-    prop.setShowChat({ bool: true, roomId: prop.roomId })
   }
 
   return (

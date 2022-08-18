@@ -52,12 +52,13 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
 
   const updateRoom = () => {
     axios
-      .get('/api/chat/list', {
+      .get('/api/chat/joinlist', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
+        console.log(res.data)
         setChatRoomList(res.data)
         setShowChat((showChat) => {
           return { ...showChat, bool: false }
@@ -113,7 +114,6 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
     updateMyRoom()
     updateRoom()
   }, [])
-  console.log(messages)
   return (
     <>
       <Grid container justifyContent="space-between">
