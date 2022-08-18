@@ -114,6 +114,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
     updateMyRoom()
     updateRoom()
   }, [])
+
   const leaveRoom = (roomId: number) => {
     socket.emit('LEAVE', roomId)
     const newJoinedRoom = joinedRoomList.filter((el) => el.id !== roomId)
@@ -122,6 +123,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
       return { ...showChat, bool: false }
     })
   }
+
   return (
     <>
       <Grid container justifyContent="space-between">
