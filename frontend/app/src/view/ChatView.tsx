@@ -97,16 +97,16 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
       })
     socket.on('RECEIVE', (res: Message) => {
       const id = res.roomId
-      const data = {
-        senderUid: res.senderUid,
-        msgContent: res.msgContent,
-        roomId: id,
-        createdAt: new Date(),
+      const msg = {
+        ...res,
+        createdAt: new Date(res.createdAt),
       }
+      console.log('incoming message')
+      console.debug(msg)
       setMessages((messages) => {
         return {
           ...messages,
-          [id]: messages[id] ? [...messages[id], data] : [data],
+          [id]: messages[id] ? [...messages[id], msg] : [msg],
         }
       })
     })
