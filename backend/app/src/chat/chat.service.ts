@@ -37,6 +37,8 @@ export class ChatService {
     roomType: RoomType,
     password?: string,
   ): Promise<ChatRoom> {
+    if (roomTitle.search(/^\w{2,30}$/) === -1)
+      throw new BadRequestException('RoomTitle is invalid')
     const room = new ChatRoom()
     let chatuser = new ChatUser()
     const user = await this.userService.findSimpleOneByUid(creatorId)
