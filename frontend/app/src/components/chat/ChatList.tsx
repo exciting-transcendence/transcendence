@@ -1,23 +1,22 @@
 import { List } from '@mui/material'
-import { Chat, User } from 'data'
+import { Message, User } from 'data'
 import { ChatListItem } from './ChatListItem'
-import { groupBySerial } from 'utility/groupBySerial'
+import { groupBySerial } from 'utility'
 import { useUserQuery } from 'hook'
 
-interface Props<T extends Chat> {
-  chats: T[]
+interface Props {
+  chats: Message[]
 }
-
-export const ChatList = <T extends Chat>({ chats }: Props<T>) => {
+export const ChatList = ({ chats }: Props) => {
   const groupedChats = groupBySerial(chats, (chat) => chat.senderUid)
 
   return (
     <>
       <List>
         {groupedChats.map((chats) => {
-          const first: Chat = chats[0]
+          const first = chats[0]
           const { createdAt, senderUid: uid } = first
-          const { data, isSuccess } = useUserQuery<User>(uid)
+          const { data, isSuccess } = useUserQuery<User>(uid) // TODO: 외부에서 전달
           return (
             <ChatListItem
               user={isSuccess ? data : undefined}

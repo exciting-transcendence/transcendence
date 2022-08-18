@@ -1,13 +1,8 @@
 import React from 'react'
-import fuzzysort from 'fuzzysort'
 
 import { User } from 'data'
 import { useUserQuery } from 'hook'
 import { UsersPanel } from './UsersPanel'
-
-export const findUser = (users: User[], text: string) => {
-  return fuzzysort.go(text, users, { key: 'nickname' }).map((r) => r.obj)
-}
 
 export const FriendView = () => {
   const { data: me, isSuccess: ok1 } = useUserQuery<User>('me')

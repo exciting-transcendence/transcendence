@@ -3,7 +3,7 @@ import { Grid, List, Divider, Input, Typography } from '@mui/material'
 import { ProfileListItem, VerticalDivider } from 'components'
 import { User } from 'data'
 import { ProfileDisplay } from 'components'
-import { findUser } from './FriendView'
+import { findUser } from 'utility'
 
 export interface Props {
   /** refUser를 제외한 모든 사용자 */
