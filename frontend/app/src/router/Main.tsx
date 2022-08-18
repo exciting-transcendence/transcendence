@@ -10,6 +10,7 @@ import { io, Socket } from 'socket.io-client'
 import { usePongSocket } from 'hook/usePongSocket'
 
 import { ChatSocket } from 'data'
+import { FindFriendView } from 'view'
 
 export const PongSocketContext = createContext<Socket | undefined>(undefined)
 
@@ -43,8 +44,9 @@ export const MainRouter = () => {
           <Route path="/game" element={<GameView {...pongData} />} />
           <Route path="/friend" element={<FriendView />} />
           <Route path="/profile" element={<Profile user={mockUser} />} />
+          <Route path="/find" element={<FindFriendView />} />
           <Route
-            path="/Chat"
+            path="/chat"
             element={<ChatView socket={socket as ChatSocket} />}
           />
         </Routes>
