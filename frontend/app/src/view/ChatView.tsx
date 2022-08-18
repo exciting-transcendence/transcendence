@@ -75,6 +75,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
   const [messages, setMessages] = useState<messages>({})
   const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
   const [myUid, setMyUid] = useState<number>()
+
   const updateRoom = () => {
     axios
       .get('/api/chat/list', {
@@ -89,7 +90,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
         })
       })
   }
-
+  // res: roomId, roomType, Roomname
   const updateMyRoom = () => {
     axios
       .get('/api/chat/me', {
@@ -101,6 +102,14 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
         setJoinedRoomList(res.data)
       })
   }
+  useEffect(() => {
+    socket.on('NOTICE', (res: Message) => {
+      console.log(res, `myUID:${myUid}`)
+      if (res.senderUid === myUid) {
+        updateMyRoom()
+      }
+    })
+  }, [myUid])
   useEffect(() => {
     axios
       .get('/api/user/me', {
@@ -126,11 +135,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
         }
       })
     })
-    socket.on('NOTICE', (res: Message) => {
-      if (res.senderUid === myUid) {
-        updateMyRoom()
-      }
-    })
+
     updateMyRoom()
     updateRoom()
   }, [])

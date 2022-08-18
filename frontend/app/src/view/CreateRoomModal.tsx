@@ -29,7 +29,7 @@ export const RoomOptionSecond = (prop: {
   roomType: string
 }) => {
   const [pwd, setPwd] = useState('false')
-  if (prop.roomType === 'Public') {
+  if (prop.roomType === 'PUBLIC') {
     return (
       <RadioGroup
         row
@@ -74,15 +74,20 @@ export const BasicModal = (prop: {
   setModal: (value: boolean) => void
   socket: any
 }) => {
-  const [roomType, setRoomType] = useState('Public')
+  const [roomType, setRoomType] = useState<string>('PUBLIC')
   const [password, setPassword] = useState('')
   const input = useRef<HTMLInputElement>()
   const handleClose = () => prop.setModal(false)
 
   const createRoom = () => {
     const roomName = input.current?.value
-    console.log(roomName)
-    prop.socket.emit('CREATE', { title: roomName, type: 'PUBLIC' })
+    if (password)
+      prop.socket.emit('CREATE', {
+        title: roomName,
+        type: 'PROTECTED',
+        password: password,
+      })
+    else prop.socket.emit('CREATE', { title: roomName, type: roomType })
     handleClose()
   }
   return (
@@ -108,12 +113,12 @@ export const BasicModal = (prop: {
             }}
           >
             <FormControlLabel
-              value="Public"
+              value="PUBLIC"
               control={<Radio />}
               label="공개방"
             />
             <FormControlLabel
-              value="Private"
+              value="PRIVATE"
               control={<Radio />}
               label="비공개방"
             />
