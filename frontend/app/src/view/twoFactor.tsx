@@ -104,8 +104,6 @@ const QrPage = (props: { setIsLoggedIn: (value: boolean) => void }) => {
       if (res.ok) {
         const { qr } = await res.json()
         setOtpRegisterLink(qr)
-      } else {
-        console.log(res.status)
       }
       setIsQrRegistered(true)
     })
