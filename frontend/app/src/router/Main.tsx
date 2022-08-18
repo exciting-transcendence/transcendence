@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import Nav from './Nav'
-import { GameView, FriendView, ChatView } from 'view'
+import { GameView, FriendView, ChatView, ProfileView } from 'view'
 import { Profile } from 'components/profile/Profile'
 
 import { mockUser } from 'mock/mockUser'
@@ -43,7 +43,7 @@ export const MainRouter = () => {
           <Route path="/" element={<></>} />
           <Route path="/game" element={<GameView {...pongData} />} />
           <Route path="/friend" element={<FriendView />} />
-          <Route path="/profile" element={<Profile user={mockUser} />} />
+          <Route path="/profile" element={<ProfileView />} />
           <Route path="/find" element={<FindFriendView />} />
           <Route
             path="/chat"
