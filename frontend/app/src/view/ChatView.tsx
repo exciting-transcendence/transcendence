@@ -2,12 +2,10 @@ import axios from 'axios'
 import { useState, useEffect } from 'react'
 import { ChatRoomList } from './ChatRoomList'
 import { JoinedRoomList } from './JoinedRoomList'
-import { Grid, Divider, Typography, Button, Tooltip } from '@mui/material'
+import { Grid, Divider, Typography, Button } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
-import { JoinedRoom, Room, Message, ChatSocket, User } from 'data'
-import { ChatInput, ChatList, MemberList } from 'components'
-import { useUserRequest } from 'hook'
-import { Logout } from '@mui/icons-material'
+import { JoinedRoom, Room, Message, ChatSocket } from 'data'
+import { ChatPanel } from './ChatPanel'
 
 const _RoomList: Room[] = [
   {
@@ -155,42 +153,5 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
         </Grid>
       </Grid>
     </>
-  )
-}
-
-interface PanelProps {
-  chats: Message[]
-  socket: ChatSocket
-  roomId: number
-}
-const ChatPanel = ({ chats, socket, roomId }: PanelProps) => {
-  const users = useUserRequest<User[]>('') // TODO: 채팅방 참여중인 목록 가져오기
-  const refUser = useUserRequest<User>('me')
-
-  const onSend = (msg: string) => {
-    socket.emit('SEND', {
-      roomId: roomId,
-      msgContent: msg,
-      createdAt: new Date(),
-    } as Message)
-  }
-
-  return (
-    <Grid container justifyContent="space-between">
-      <Grid item xs={8}>
-        <ChatList chats={chats} />
-      </Grid>
-      <Grid item xs={4}>
-        {users && refUser ? (
-          <MemberList users={users} refUser={refUser} />
-        ) : null}
-      </Grid>
-      <ChatInput onSend={onSend} />
-      <Button>
-        <Tooltip title="logout">
-          <Logout />
-        </Tooltip>
-      </Button>
-    </Grid>
   )
 }
