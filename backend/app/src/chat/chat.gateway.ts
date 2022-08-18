@@ -99,6 +99,7 @@ export class ChatGateway {
         `chat: ${client.data.uid} sent message but is muted in ${data.roomId}`,
       )
     }
+    return { status: 200 }
   }
 
   @AsyncApiSub({
@@ -145,6 +146,7 @@ export class ChatGateway {
     client.join(room.roomId.toString())
     console.log(`chat: ${client.data.uid} has entered to ${room.roomId}`)
     this.emitNotice(client, room.roomId, 'join')
+    return { status: 200 }
   }
 
   @AsyncApiPub({
@@ -167,6 +169,7 @@ export class ChatGateway {
     client.leave(roomId.toString())
     console.log(`chat: ${client.data.uid} leaved ${roomId}`)
     this.emitNotice(client, roomId, 'leave')
+    return { status: 200 }
   }
 
   @AsyncApiSub({
@@ -212,6 +215,7 @@ export class ChatGateway {
     client.join(newRoom.id.toString())
     console.log(`chat: ${client.data.uid} has entered to ${newRoom.id}`)
     this.emitNotice(client, newRoom.id, 'join')
+    return { status: 200 }
   }
 
   @AsyncApiPub({
@@ -231,6 +235,7 @@ export class ChatGateway {
     } catch (error) {
       return error
     }
+    return { status: 200 }
   }
 
   @AsyncApiPub({
@@ -250,5 +255,6 @@ export class ChatGateway {
     } catch (error) {
       return error
     }
+    return { status: 200 }
   }
 }
