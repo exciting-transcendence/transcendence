@@ -15,22 +15,15 @@ export class TwoFactorService {
   ) {}
 
   async enable(uid: number): Promise<string> {
-    const user = await this.userRepository.findOneBy({ uid })
-
-    let twoFactor = await this.twoFactorRepository.findOneBy({
-      user: { uid },
-    })
-
-    if (twoFactor !== null) {
-      return authenticator.keyuri(
-        user.nickname,
-        'transcendence',
-        twoFactor.secret,
-      )
+    if (
+      (await this.twoFactorRepository.findOneBy({ user: { uid } })) !== null
+    ) {
+      throw new ConflictException('Two factor is already enabled')
     }
 
+    const user = await this.userRepository.findOneBy({ uid })
     user.twoFactor = true
-    twoFactor = new TwoFactor()
+    const twoFactor = new TwoFactor()
     twoFactor.user = user
     twoFactor.secret = authenticator.generateSecret()
 
@@ -45,9 +38,10 @@ export class TwoFactorService {
   }
 
   async disable(uid: number): Promise<void> {
-    if (this.twoFactorRepository.findBy({ user: { uid } }) === null) {
-      return
+    if ((await this.twoFactorRepository.findBy({ user: { uid } })) === null) {
+      throw new ConflictException('Two factor is already disabled')
     }
+
     const user = await this.userRepository.findOneBy({ uid })
     user.twoFactor = false
 
