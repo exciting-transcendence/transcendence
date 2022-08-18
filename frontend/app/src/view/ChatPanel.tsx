@@ -30,6 +30,7 @@ export const ChatPanel = ({ chats, socket, roomId }: PanelProps) => {
       msgContent: msg,
       createdAt: new Date(),
     } as Message)
+    console.log(`sent msg: ${msg}`)
   }
 
   return (
