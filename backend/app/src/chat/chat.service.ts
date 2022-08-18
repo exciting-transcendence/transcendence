@@ -186,7 +186,7 @@ export class ChatService {
 
   async addBlockUser(uid: number, roomId: number) {
     const room = await this.chatRoomRepository.findOne({
-      select: ['chatUser'],
+      select: ['bannedIds', 'chatUser'],
       where: { id: roomId, chatUser: { user: { uid } } },
       relations: ['chatUser', 'chatUser.user'],
     })
@@ -214,5 +214,30 @@ export class ChatService {
 
   async findBlockedMeUsers(uid: number): Promise<number[]> {
     return await this.userService.findBlockedByUid(uid)
+  }
+
+  async changeRoomPass(roomId: number, password: string, newPassword: string) {
+    const room = await this.chatRoomRepository.findOne({
+      select: ['password'],
+      where: { id: roomId },
+    })
+    if (!room) throw new NotFoundException('Room not found')
+    if (!(await bcrypt.compare(password, room.password)))
+      throw new BadRequestException('Password is wrong')
+    room.password = await bcrypt.hash(newPassword, 10)
+    return this.chatRoomRepository.save(room)
+  }
+
+  async deleteRoomPass(roomId: number, password: string) {
+    const room = await this.chatRoomRepository.findOne({
+      select: ['password', 'roomtype'],
+      where: { id: roomId },
+    })
+    if (!room) throw new NotFoundException('Room not found')
+    if (!(await bcrypt.compare(password, room.password)))
+      throw new BadRequestException('Password is wrong')
+    room.password = null
+    room.roomtype = RoomType.PUBLIC
+    return this.chatRoomRepository.save(room)
   }
 }
