@@ -1,13 +1,11 @@
 import { QRCodeSVG } from 'qrcode.react'
-import React, { useEffect, useRef, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { ConstructionOutlined } from '@mui/icons-material'
 
 const theme = createTheme({
   palette: {
@@ -89,8 +87,12 @@ export const InputCode = (props: {
 
 const QrPage = (props: { setIsLoggedIn: (value: boolean) => void }) => {
   const [otpRegisterLink, setOtpRegisterLink] = useState('')
+  const [isQrRegistered, setIsQrRegistered] = useState(false)
 
   useEffect(() => {
+    if (isQrRegistered) {
+      return
+    }
     const jwt = window.localStorage.getItem('temp_token')
     fetch('api/auth/2fa', {
       method: 'PUT',
@@ -98,17 +100,14 @@ const QrPage = (props: { setIsLoggedIn: (value: boolean) => void }) => {
         Authorization: `Bearer ${jwt}`,
         'Content-Type': 'application/json',
       },
+    }).then(async (res) => {
+      if (res.ok) {
+        const { qr } = await res.json()
+        setOtpRegisterLink(qr)
+      }
+      setIsQrRegistered(true)
     })
-      .then(async (res) => {
-        if (res.ok) {
-          const { qr } = await res.json()
-          setOtpRegisterLink(qr)
-        } else {
-          return Promise.reject()
-        }
-      })
-      .catch((_) => undefined)
-  }, [])
+  }, [isQrRegistered])
 
   return (
     <div>

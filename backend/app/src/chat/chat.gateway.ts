@@ -19,6 +19,7 @@ import { jwtConstants } from 'configs/jwt-token.config'
 import { ChatRoom } from './chatroom.entity'
 import { UsePipes } from '@nestjs/common'
 import { WSValidationPipe } from 'utils/WSValidationPipe'
+import { Status } from 'user/status.enum'
 
 @AsyncApiService()
 @UsePipes(new WSValidationPipe())
@@ -49,6 +50,11 @@ export class ChatGateway {
     }
 
     try {
+      await this.chatService.changeStatus(client.data.uid, Status.ONLINE)
+    } catch (error) {
+      return error
+    }
+    try {
       const rooms = await this.chatService.findRoomsByUserId(client.data.uid)
       rooms.forEach((el) => {
         client.join(el.id.toString())
@@ -57,12 +63,15 @@ export class ChatGateway {
     } catch (error) {
       return error
     }
-    // TODO: change user status to online
     console.log(`chat: uid ${client.data.uid} connected.`)
   }
 
-  handleDisconnect(client: Socket) {
-    // TODO: change user status to offline
+  async handleDisconnect(client: Socket) {
+    try {
+      await this.chatService.changeStatus(client.data.uid, Status.OFFLINE)
+    } catch (error) {
+      return error
+    }
     console.log(`chat: uid ${client.data.uid} disconnected`)
   }
 
@@ -90,6 +99,7 @@ export class ChatGateway {
         `chat: ${client.data.uid} sent message but is muted in ${data.roomId}`,
       )
     }
+    return { status: 200 }
   }
 
   @AsyncApiSub({
@@ -127,6 +137,7 @@ export class ChatGateway {
     client.join(room.roomId.toString())
     console.log(`chat: ${client.data.uid} has entered to ${room.roomId}`)
     this.emitNotice(client, room.roomId, 'join')
+    return { status: 200 }
   }
 
   @AsyncApiPub({
@@ -149,6 +160,7 @@ export class ChatGateway {
     client.leave(roomId.toString())
     console.log(`chat: ${client.data.uid} leaved ${roomId}`)
     this.emitNotice(client, roomId, 'leave')
+    return { status: 200 }
   }
 
   @AsyncApiSub({
@@ -194,6 +206,7 @@ export class ChatGateway {
     client.join(newRoom.id.toString())
     console.log(`chat: ${client.data.uid} has entered to ${newRoom.id}`)
     this.emitNotice(client, newRoom.id, 'join')
+    return { status: 200 }
   }
 
   @AsyncApiPub({
@@ -213,6 +226,7 @@ export class ChatGateway {
     } catch (error) {
       return error
     }
+    return { status: 200 }
   }
 
   @AsyncApiPub({
@@ -232,5 +246,6 @@ export class ChatGateway {
     } catch (error) {
       return error
     }
+    return { status: 200 }
   }
 }

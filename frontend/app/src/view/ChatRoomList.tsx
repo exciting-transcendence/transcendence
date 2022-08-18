@@ -31,27 +31,9 @@ export const ChatRoomList = (prop: {
   return (
     <Box sx={{ width: '100%' }}>
       <Stack spacing={2}>
-        {prop.list.map((chatRoom: Room) => {
-          if (chatRoom.roomtype === 'PROTECTED')
-            return (
-              <>
-                <PwdModal
-                  setModal={setModal}
-                  modal={modal}
-                  socket={prop.socket}
-                  setShowChat={prop.setShowChat}
-                  roomId={chatRoom.id}
-                />
-                <Item onClick={() => setModal(true)}>
-                  비밀방입니다 임시 {chatRoom.name}
-                </Item>
-              </>
-            )
-          else
-            return (
-              <Item onClick={() => joinRoom(chatRoom.id)}>{chatRoom.name}</Item>
-            )
-        })}
+        {prop.list.map((chatRoom: Room) => (
+          <Item onClick={() => joinRoom(chatRoom.id)}>{chatRoom.name}</Item>
+        ))}
       </Stack>
     </Box>
   )
