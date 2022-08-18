@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { MainRouter, LoginRouter } from 'router'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { queryClient } from 'hook'
 
 export const Context = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
