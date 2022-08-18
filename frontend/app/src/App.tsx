@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { MainRouter, LoginRouter } from 'router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export const Context = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -24,6 +25,7 @@ export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Context />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }
