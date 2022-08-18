@@ -1,9 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import Nav from './Nav'
 import { GameView, FriendView, ChatView, ProfileView } from 'view'
-import { Profile } from 'components/profile/Profile'
-
-import { mockUser } from 'mock/mockUser'
 import { useEffect, createContext, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 

@@ -13,7 +13,7 @@ import {
 
 import { PongSocketContext } from 'router/Main'
 import { useNavigate } from 'react-router-dom'
-import { useAuthHeader } from 'hook/useAuthHeader'
+import { getAuthHeader } from 'hook/getAuthHeader'
 import axios from 'axios'
 
 type userStatus = 'DEFAULT' | 'BLOCKED' | 'FRIEND'
@@ -38,7 +38,7 @@ const Actions = ({
 }) => {
   const pongSocket = useContext(PongSocketContext)
   const navigate = useNavigate()
-  const { headers } = useAuthHeader()
+  const { headers } = getAuthHeader()
 
   if (status === 'BLOCKED') {
     return (
