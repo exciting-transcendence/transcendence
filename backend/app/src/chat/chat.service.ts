@@ -184,7 +184,7 @@ export class ChatService {
     return this.chatUserRepository.save(room.chatUser[0])
   }
 
-  async addBlockUser(uid: number, roomId: number) {
+  async addBannedUser(uid: number, roomId: number) {
     const room = await this.chatRoomRepository.findOne({
       select: ['bannedIds', 'chatUser'],
       where: { id: roomId, chatUser: { user: { uid } } },
