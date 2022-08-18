@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, ConflictException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { User } from 'user/user.entity'
@@ -16,9 +16,21 @@ export class TwoFactorService {
 
   async enable(uid: number): Promise<string> {
     const user = await this.userRepository.findOneBy({ uid })
-    user.twoFactor = true
 
-    const twoFactor = new TwoFactor()
+    let twoFactor = await this.twoFactorRepository.findOneBy({
+      user: { uid },
+    })
+
+    if (twoFactor !== null) {
+      return authenticator.keyuri(
+        user.nickname,
+        'transcendence',
+        twoFactor.secret,
+      )
+    }
+
+    user.twoFactor = true
+    twoFactor = new TwoFactor()
     twoFactor.user = user
     twoFactor.secret = authenticator.generateSecret()
 
@@ -33,8 +45,12 @@ export class TwoFactorService {
   }
 
   async disable(uid: number): Promise<void> {
+    if (this.twoFactorRepository.findBy({ user: { uid } }) === null) {
+      return
+    }
     const user = await this.userRepository.findOneBy({ uid })
     user.twoFactor = false
+
     await this.twoFactorRepository.delete({ user: { uid } })
     await this.userRepository.save(user)
   }
