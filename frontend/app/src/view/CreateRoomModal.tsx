@@ -78,9 +78,14 @@ export const BasicModal = (prop: {
   const [password, setPassword] = useState('')
   const input = useRef<HTMLInputElement>()
   const handleClose = () => prop.setModal(false)
+  const [errMsg, setErrMsg] = useState('')
 
   const createRoom = () => {
     const roomName = input.current?.value
+    if (roomName && roomName.length >= 30) {
+      setErrMsg('방 제목은 1자 이상 30자 미만입니다')
+      return
+    }
     if (password)
       prop.socket.emit('CREATE', {
         title: roomName,
@@ -125,7 +130,7 @@ export const BasicModal = (prop: {
           </RadioGroup>
           <RoomOptionSecond setPassword={setPassword} roomType={roomType} />
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            여기 에러메시지가 출력되어야 할까요?
+            {errMsg}
           </Typography>
 
           <Button onClick={createRoom} fullWidth={true}>
