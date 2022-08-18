@@ -21,7 +21,9 @@ export const JoinedRoomList = (prop: {
     <Box sx={{ width: '100%' }}>
       <Stack spacing={2}>
         {prop.room.map((chatRoom: JoinedRoom) => (
-          <Item onClick={() => changeView(chatRoom.id)}>{chatRoom.name}</Item>
+          <Item key={chatRoom.id} onClick={() => changeView(chatRoom.id)}>
+            {chatRoom.name}
+          </Item>
         ))}
       </Stack>
     </Box>
