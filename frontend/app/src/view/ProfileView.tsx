@@ -1,11 +1,9 @@
 import { Profile } from 'components/profile/Profile'
 import { User } from 'data'
-import { useQuery } from '@tanstack/react-query'
-import { getMeUser } from 'query'
-import { AxiosError } from 'axios'
+import { useUserQuery } from 'hook'
 
 export const ProfileView = () => {
-  const { data, isSuccess } = useQuery<User, AxiosError>(['meUser'], getMeUser)
+  const { data, isSuccess } = useUserQuery<User>('me')
 
   if (isSuccess) {
     return <Profile user={data} />

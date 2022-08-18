@@ -1,15 +1,14 @@
 import { User } from 'data'
-import { useUserRequest } from 'hook'
+import { useUserQuery } from 'hook'
 import { UsersPanel } from './UsersPanel'
 
 export const FindFriendView = () => {
-  const refUser = useUserRequest<User>('me')
-  const users = useUserRequest<User[]>('')
+  const { data: me, isSuccess: ok1 } = useUserQuery<User>('me')
+  const { data: users, isSuccess: ok2 } = useUserQuery<User[]>('')
 
-  if (!(refUser && users)) {
-    return <div>Loading...</div>
+  if (ok1 && ok2) {
+    const otherUsers = users.filter((u) => u.uid !== me.uid)
+    return <UsersPanel users={otherUsers} refUser={me} />
   }
-
-  const otherUsers = users.filter((u) => u.uid !== refUser.uid)
-  return <UsersPanel users={otherUsers} refUser={refUser} listname={'Users'} />
+  return <div>Loading...</div>
 }

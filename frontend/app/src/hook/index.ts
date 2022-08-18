@@ -1,3 +1,3 @@
 export * from './useToggles'
 export * from './useAuthSocket'
-export * from './useUser'
+export * from './useUserQuery'
