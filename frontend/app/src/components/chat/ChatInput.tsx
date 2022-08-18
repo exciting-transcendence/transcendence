@@ -12,6 +12,12 @@ export const ChatInput = ({ onSend }: Props) => {
       label="Send Text"
       value={text}
       onChange={(e) => setText(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          onSend(text)
+        }
+      }}
       InputProps={{
         endAdornment: (
           <Button onClick={() => onSend(text)}>
