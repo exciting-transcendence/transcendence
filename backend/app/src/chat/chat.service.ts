@@ -184,6 +184,19 @@ export class ChatService {
     return this.chatUserRepository.save(room.chatUser[0])
   }
 
+  async addBlockUser(uid: number, roomId: number) {
+    const room = await this.chatRoomRepository.findOne({
+      select: ['chatUser'],
+      where: { id: roomId, chatUser: { user: { uid } } },
+      relations: ['chatUser', 'chatUser.user'],
+    })
+    if (!room) throw new NotFoundException('Room not found or User not in room')
+    if (room.bannedIds.find((id) => id === uid))
+      throw new BadRequestException('Already banned')
+    room.bannedIds.push(uid)
+    return this.chatRoomRepository.save(room)
+  }
+
   async isMuted(uid: number, roomId: number) {
     const room = await this.chatRoomRepository.findOne({
       select: ['chatUser'],
