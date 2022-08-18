@@ -20,6 +20,8 @@ import { ChatRoom } from './chatroom.entity'
 import { UsePipes } from '@nestjs/common'
 import { WSValidationPipe } from 'utils/WSValidationPipe'
 import { Status } from 'user/status.enum'
+import { ChatPasswordDto } from 'dto/chatRoomPassword.dto'
+import { RoomPasswordCommand } from './roomPasswordCommand.enum'
 
 @AsyncApiService()
 @UsePipes(new WSValidationPipe())
@@ -252,6 +254,34 @@ export class ChatGateway {
       return 'You are not admin'
     try {
       await this.chatService.removeUserAsAdmin(data.uid, data.roomId)
+    } catch (error) {
+      return error
+    }
+    return { status: 200 }
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.PASSWORD,
+    summary: 'roomId의 password를 추가/변경/삭제',
+    description: '추가하면 roomType이 PROTECTED로, 삭제하면 PUBLIC으로 바뀜',
+    message: { name: 'chatPasswordDto', payload: { type: ChatPasswordDto } },
+  })
+  @SubscribeMessage(chatEvent.PASSWORD)
+  async onPasswordCUD(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: ChatPasswordDto,
+  ) {
+    // check isOwner
+    try {
+      const { uid } = client.data
+      const { roomId, command, password, newPassword } = data
+
+      if (command === RoomPasswordCommand.ADD)
+        this.chatService.createRoomPassword(roomId, password)
+      else if (command === RoomPasswordCommand.DELETE)
+        this.chatService.deleteRoomPassword(roomId, password)
+      else if (command === RoomPasswordCommand.MODIFY)
+        this.chatService.changeRoomPassword(roomId, password, newPassword)
     } catch (error) {
       return error
     }
