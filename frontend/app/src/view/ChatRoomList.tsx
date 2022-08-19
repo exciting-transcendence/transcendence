@@ -1,5 +1,12 @@
 import { Socket } from 'dgram'
-import { useState, useCallback, useEffect, useRef, useContext } from 'react'
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useContext,
+  Fragment,
+} from 'react'
 import { Box, Paper, Stack } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { Room } from 'data'
@@ -20,9 +27,9 @@ export const ChatRoomList = (prop: {
   setShowChat: any
 }) => {
   const [modal, setModal] = useState(false)
-  const joinRoom = (room: number) => {
+  const joinRoom = (room: number, type: string) => {
     prop.socket.emit('JOIN', { roomId: room })
-    prop.setShowChat({ bool: true, roomId: room })
+    prop.setShowChat({ bool: true, roomId: room, roomType: type })
   }
 
   return (
@@ -31,7 +38,7 @@ export const ChatRoomList = (prop: {
         {prop.list.map((chatRoom: Room) => {
           if (chatRoom.roomtype === 'PROTECTED')
             return (
-              <>
+              <Fragment key={chatRoom.id}>
                 <PwdModal
                   setModal={setModal}
                   modal={modal}
@@ -43,11 +50,16 @@ export const ChatRoomList = (prop: {
                   <LockIcon />
                   {chatRoom.name}
                 </Item>
-              </>
+              </Fragment>
             )
           else
             return (
-              <Item onClick={() => joinRoom(chatRoom.id)}>{chatRoom.name}</Item>
+              <Item
+                key={chatRoom.id}
+                onClick={() => joinRoom(chatRoom.id, chatRoom.roomtype)}
+              >
+                {chatRoom.name}
+              </Item>
             )
         })}
       </Stack>
