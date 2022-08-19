@@ -6,7 +6,7 @@ import axios from 'axios'
 import { getAuthHeader } from 'hook/getAuthHeader'
 
 export const getDataFn =
-  <T>(endpoint: string, key: (string | number)[], options?: any) =>
+  <T>(endpoint: string, key: (string | number)[]) =>
   async () => {
     const authHeader = getAuthHeader()
     const { data } = await axios.get<T>(
@@ -16,7 +16,11 @@ export const getDataFn =
     return data
   }
 
-export const useApiQuery = <T>(key: (string | number)[], options?: any) =>
-  useQuery<T, AxiosError>(key, getDataFn<T>('/api', key, options), {
+export const useApiQuery = <T>(
+  key: (string | number)[],
+  options?: Record<string, unknown>,
+) =>
+  useQuery<T, AxiosError>(key, getDataFn<T>('/api', key), {
     staleTime: 10 * MINUTE,
+    ...options,
   })
