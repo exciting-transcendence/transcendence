@@ -4,7 +4,7 @@ import { ChatRoomList } from './ChatRoomList'
 import { JoinedRoomList } from './JoinedRoomList'
 import { Grid, Divider, Typography, Button } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
-import { JoinedRoom, Room, Message, ChatSocket } from 'data'
+import { JoinedRoom, Room, Message, ChatSocket, User } from 'data'
 import { ChatPanel } from './ChatPanel'
 import { getAuthHeader } from 'hook/getAuthHeader'
 import { queryClient, useApiQuery } from 'hook'
@@ -15,42 +15,32 @@ type Messages = {
 }
 
 export const ChatView = ({ socket }: { socket: ChatSocket }) => {
-  const [chatRoomList, setChatRoomList] = useState<Room[]>([])
   const [modal, setModal] = useState(false)
   const [messages, setMessages] = useState<Messages>({})
   const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
-  const [myUid, setMyUid] = useState<number>()
-  const authHeader = getAuthHeader()
-  const { data: joinedRoomList, isSuccess } = useApiQuery<JoinedRoom[]>([
-    'chat',
-    'me',
-  ])
+  const { data: me } = useApiQuery<User>(['user', 'me'])
+  const { data: chatRoomList } = useApiQuery<Room[]>(['chat', 'joinlist'])
+  const { data: joinedRoomList } = useApiQuery<JoinedRoom[]>(['chat', 'me'])
+
+  if (!me) {
+    return null
+  }
+  const { uid: myUid } = me
 
   const updateRoom = () => {
-    axios.get('/api/chat/joinlist', authHeader).then((res) => {
-      console.log(res.data)
-      setChatRoomList(res.data)
-      setShowChat((showChat) => {
-        return { ...showChat, bool: false }
-      })
+    queryClient.invalidateQueries(['chat', 'joinlist'])
+    setShowChat((showChat) => {
+      return { ...showChat, bool: false }
     })
-  }
-  // res: roomId, roomType, Roomname
-  const updateMyRoom = () => {
-    queryClient.invalidateQueries(['chat', 'me'])
   }
   useEffect(() => {
     socket.on('NOTICE', (res: Message) => {
-      console.log(res, `myUID:${myUid}`)
       if (res.senderUid === myUid) {
-        updateMyRoom()
+        queryClient.invalidateQueries(['chat', 'me'])
       }
     })
   }, [myUid])
   useEffect(() => {
-    axios.get('/api/user/me', authHeader).then((res) => {
-      setMyUid(res.data.uid)
-    })
     socket.on('RECEIVE', (res: Message) => {
       const id = res.roomId
       const msg = {
@@ -66,9 +56,6 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
         }
       })
     })
-
-    updateMyRoom()
-    updateRoom()
   }, [])
 
   const leaveRoom = (roomId: number) => {
@@ -95,7 +82,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
           <Typography variant="h6" padding="1rem" textAlign="center">
             참여 중인 채팅 리스트
           </Typography>
-          {isSuccess ? (
+          {joinedRoomList ? (
             <JoinedRoomList setShowChat={setShowChat} room={joinedRoomList} />
           ) : (
             <Typography>Loading...</Typography>
@@ -119,11 +106,15 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
               <Typography variant="h6" padding="1rem" textAlign="center">
                 참여 가능한 채팅 리스트
               </Typography>
-              <ChatRoomList
-                list={chatRoomList}
-                socket={socket}
-                setShowChat={setShowChat}
-              />
+              {chatRoomList ? (
+                <ChatRoomList
+                  list={chatRoomList}
+                  socket={socket}
+                  setShowChat={setShowChat}
+                />
+              ) : (
+                <Typography>Loading...</Typography>
+              )}
             </div>
           )}
         </Grid>
