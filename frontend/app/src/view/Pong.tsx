@@ -1,10 +1,11 @@
 import { useRef, useEffect, useState } from 'react'
 import Avatar from '@mui/material/Avatar'
-import { Stack, Typography, Box, Modal, Button } from '@mui/material'
+import { Stack, Typography, Box, Modal, Button, setRef } from '@mui/material'
 import styled from 'styled-components'
 import { useApiQuery } from 'hook'
 import { useAvatar } from 'hook/useAvatar'
 import { User } from 'data'
+import { useUserQuery } from 'hook/useUserQuery'
 
 export type Rect = {
   x: number
@@ -42,21 +43,16 @@ const drawRect = (
 }
 
 const PongUser = ({ uid }: { uid: number }) => {
-  const { data: profile, isSuccess } = useApiQuery<User>(['user', uid])
-  const [_avatarFile, avatar, setAvatarFile] = useAvatar(
-    '/api/avatar/default.jpg',
-  )
+  const { data: profile, isSuccess } = useUserQuery(uid)
 
   if (!isSuccess) {
     return null
   }
 
-  setAvatarFile(profile.avatar)
-
   return (
     <Stack justifyContent="center" alignItems="center">
       <Typography>{profile.nickname}</Typography>
-      <Avatar src={avatar} />
+      <Avatar src={profile.avatar} />
       <Typography>RATING: {profile.stat.rating}</Typography>
     </Stack>
   )
@@ -120,13 +116,16 @@ export const PongStartCounter = () => {
     }
   }, [remainTime])
 
-  return (
-    <Modal open={remainTime > 0}>
-      <Box sx={remainTimeModalStyle}>
-        <Typography variant="h1">{remainTime}</Typography>
-      </Box>
-    </Modal>
-  )
+  if (remainTime > 0) {
+    return (
+      <Modal open>
+        <Box sx={remainTimeModalStyle}>
+          <Typography variant="h1">{remainTime}</Typography>
+        </Box>
+      </Modal>
+    )
+  }
+  return null
 }
 
 export const PongResult = ({
