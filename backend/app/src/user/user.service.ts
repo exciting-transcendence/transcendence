@@ -56,7 +56,7 @@ export class UserService {
       arr.map(async (i) => {
         const dummy = new User()
         dummy.stat = new Stat()
-        dummy.avatar = userData.avatar
+        dummy.avatar = `https://picsum.photos/seed/${Math.random()}/200/300`
         dummy.nickname = `dummy ${userData.nickname} #${i}`
         dummy.twoFactor = false
         dummy.isActive = true
