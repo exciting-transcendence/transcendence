@@ -43,6 +43,9 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
         queryClient.invalidateQueries(['chat', 'me'])
       }
     })
+    return () => {
+      socket.removeAllListeners('NOTICE')
+    }
   }, [myUid])
   useEffect(() => {
     socket.on('RECEIVE', (res: Message) => {
@@ -60,6 +63,9 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
         }
       })
     })
+    return () => {
+      socket.removeAllListeners('RECEIVE')
+    }
   }, [])
 
   const leaveRoom = (roomId: number) => {
