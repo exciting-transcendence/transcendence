@@ -43,23 +43,23 @@ const drawRect = (
 
 const PongUser = ({ uid }: { uid: number }) => {
   const { data: profile, isSuccess } = useApiQuery<User>(['user', uid])
+  const [_avatarFile, avatar, setAvatarFile] = useAvatar(
+    '/api/avatar/default.jpg',
+  )
 
-  if (isSuccess) {
-    const [_avatarFile, avatar, setAvatarFile] = useAvatar(
-      '/api/avatar/default.jpg',
-    )
-
-    setAvatarFile(profile.avatar)
-
-    return (
-      <Stack justifyContent="center" alignItems="center">
-        <Typography>{profile.nickname}</Typography>
-        <Avatar src={avatar} />
-        <Typography>RATING: {profile.stat.rating}</Typography>
-      </Stack>
-    )
+  if (!isSuccess) {
+    return null
   }
-  return null
+
+  setAvatarFile(profile.avatar)
+
+  return (
+    <Stack justifyContent="center" alignItems="center">
+      <Typography>{profile.nickname}</Typography>
+      <Avatar src={avatar} />
+      <Typography>RATING: {profile.stat.rating}</Typography>
+    </Stack>
+  )
 }
 
 const remainTimeModalStyle = {
