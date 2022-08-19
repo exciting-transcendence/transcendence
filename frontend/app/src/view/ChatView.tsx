@@ -17,7 +17,11 @@ type Messages = {
 export const ChatView = ({ socket }: { socket: ChatSocket }) => {
   const [modal, setModal] = useState(false)
   const [messages, setMessages] = useState<Messages>({})
-  const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
+  const [showChat, setShowChat] = useState({
+    bool: false,
+    roomId: 0,
+    roomType: 'PUBLIC',
+  })
   const { data: me } = useApiQuery<User>(['user', 'me'])
   const { data: chatRoomList } = useApiQuery<Room[]>(['chat', 'joinlist'])
   const { data: joinedRoomList } = useApiQuery<JoinedRoom[]>(['chat', 'me'])
@@ -98,7 +102,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
             <ChatPanel
               chats={messages[showChat.roomId] ? messages[showChat.roomId] : []}
               socket={socket}
-              roomId={showChat.roomId}
+              roomInfo={showChat}
               leaveRoom={leaveRoom}
             />
           ) : (
