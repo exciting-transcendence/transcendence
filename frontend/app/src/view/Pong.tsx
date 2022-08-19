@@ -42,7 +42,7 @@ const drawRect = (
 }
 
 const PongUser = ({ uid }: { uid: number }) => {
-  const { data: profile, isSuccess } = useUserQuery<User>(`/${uid}`)
+  const { data: profile, isSuccess } = useUserQuery<User>(['user', uid])
 
   if (isSuccess) {
     const [_avatarFile, avatar, setAvatarFile] = useAvatar(

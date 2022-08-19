@@ -7,16 +7,18 @@ import { MINUTE } from 'utility/time'
 const USER_API_KEY = '/api/user'
 
 export const getDataFn =
-  <T>(endpoint: string, key: string | number) =>
+  <T>(endpoint: string, key: (string | number)[]) =>
   async () => {
     const authHeader = getAuthHeader()
-    const { data } = await axios.get<T>(`${endpoint}/${key}`, authHeader)
+    const { data } = await axios.get<T>(
+      `${endpoint}/${key.join('/')}`,
+      authHeader,
+    )
     return data
   }
 
-// FIXME: 이후 쿼리 사용시 roomId와 useId가 구별되야됨, 현재는 userId를 그대로 키로 사용
-export const useUserQuery = <T = User | User[]>(key: string | number) =>
-  useQuery<T, AxiosError>([key], getDataFn<T>(USER_API_KEY, key), {
+export const useUserQuery = <T = User | User[]>(key: (string | number)[]) =>
+  useQuery<T, AxiosError>(key, getDataFn<T>('/api', key), {
     staleTime: 10 * MINUTE,
   })
 

@@ -3,7 +3,7 @@ import { User } from 'data'
 import { useUserQuery } from 'hook'
 
 export const ProfileView = () => {
-  const { data, isSuccess } = useUserQuery<User>('me')
+  const { data, isSuccess } = useUserQuery<User>(['user', 'me'])
 
   if (isSuccess) {
     return <Profile user={data} />

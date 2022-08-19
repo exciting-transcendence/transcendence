@@ -15,7 +15,7 @@ export const ChatList = ({ chats }: Props) => {
       {groupedChats.map((chats) => {
         const first = chats[0]
         const { createdAt, senderUid: uid } = first
-        const { data, isSuccess } = useUserQuery<User>(uid) // TODO: 외부에서 전달
+        const { data, isSuccess } = useUserQuery<User>(['user', uid]) // TODO: 외부에서 전달
         return (
           <ChatListItem
             user={isSuccess ? data : undefined}
