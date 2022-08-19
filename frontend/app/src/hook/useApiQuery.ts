@@ -16,7 +16,7 @@ export const getDataFn =
     return data
   }
 
-export const useUserQuery = <T>(key: (string | number)[], options?: any) =>
+export const useApiQuery = <T>(key: (string | number)[], options?: any) =>
   useQuery<T, AxiosError>(key, getDataFn<T>('/api', key, options), {
     staleTime: 10 * MINUTE,
   })

@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import Avatar from '@mui/material/Avatar'
 import { Stack, Typography, Box, Modal, Button } from '@mui/material'
 import styled from 'styled-components'
-import { useUserQuery } from 'hook'
+import { useApiQuery } from 'hook'
 import { useAvatar } from 'hook/useAvatar'
 import { User } from 'data'
 
@@ -42,7 +42,7 @@ const drawRect = (
 }
 
 const PongUser = ({ uid }: { uid: number }) => {
-  const { data: profile, isSuccess } = useUserQuery<User>(['user', uid])
+  const { data: profile, isSuccess } = useApiQuery<User>(['user', uid])
 
   if (isSuccess) {
     const [_avatarFile, avatar, setAvatarFile] = useAvatar(

@@ -2,7 +2,7 @@ import { List } from '@mui/material'
 import { Message, User } from 'data'
 import { ChatListItem } from './ChatListItem'
 import { groupBySerial } from 'utility'
-import { useUserQuery } from 'hook'
+import { useApiQuery } from 'hook'
 
 interface GroupedMessage {
   user?: User
@@ -37,7 +37,7 @@ export const ChatList = ({ chats }: Props) => {
     groupBySerial(chats, (chat) => chat.senderUid).map((group) => {
       const first = group[0]
       const { createdAt, senderUid: uid } = first
-      const { data: user, isSuccess } = useUserQuery<User>(['user', uid])
+      const { data: user, isSuccess } = useApiQuery<User>(['user', uid])
       return {
         user: isSuccess ? user : undefined,
         createdAt,

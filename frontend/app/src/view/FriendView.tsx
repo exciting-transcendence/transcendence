@@ -1,12 +1,12 @@
 import React from 'react'
 
 import { User } from 'data'
-import { useUserQuery } from 'hook'
+import { useApiQuery } from 'hook'
 import { UsersPanel } from './UsersPanel'
 
 export const FriendView = () => {
-  const { data: me, isSuccess: ok1 } = useUserQuery<User>(['user', 'me'])
-  const { data: users, isSuccess: ok2 } = useUserQuery<User[]>([
+  const { data: me, isSuccess: ok1 } = useApiQuery<User>(['user', 'me'])
+  const { data: users, isSuccess: ok2 } = useApiQuery<User[]>([
     'user',
     'me',
     'friend',
