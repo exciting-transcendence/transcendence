@@ -7,36 +7,8 @@ import { BasicModal } from './CreateRoomModal'
 import { JoinedRoom, Room, Message, ChatSocket } from 'data'
 import { ChatPanel } from './ChatPanel'
 import { getAuthHeader } from 'hook/getAuthHeader'
-
-const _RoomList: Room[] = [
-  {
-    id: 1,
-    name: '방 이름1',
-    roomtype: '1',
-    password: '123',
-    bannedIds: [],
-    mutedIds: [],
-    chatUser: [],
-  },
-  {
-    id: 1,
-    name: '방 이름2',
-    roomtype: '1',
-    password: '123',
-    bannedIds: [],
-    mutedIds: [],
-    chatUser: [],
-  },
-  {
-    id: 1,
-    name: '방 이름3',
-    roomtype: '1',
-    password: '123',
-    bannedIds: [],
-    mutedIds: [],
-    chatUser: [],
-  },
-]
+import { queryClient, useApiQuery } from 'hook'
+import { useMutation } from '@tanstack/react-query'
 
 type Messages = {
   [roomId: number]: Message[]
@@ -44,12 +16,15 @@ type Messages = {
 
 export const ChatView = ({ socket }: { socket: ChatSocket }) => {
   const [chatRoomList, setChatRoomList] = useState<Room[]>([])
-  const [joinedRoomList, setJoinedRoomList] = useState<JoinedRoom[]>([])
   const [modal, setModal] = useState(false)
   const [messages, setMessages] = useState<Messages>({})
   const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
   const [myUid, setMyUid] = useState<number>()
   const authHeader = getAuthHeader()
+  const { data: joinedRoomList, isSuccess } = useApiQuery<JoinedRoom[]>([
+    'chat',
+    'me',
+  ])
 
   const updateRoom = () => {
     axios.get('/api/chat/joinlist', authHeader).then((res) => {
@@ -62,9 +37,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
   }
   // res: roomId, roomType, Roomname
   const updateMyRoom = () => {
-    axios.get('/api/chat/me', authHeader).then((res) => {
-      setJoinedRoomList(res.data)
-    })
+    queryClient.invalidateQueries(['chat', 'me'])
   }
   useEffect(() => {
     socket.on('NOTICE', (res: Message) => {
@@ -100,8 +73,8 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
 
   const leaveRoom = (roomId: number) => {
     socket.emit('LEAVE', { uid: roomId })
-    const newJoinedRoom = joinedRoomList.filter((el) => el.id !== roomId)
-    setJoinedRoomList(newJoinedRoom)
+    // const newJoinedRoom = joinedRoomList.filter((el) => el.id !== roomId)
+    // setJoinedRoomList(newJoinedRoom)
     setShowChat((showChat) => {
       return { ...showChat, bool: false }
     })
@@ -122,7 +95,11 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
           <Typography variant="h6" padding="1rem" textAlign="center">
             참여 중인 채팅 리스트
           </Typography>
-          <JoinedRoomList setShowChat={setShowChat} room={joinedRoomList} />
+          {isSuccess ? (
+            <JoinedRoomList setShowChat={setShowChat} room={joinedRoomList} />
+          ) : (
+            <Typography>Loading...</Typography>
+          )}
         </Grid>
         <Divider
           orientation="vertical"
