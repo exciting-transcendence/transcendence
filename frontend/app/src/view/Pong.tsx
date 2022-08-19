@@ -15,6 +15,7 @@ export type Rect = {
 }
 
 export type PongProps = {
+  isPlaying: boolean
   leftPaddle: Rect
   rightPaddle: Rect
   ball: Rect
@@ -116,16 +117,13 @@ export const PongStartCounter = () => {
     }
   }, [remainTime])
 
-  if (remainTime > 0) {
-    return (
-      <Modal open>
-        <Box sx={remainTimeModalStyle}>
-          <Typography variant="h1">{remainTime}</Typography>
-        </Box>
-      </Modal>
-    )
-  }
-  return null
+  return (
+    <Modal open={remainTime > 0}>
+      <Box sx={remainTimeModalStyle}>
+        <Typography variant="h1">{remainTime}</Typography>
+      </Box>
+    </Modal>
+  )
 }
 
 export const PongResult = ({
@@ -199,15 +197,18 @@ const Pong = (props: PongProps) => {
   }, [props])
 
   return (
-    <PongGrid>
-      <PongLeftProfile>
-        <PongUser uid={props.leftUser} />
-      </PongLeftProfile>
-      <PongRightProfile>
-        <PongUser uid={props.rightUser} />
-      </PongRightProfile>
-      <PongCanvas width={800} height={450} ref={pongCanvas} />
-    </PongGrid>
+    <>
+      {props.isPlaying ? null : <PongStartCounter />}
+      <PongGrid>
+        <PongLeftProfile>
+          <PongUser uid={props.leftUser} />
+        </PongLeftProfile>
+        <PongRightProfile>
+          <PongUser uid={props.rightUser} />
+        </PongRightProfile>
+        <PongCanvas width={800} height={450} ref={pongCanvas} />
+      </PongGrid>
+    </>
   )
 }
 

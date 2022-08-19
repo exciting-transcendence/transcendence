@@ -89,14 +89,12 @@ export const GameView = ({
     case 'play':
     case 'gameInfo':
       return (
-        <>
-          <PongStartCounter />
-          <Pong
-            {...gameInfo}
-            {...player}
-            window={{ ratio: 16 / 9, height: 450 }}
-          />
-        </>
+        <Pong
+          isPlaying={gameState === 'play'}
+          {...gameInfo}
+          {...player}
+          window={{ ratio: 16 / 9, height: 450 }}
+        />
       )
 
     case 'gameEnd':
