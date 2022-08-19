@@ -327,7 +327,6 @@ export class ChatGateway {
         soc.join(roomId.toString())
         console.log(`chat: ${soc.data.uid} has entered to ${roomId}`)
       }
-      soc.emit(chatEvent.RECEIVE, data)
     })
 
     // room의 모두에게 NOTICE 전송
