@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { RoomPasswordCommand } from 'chat/roomPasswordCommand.enum'
-import { IsEnum, IsNumber, IsString, ValidateIf } from 'class-validator'
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateIf,
+} from 'class-validator'
 
 export class ChatPasswordDto {
   @ApiProperty({
@@ -17,13 +23,19 @@ export class ChatPasswordDto {
   @IsEnum(RoomPasswordCommand)
   command: RoomPasswordCommand
 
-  @ApiProperty({ description: 'bcrypted string', required: false })
+  @ApiProperty({
+    description:
+      'bcrypted string\n\n추가시: 새 비밀번호\n\n변경,삭제시: 기존 비밀번호',
+  })
   @IsString()
-  @ValidateIf((o) => o.command !== RoomPasswordCommand.ADD)
-  password?: string
+  password: string
 
-  @ApiProperty({ description: 'bcrypted string', required: false })
+  @ApiProperty({
+    description: 'bcrypted string\n\n변경시: 새 비밀번호',
+    required: false,
+  })
   @IsString()
-  @ValidateIf((o) => o.command !== RoomPasswordCommand.DELETE)
+  @IsOptional()
+  @ValidateIf((o) => o.command === RoomPasswordCommand.MODIFY)
   newPassword?: string
 }
