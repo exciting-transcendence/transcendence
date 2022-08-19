@@ -1,13 +1,12 @@
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import { User } from 'data'
 import { useQuery } from '@tanstack/react-query'
-import { getAuthHeader } from 'hook/getAuthHeader'
 import { MINUTE } from 'utility/time'
-
-const USER_API_KEY = '/api/user'
+import axios from 'axios'
+import { getAuthHeader } from 'hook/getAuthHeader'
 
 export const getDataFn =
-  <T>(endpoint: string, key: (string | number)[]) =>
+  <T>(endpoint: string, key: (string | number)[], options?: any) =>
   async () => {
     const authHeader = getAuthHeader()
     const { data } = await axios.get<T>(
@@ -17,15 +16,7 @@ export const getDataFn =
     return data
   }
 
-export const useUserQuery = <T = User | User[]>(key: (string | number)[]) =>
-  useQuery<T, AxiosError>(key, getDataFn<T>('/api', key), {
+export const useUserQuery = <T>(key: (string | number)[], options?: any) =>
+  useQuery<T, AxiosError>(key, getDataFn<T>('/api', key, options), {
     staleTime: 10 * MINUTE,
   })
-
-// export const useUserQueries = (keys: string[]) =>
-//   useQueries({
-//     queries: keys.map((k) => ({
-//       queryKey: [k],
-//       queryFn: getDataFn<User>(USER_API_KEY, k),
-//     })),
-//   })
