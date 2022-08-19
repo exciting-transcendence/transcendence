@@ -6,6 +6,7 @@ import { Grid, Divider, Typography, Button } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
 import { JoinedRoom, Room, Message, ChatSocket } from 'data'
 import { ChatPanel } from './ChatPanel'
+import { getAuthHeader } from 'hook/getAuthHeader'
 
 const _RoomList: Room[] = [
   {
@@ -44,38 +45,26 @@ type Messages = {
 export const ChatView = ({ socket }: { socket: ChatSocket }) => {
   const [chatRoomList, setChatRoomList] = useState<Room[]>([])
   const [joinedRoomList, setJoinedRoomList] = useState<JoinedRoom[]>([])
-  const token = window.localStorage.getItem('access_token')
   const [modal, setModal] = useState(false)
   const [messages, setMessages] = useState<Messages>({})
   const [showChat, setShowChat] = useState({ bool: false, roomId: 0 })
   const [myUid, setMyUid] = useState<number>()
+  const authHeader = getAuthHeader()
 
   const updateRoom = () => {
-    axios
-      .get('/api/chat/joinlist', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    axios.get('/api/chat/joinlist', authHeader).then((res) => {
+      console.log(res.data)
+      setChatRoomList(res.data)
+      setShowChat((showChat) => {
+        return { ...showChat, bool: false }
       })
-      .then((res) => {
-        console.log(res.data)
-        setChatRoomList(res.data)
-        setShowChat((showChat) => {
-          return { ...showChat, bool: false }
-        })
-      })
+    })
   }
   // res: roomId, roomType, Roomname
   const updateMyRoom = () => {
-    axios
-      .get('/api/chat/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setJoinedRoomList(res.data)
-      })
+    axios.get('/api/chat/me', authHeader).then((res) => {
+      setJoinedRoomList(res.data)
+    })
   }
   useEffect(() => {
     socket.on('NOTICE', (res: Message) => {
@@ -86,15 +75,9 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
     })
   }, [myUid])
   useEffect(() => {
-    axios
-      .get('/api/user/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setMyUid(res.data.uid)
-      })
+    axios.get('/api/user/me', authHeader).then((res) => {
+      setMyUid(res.data.uid)
+    })
     socket.on('RECEIVE', (res: Message) => {
       const id = res.roomId
       const msg = {
@@ -116,7 +99,7 @@ export const ChatView = ({ socket }: { socket: ChatSocket }) => {
   }, [])
 
   const leaveRoom = (roomId: number) => {
-    socket.emit('LEAVE', roomId)
+    socket.emit('LEAVE', { uid: roomId })
     const newJoinedRoom = joinedRoomList.filter((el) => el.id !== roomId)
     setJoinedRoomList(newJoinedRoom)
     setShowChat((showChat) => {
