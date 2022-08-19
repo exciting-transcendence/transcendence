@@ -304,17 +304,16 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: ChatPasswordDto,
   ) {
-    // check isOwner
     try {
       const { uid } = client.data
-      const { roomId, command, password, newPassword } = data
+      const { roomId, command, password } = data
 
       if (command === RoomPasswordCommand.ADD)
-        this.chatService.createRoomPassword(roomId, password)
+        this.chatService.createRoomPassword(uid, roomId, password)
       else if (command === RoomPasswordCommand.DELETE)
-        this.chatService.deleteRoomPassword(roomId, password)
+        this.chatService.deleteRoomPassword(uid, roomId)
       else if (command === RoomPasswordCommand.MODIFY)
-        this.chatService.changeRoomPassword(roomId, password, newPassword)
+        this.chatService.changeRoomPassword(uid, roomId, password)
     } catch (error) {
       return error
     }

@@ -24,18 +24,11 @@ export class ChatPasswordDto {
   command: RoomPasswordCommand
 
   @ApiProperty({
-    description:
-      'bcrypted string\n\n추가시: 새 비밀번호\n\n변경,삭제시: 기존 비밀번호',
-  })
-  @IsString()
-  password: string
-
-  @ApiProperty({
-    description: 'bcrypted string\n\n변경시: 새 비밀번호',
+    description: 'bcrypted string\n\n새 비밀번호(추가, 변경시)',
     required: false,
   })
   @IsString()
   @IsOptional()
-  @ValidateIf((o) => o.command === RoomPasswordCommand.MODIFY)
-  newPassword?: string
+  @ValidateIf((o) => o.command !== RoomPasswordCommand.DELETE)
+  password?: string
 }
