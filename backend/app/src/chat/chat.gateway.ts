@@ -20,6 +20,7 @@ import { ChatRoom } from './chatroom.entity'
 import { UsePipes } from '@nestjs/common'
 import { WSValidationPipe } from 'utils/WSValidationPipe'
 import { Status } from 'user/status.enum'
+import { ChatInviteDto } from 'dto/chatInvite.dto'
 
 @AsyncApiService()
 @UsePipes(new WSValidationPipe())
@@ -145,7 +146,7 @@ export class ChatGateway {
     }
     client.join(room.roomId.toString())
     console.log(`chat: ${client.data.uid} has entered to ${room.roomId}`)
-    this.emitNotice(client, room.roomId, 'join')
+    this.emitNotice(client.data.uid, room.roomId, 'join')
     return { status: 200 }
   }
 
@@ -163,6 +164,7 @@ export class ChatGateway {
     try {
       // owner가 나가면 모두에게 DESTROYED 전송. 이후 모두 내보내고 채팅방 삭제
       if (await this.chatService.isOwner(client.data.uid, roomId)) {
+        console.log(`chat: owner ${client.data.uid} leaved ${roomId}`)
         this.emitDestroyed(client, roomId)
         return { status: 200 }
       }
@@ -177,7 +179,7 @@ export class ChatGateway {
     }
     client.leave(roomId.toString())
     console.log(`chat: ${client.data.uid} leaved ${roomId}`)
-    this.emitNotice(client, roomId, 'leave')
+    this.emitNotice(client.data.uid, roomId, 'leave')
     return { status: 200 }
   }
 
@@ -210,10 +212,10 @@ export class ChatGateway {
     description: "user 입장시 mscContent='join', 퇴장시 'leave'",
     message: { name: 'ChatMessageDto', payload: { type: ChatMessageDto } },
   })
-  async emitNotice(client, roomId: number, msg: string) {
+  async emitNotice(uid: number, roomId: number, msg: string) {
     const data: ChatMessageDto = {
       roomId: roomId,
-      senderUid: client.data.uid,
+      senderUid: uid,
       msgContent: msg,
       createdAt: new Date(),
     }
@@ -246,7 +248,7 @@ export class ChatGateway {
     }
     client.join(newRoom.id.toString())
     console.log(`chat: ${client.data.uid} has entered to ${newRoom.id}`)
-    this.emitNotice(client, newRoom.id, 'join')
+    this.emitNotice(client.data.uid, newRoom.id, 'join')
     return { status: 200 }
   }
 
@@ -288,5 +290,46 @@ export class ChatGateway {
       return error
     }
     return { status: 200 }
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.INVITE,
+    summary: 'nickname을 roomID에 초대',
+    description:
+      'nickname이 존재하지 않으면 404 리턴, 기타 에러 400 리턴, 문제 없으면 200 리턴',
+    message: { name: 'ChatInviteDto', payload: { type: ChatInviteDto } },
+  })
+  @SubscribeMessage(chatEvent.INVITE)
+  async onInvite(
+    @ConnectedSocket() client,
+    @MessageBody() data: ChatInviteDto,
+  ) {
+    const inviter = client.data.uid
+    const roomId = data.roomId
+    const invitee = await this.chatService.findUidByNickname(
+      data.inviteeNickname,
+    )
+    const isInvite = true
+    // inviteeNickname이 존재하는지
+    if (invitee === null) return { status: 404 }
+    // inviter가 roomId에 속해있는지
+    if (client.rooms.has(roomId.toString()) === false) return { status: 400 }
+    // invitee의 소켓id 찾아서 room에 추가
+    const sockets = await this.server.fetchSockets()
+    sockets.forEach(async (soc) => {
+      if (soc.data && soc.data.uid && soc.data.uid === invitee) {
+        try {
+          await this.chatService.addUserToRoom(invitee, roomId, null, isInvite)
+        } catch (error) {
+          return error
+        }
+        soc.join(roomId.toString())
+        console.log(`chat: ${soc.data.uid} has entered to ${roomId}`)
+      }
+      soc.emit(chatEvent.RECEIVE, data)
+    })
+
+    // room의 모두에게 NOTICE 전송
+    this.emitNotice(invitee, roomId, 'join')
   }
 }

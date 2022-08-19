@@ -91,6 +91,7 @@ export class ChatService {
     uid: number,
     roomId: number,
     password?: string,
+    isInvite?: boolean,
   ): Promise<ChatRoom> {
     const room = await this.chatRoomRepository.findOne({
       where: { id: roomId },
@@ -100,7 +101,7 @@ export class ChatService {
     if (room.bannedIds.includes(uid)) {
       throw new BadRequestException('User is banned')
     }
-    if (password) {
+    if (password && !isInvite) {
       if (!(await bcrypt.compare(password, room.password)))
         throw new BadRequestException('Password is wrong')
     } else if (room.roomtype === RoomType.PROTECTED) {
@@ -264,6 +265,10 @@ export class ChatService {
 
   async findOneByuid(uid: number): Promise<User> {
     return await this.userService.findOneByUid(uid)
+  }
+
+  async findUidByNickname(nickname: string): Promise<number> {
+    return await this.userService.findUidByNickname(nickname)
   }
 
   async findBlockedMeUsers(uid: number): Promise<number[]> {
