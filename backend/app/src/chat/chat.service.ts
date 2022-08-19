@@ -3,7 +3,6 @@ import {
   NotFoundException,
   InternalServerErrorException,
   BadRequestException,
-  UnauthorizedException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Not, Repository } from 'typeorm'
