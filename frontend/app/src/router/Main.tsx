@@ -37,7 +37,7 @@ export const MainRouter = () => {
       <Nav />
       <PongSocketContext.Provider value={pongData.socket}>
         <Routes>
-          <Route path="/" element={<></>} />
+          <Route path="/" element={<FriendView />} />
           <Route path="/game" element={<GameView {...pongData} />} />
           <Route path="/friend" element={<FriendView />} />
           <Route path="/profile" element={<ProfileView />} />
