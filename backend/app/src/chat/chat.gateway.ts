@@ -155,13 +155,14 @@ export class ChatGateway {
     channel: chatEvent.LEAVE,
     summary: '채팅방에서 나가기',
     description: 'user가 채팅방에서 나감. 알림메시지를 모든 구성원에게 전송',
-    message: { name: 'roomId', payload: { type: Number } },
+    message: { name: 'ChatJoinRoomDto', payload: { type: ChatJoinRoomDto } },
   })
   @SubscribeMessage(chatEvent.LEAVE)
   async onLeaveRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() roomId: number,
+    @MessageBody() room: ChatJoinRoomDto,
   ) {
+    const { roomId } = room
     try {
       await this.chatService.removeUserFromRoom(client.data.uid, roomId)
     } catch (error) {
