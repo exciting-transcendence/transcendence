@@ -320,4 +320,10 @@ export class ChatService {
   async changeStatus(uid: number, status: Status) {
     return await this.userService.changeStatus(uid, status)
   }
+
+  async getSocketByUid(server: Server, uid: number) {
+    const clients = await server.fetchSockets()
+    clients.filter((soc) => soc.data && soc.data.uid && soc.data.uid === uid)
+    return clients
+  }
 }

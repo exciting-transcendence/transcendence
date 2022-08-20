@@ -307,19 +307,17 @@ export class ChatGateway {
     // add user to banned list
     this.chatService.addBannedUser(uid, roomId)
     // let out user in room
-    const sockets = await this.server.fetchSockets()
+    const sockets = await this.chatService.getSocketByUid(this.server, uid)
+    const msg: ChatMessageDto = {
+      roomId: roomId,
+      senderUid: uid,
+      msgContent: 'banned',
+      createdAt: new Date(),
+    }
     sockets.forEach(async (el) => {
-      if (el.data && el.data.uid && el.data.uid === uid) {
-        const msg: ChatMessageDto = {
-          roomId: roomId,
-          senderUid: uid,
-          msgContent: 'banned',
-          createdAt: new Date(),
-        }
-        // return? emit notice?
-        el.emit(chatEvent.NOTICE, msg)
-        el.leave(roomId.toString())
-      }
+      // return? emit notice?
+      el.emit(chatEvent.NOTICE, msg)
+      el.leave(roomId.toString())
     })
   }
 
@@ -361,19 +359,16 @@ export class ChatGateway {
     // inviter가 roomId에 속해있는지
     if (client.rooms.has(roomId.toString()) === false) return { status: 400 }
     // invitee의 소켓id 찾아서 room에 추가
-    const sockets = await this.server.fetchSockets()
-    sockets.forEach(async (soc) => {
-      if (soc.data && soc.data.uid && soc.data.uid === invitee) {
-        try {
-          await this.chatService.addUserToRoom(invitee, roomId, null, isInvite)
-        } catch (error) {
-          return error
-        }
-        soc.join(roomId.toString())
-        console.log(`chat: ${soc.data.uid} has entered to ${roomId}`)
+    const sockets = await this.chatService.getSocketByUid(this.server, invitee)
+    sockets.forEach(async (el) => {
+      try {
+        await this.chatService.addUserToRoom(invitee, roomId, null, isInvite)
+      } catch (error) {
+        return error
       }
+      el.join(roomId.toString())
     })
-
+    console.log(`chat: ${invitee} has entered to ${roomId}`)
     // room의 모두에게 NOTICE 전송
     this.emitNotice(invitee, roomId, 'join')
   }
