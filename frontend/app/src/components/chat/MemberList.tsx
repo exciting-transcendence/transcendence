@@ -25,6 +25,7 @@ export const Section = ({ title, users, onClick }: SectionProps) => (
   </>
 )
 interface Props {
+  // TODO: ChatUser 배열을 받아 추가 정보 표시?
   /** 모든 사용자 */
   users: OtherUser[]
   /** 로그인한 사용자 */
