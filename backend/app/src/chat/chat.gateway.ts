@@ -17,7 +17,7 @@ import { ChatService } from './chat.service'
 import * as jwt from 'jsonwebtoken'
 import { jwtConstants } from 'configs/jwt-token.config'
 import { ChatRoom } from './chatroom.entity'
-import { UsePipes } from '@nestjs/common'
+import { ForbiddenException, UsePipes } from '@nestjs/common'
 import { WSValidationPipe } from 'utils/WSValidationPipe'
 import { Status } from 'user/status.enum'
 import { ChatInviteDto } from 'dto/chatInvite.dto'
@@ -265,8 +265,10 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: UserInRoomDto,
   ) {
-    if (this.chatService.isAdmin(client.data.uid, data.roomId))
-      return 'You are not admin'
+    if (
+      (await this.chatService.isAdmin(client.data.uid, data.roomId)) === false
+    )
+      return new ForbiddenException('You are not admin')
     try {
       await this.chatService.addUserAsAdmin(data.uid, data.roomId)
     } catch (error) {
@@ -285,8 +287,10 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: UserInRoomDto,
   ) {
-    if (this.chatService.isAdmin(client.data.uid, data.roomId))
-      return 'You are not admin'
+    if (
+      (await this.chatService.isAdmin(client.data.uid, data.roomId)) === false
+    )
+      return new ForbiddenException('You are not admin')
     try {
       await this.chatService.removeUserAsAdmin(data.uid, data.roomId)
     } catch (error) {
@@ -302,8 +306,8 @@ export class ChatGateway {
   ) {
     const { uid, roomId } = data
     // check if client is admin
-    if (this.chatService.isAdmin(client.data.uid, roomId))
-      return 'You are not admin'
+    if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
+      return new ForbiddenException('You are not admin')
     // add user to banned list
     this.chatService.addBannedUser(uid, roomId)
     // let out user in room
@@ -328,8 +332,8 @@ export class ChatGateway {
   ) {
     const { uid, roomId } = data
     // check if client is admin
-    if (this.chatService.isAdmin(client.data.uid, roomId))
-      return 'You are not admin'
+    if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
+      return new ForbiddenException('You are not admin')
     // delete user from banned list
     this.chatService.deleteBannedUser(uid, roomId)
     console.log(`chat: ${uid} is unbanned from ${roomId}`)
