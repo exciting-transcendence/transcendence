@@ -15,9 +15,13 @@ interface SectionProps {
 export const Section = ({ title, users, onClick }: SectionProps) => (
   <>
     <ListSubheader>{title}</ListSubheader>
-    {users.map((user) =>
-      ProfileListItem({ user, onClick: () => onClick(user.uid) }),
-    )}
+    {users.map((user) => (
+      <ProfileListItem
+        key={user.uid}
+        user={user}
+        onClick={() => onClick(user.uid)}
+      />
+    ))}
   </>
 )
 interface Props {
