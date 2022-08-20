@@ -1,12 +1,8 @@
 import { useRef, useEffect, useState } from 'react'
 import Avatar from '@mui/material/Avatar'
-import { Stack, Typography, Box, Modal, Button, setRef } from '@mui/material'
+import { Stack, Typography, Box, Modal, Button } from '@mui/material'
 import styled from 'styled-components'
-import { useApiQuery } from 'hook'
-import { useAvatar } from 'hook/useAvatar'
-import { User } from 'data'
 import { useUserQuery } from 'hook/useUserQuery'
-import { PropaneSharp } from '@mui/icons-material'
 
 export type Rect = {
   x: number
