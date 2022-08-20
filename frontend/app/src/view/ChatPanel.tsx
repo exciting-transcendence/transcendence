@@ -6,6 +6,7 @@ import { Logout } from '@mui/icons-material'
 import { InviteUser } from './InviteUser'
 import { MemberView } from './MemberView'
 import { PwdSetOption } from './PwdSetModal'
+import { useState } from 'react'
 
 // TODO: 나가기 누를 때 한 번 더 확인하기
 const LeaveButton = ({ onClick }: { onClick: () => void }) => {
