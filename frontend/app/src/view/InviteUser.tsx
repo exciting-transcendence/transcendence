@@ -16,7 +16,7 @@ export const InviteUser = (prop: { socket: ChatSocket; roomId: number }) => {
       'INVITE',
       { inviteeNickname: nickName, roomId: prop.roomId },
       (res: any) => {
-        if (res.status === 400) setErr('일치하는 닉네임을 가진 유저가 없습니다')
+        if (res.status === 404) setErr('일치하는 닉네임을 가진 유저가 없습니다')
       },
     )
   }

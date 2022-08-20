@@ -24,7 +24,21 @@ interface ExtraOptionProps {
 }
 
 const ExtraOptionPerRoom = ({ socket, roomInfo }: ExtraOptionProps) => {
-  if (roomInfo.roomType === 'PUBLIC' || roomInfo.roomType === 'PROTECTED') {
+  const [isOwner, setIsOwner] = useState(false)
+  const { data: me, isSuccess: meOk } = useApiQuery<User>(['user', 'me'])
+  const { data: users, isSuccess: usersOk } = useApiQuery<ChatUser[]>(
+    ['chat', roomInfo.roomId, 'list'],
+    { enabled: meOk },
+  )
+  if (usersOk && meOk && isOwner === false) {
+    users.forEach((el) => {
+      if (el.user.uid === me.uid && el.isOwner) setIsOwner(true)
+    })
+  }
+  if (
+    (roomInfo.roomType === 'PUBLIC' || roomInfo.roomType === 'PROTECTED') &&
+    isOwner
+  ) {
     return <PwdSetOption socket={socket} roomInfo={roomInfo} />
   } else if (roomInfo.roomType === 'PRIVATE') {
     return <InviteUser socket={socket} roomId={roomInfo.roomId} />
