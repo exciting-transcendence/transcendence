@@ -322,7 +322,8 @@ export class ChatService {
 
   async getSocketByUid(server: Server, uid: number) {
     const clients = await server.fetchSockets()
-    clients.filter((soc) => soc.data && soc.data.uid && soc.data.uid === uid)
-    return clients
+    return clients.filter(
+      (soc) => soc.data && soc.data.uid && soc.data.uid === uid,
+    )
   }
 }

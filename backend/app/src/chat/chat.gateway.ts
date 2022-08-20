@@ -308,21 +308,27 @@ export class ChatGateway {
     // check if client is admin
     if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
       return new ForbiddenException('You are not admin')
+    // check if target is owner
+    if ((await this.chatService.isOwner(uid, roomId)) === false)
+      return new ForbiddenException('Owner cannot be banned')
     // add user to banned list
     this.chatService.addBannedUser(uid, roomId)
-    // let out user in room
-    const sockets = await this.chatService.getSocketByUid(this.server, uid)
+    // 모든 참여자에게 uid가 ban 됐음을 notice
     const msg: ChatMessageDto = {
       roomId: roomId,
       senderUid: uid,
       msgContent: 'banned',
       createdAt: new Date(),
     }
+    this.server.to(roomId.toString()).emit(chatEvent.NOTICE, msg)
+    // let user out from room
+    const sockets = await this.chatService.getSocketByUid(this.server, uid)
     sockets.forEach(async (el) => {
-      // return? emit notice?
-      el.emit(chatEvent.NOTICE, msg)
+      console.log(`${el.data.uid} will be banned`)
+      // el.emit(chatEvent.NOTICE, msg)
       el.leave(roomId.toString())
     })
+    return { status: 200 }
   }
 
   @SubscribeMessage(chatEvent.UNBAN)
@@ -337,7 +343,7 @@ export class ChatGateway {
     // delete user from banned list
     this.chatService.deleteBannedUser(uid, roomId)
     console.log(`chat: ${uid} is unbanned from ${roomId}`)
-    // return? emit notice?
+    return { status: 200 }
   }
 
   @AsyncApiPub({
