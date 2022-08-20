@@ -63,7 +63,7 @@ export class AuthController {
 
   @Get(':uid')
   async test(@Param('uid') uid: number) {
-    const user = await this.userService.findOneByUid(uid)
+    const user = await this.userService.findOneByUid(+uid)
 
     return {
       access_token: this.userService.issueToken(user, true),
