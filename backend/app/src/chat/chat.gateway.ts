@@ -212,7 +212,8 @@ export class ChatGateway {
   @AsyncApiSub({
     channel: chatEvent.NOTICE,
     summary: '공지msg',
-    description: "user 입장시 mscContent='join', 퇴장시 'leave'",
+    description:
+      "user 입장시 mscContent='join', 퇴장시 'leave'\n\n'banned'일 때 senderUid=밴된 당사자의 uid",
     message: { name: 'ChatMessageDto', payload: { type: ChatMessageDto } },
   })
   async emitNotice(uid: number, roomId: number, msg: string) {
@@ -299,6 +300,13 @@ export class ChatGateway {
     return { status: 200 }
   }
 
+  @AsyncApiPub({
+    channel: chatEvent.BAN,
+    summary: 'uid를 roomId의 banned 리스트에 추가',
+    description:
+      'admin이 아니거나 owner를 밴할 땐 403 리턴, uid나 roomId가 유효하지 않으면 400리턴',
+    message: { name: 'UserInRoomDto', payload: { type: UserInRoomDto } },
+  })
   @SubscribeMessage(chatEvent.BAN)
   async onBanUser(
     @ConnectedSocket() client: Socket,
@@ -312,7 +320,11 @@ export class ChatGateway {
     if ((await this.chatService.isOwner(uid, roomId)) === false)
       return new ForbiddenException('Owner cannot be banned')
     // add user to banned list
-    this.chatService.addBannedUser(uid, roomId)
+    try {
+      await this.chatService.addBannedUser(uid, roomId)
+    } catch (error) {
+      return error
+    }
     // 모든 참여자에게 uid가 ban 됐음을 notice
     const msg: ChatMessageDto = {
       roomId: roomId,
@@ -331,6 +343,13 @@ export class ChatGateway {
     return { status: 200 }
   }
 
+  @AsyncApiPub({
+    channel: chatEvent.UNBAN,
+    summary: 'uid를 roomId의 banned 리스트에서 삭제',
+    description:
+      'admin이 아닐 땐 403 리턴, uid나 roomId가 유효하지 않으면 400리턴',
+    message: { name: 'UserInRoomDto', payload: { type: UserInRoomDto } },
+  })
   @SubscribeMessage(chatEvent.UNBAN)
   async onUnbanUser(
     @ConnectedSocket() client: Socket,
@@ -341,7 +360,11 @@ export class ChatGateway {
     if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
       return new ForbiddenException('You are not admin')
     // delete user from banned list
-    this.chatService.deleteBannedUser(uid, roomId)
+    try {
+      await this.chatService.deleteBannedUser(uid, roomId)
+    } catch (error) {
+      return error
+    }
     console.log(`chat: ${uid} is unbanned from ${roomId}`)
     return { status: 200 }
   }
