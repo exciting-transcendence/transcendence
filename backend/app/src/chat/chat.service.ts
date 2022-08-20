@@ -179,7 +179,7 @@ export class ChatService {
       where: { id: roomId, chatUser: { user: { uid } } },
       relations: ['chatUser', 'chatUser.user'],
     })
-    if (!room) throw new NotFoundException('Room not found or User not in room')
+    if (!room) return false
     if (room.chatUser[0].isAdmin) return true
     return false
   }
@@ -257,7 +257,7 @@ export class ChatService {
       where: { id: roomId, chatUser: { user: { uid } } },
       relations: ['chatUser', 'chatUser.user'],
     })
-    if (!room) throw new NotFoundException('Room not found or User not in room')
+    if (!room) false
     if (room.chatUser[0].endOfMute > new Date()) return true
     return false
   }
