@@ -295,6 +295,49 @@ export class ChatGateway {
     return { status: 200 }
   }
 
+  @SubscribeMessage(chatEvent.BAN)
+  async onBanUser(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: UserInRoomDto,
+  ) {
+    const { uid, roomId } = data
+    // check if client is admin
+    if (this.chatService.isAdmin(client.data.uid, roomId))
+      return 'You are not admin'
+    // add user to banned list
+    this.chatService.addBannedUser(uid, roomId)
+    // let out user in room
+    const sockets = await this.server.fetchSockets()
+    sockets.forEach(async (el) => {
+      if (el.data && el.data.uid && el.data.uid === uid) {
+        const msg: ChatMessageDto = {
+          roomId: roomId,
+          senderUid: uid,
+          msgContent: 'banned',
+          createdAt: new Date(),
+        }
+        // return? emit notice?
+        el.emit(chatEvent.NOTICE, msg)
+        el.leave(roomId.toString())
+      }
+    })
+  }
+
+  @SubscribeMessage(chatEvent.UNBAN)
+  async onUnbanUser(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: UserInRoomDto,
+  ) {
+    const { uid, roomId } = data
+    // check if client is admin
+    if (this.chatService.isAdmin(client.data.uid, roomId))
+      return 'You are not admin'
+    // delete user from banned list
+    this.chatService.deleteBannedUser(uid, roomId)
+    console.log(`chat: ${uid} is unbanned from ${roomId}`)
+    // return? emit notice?
+  }
+
   @AsyncApiPub({
     channel: chatEvent.INVITE,
     summary: 'nickname을 roomID에 초대',
