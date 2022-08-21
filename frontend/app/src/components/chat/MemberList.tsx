@@ -6,6 +6,7 @@ import { ProfileDisplay } from 'components'
 import { useState } from 'react'
 import { ListSubheader } from '@mui/material'
 import { ProfileListItem } from 'components'
+import { MyProfile, OtherProfile } from 'components'
 
 interface SectionProps {
   title: string
@@ -45,6 +46,9 @@ export const MemberList = ({ users, refUser }: Props) => {
   const [id, setId] = useState(refUser.uid)
   const [open, { on, off }] = useToggles(false)
 
+  const otherUser = users.find((user) => user.uid === id)
+  const isMe = id === refUser.uid
+
   const openModal = (uid: number) => {
     on()
     setId(uid)
@@ -59,11 +63,11 @@ export const MemberList = ({ users, refUser }: Props) => {
       <Modal open={open} onClose={off}>
         <Box sx={style}>
           <Card sx={{ padding: '2vw' }}>
-            <ProfileDisplay
-              users={users as User[]}
-              refUser={refUser}
-              uid={id}
-            />
+            {isMe ? (
+              <MyProfile user={refUser} />
+            ) : otherUser ? (
+              <OtherProfile user={otherUser} refUser={refUser} />
+            ) : null}
           </Card>
         </Box>
       </Modal>

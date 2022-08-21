@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { ButtonGroup, Grid, Typography } from '@mui/material'
-import { User } from 'data'
+import { OtherUser, User } from 'data'
 import { Profile } from './Profile'
 import {
   AddFriendButton,
@@ -27,7 +27,7 @@ import {
 import { strtrim } from 'utility'
 
 type userStatus = 'DEFAULT' | 'BLOCKED' | 'FRIEND'
-const getStatus = (user: User, refUser: User): userStatus => {
+const getStatus = (user: OtherUser, refUser: User): userStatus => {
   if (refUser.blocks.includes(user.uid)) {
     return 'BLOCKED'
   } else if (refUser.friends.includes(user.uid)) {
@@ -100,7 +100,7 @@ const Actions = ({
 }
 
 interface Props {
-  user: User
+  user: OtherUser
   refUser: User
 }
 export const OtherProfile = ({ user, refUser }: Props) => {

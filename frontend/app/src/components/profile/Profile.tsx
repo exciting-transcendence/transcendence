@@ -1,5 +1,5 @@
 import { Grid, Typography } from '@mui/material'
-import { Stat, User } from 'data'
+import { OtherUser, Stat, User } from 'data'
 import { ButtonGroup } from '@mui/material'
 import { ChangeAvatarButton, ChangeNickNameButton } from './userActions'
 import { ReactNode } from 'react'
@@ -24,7 +24,7 @@ const StatDisplay = ({ stat }: { stat?: Stat }) => {
 }
 
 interface Props {
-  user: User
+  user: OtherUser
 }
 export const Profile = ({ user }: Props) => {
   const { uid, stat, avatar, nickname, status } = user
