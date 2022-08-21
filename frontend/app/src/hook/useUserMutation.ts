@@ -67,11 +67,25 @@ export const avatarChangeMutation = () => {
   const { headers } = getAuthHeader()
 
   return useMutation(
-    (avatar: File) => {
-      const formData = new FormData()
-      formData.append('file', avatar)
-      return axios.post('/api/avatar/change', { avatar }, { headers })
+    async (avatar: File) => {
+      const formdata = new FormData()
+      const { headers } = getAuthHeader()
+      formdata.append('file', avatar)
+
+      const result = await fetch('/api/avatar/change', {
+        method: 'POST',
+        headers,
+        body: formdata,
+      })
+      console.log(result)
+      return result
     },
+    // (avatar: File) => {
+    //   const formdata = new FormData()
+    //   formdata.append('file', avatar)
+
+    //   return axios.post('/api/avatar/change', { body: formdata }, { headers })
+    // },
     { onSuccess: () => queryClient.invalidateQueries(['user', 'me']) },
   )
 }

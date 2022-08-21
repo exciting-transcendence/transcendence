@@ -15,7 +15,7 @@ import {
 import { ChangeAvatarButton } from './userActions'
 import { ReactNode } from 'react'
 import { AvatarWithStatus, IconButtonWrap } from 'components'
-import { renameMutation, useToggles } from 'hook'
+import { avatarChangeMutation, renameMutation, useToggles } from 'hook'
 import { ButtonGroup, Container } from '@mui/material'
 import { FormContainer, TextFieldElement } from 'react-hook-form-mui'
 import { useForm } from 'react-hook-form'
@@ -89,6 +89,7 @@ const RenameForm = ({ off }: FormProps) => {
   const { register, watch } = formContext
 
   const rename = renameMutation()
+  const changeAvatar = avatarChangeMutation()
   const watchImage = watch('image')
   const preview =
     watchImage && watchImage[0] ? URL.createObjectURL(watchImage[0]) : ''
@@ -102,6 +103,7 @@ const RenameForm = ({ off }: FormProps) => {
           rename.mutate(data.nickname)
         }
         if (data.image) {
+          changeAvatar.mutate(data.image[0])
         }
         off()
       }}
