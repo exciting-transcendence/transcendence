@@ -24,6 +24,7 @@ import {
   unblockMutation,
   useApiQuery,
 } from 'hook'
+import { strtrim } from 'utility'
 
 type userStatus = 'DEFAULT' | 'BLOCKED' | 'FRIEND'
 const getStatus = (user: User, refUser: User): userStatus => {
@@ -71,7 +72,7 @@ const Actions = ({
       {chatSocket && otherUser && me ? (
         <MessageButton
           onClick={() => {
-            const title = `${me}${otherUser}`
+            const title = strtrim(`DM${me}${otherUser}`)
             chatSocket.emit('CREATE', { title, type: 'DM' }, (res) => {
               if (res.status !== 200) {
                 alert('Error creating chat')
