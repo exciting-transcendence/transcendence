@@ -102,7 +102,7 @@ const RenameForm = ({ off }: FormProps) => {
         if (data.nickname) {
           rename.mutate(data.nickname)
         }
-        if (data.image) {
+        if (data.image && data.image[0]) {
           changeAvatar.mutate(data.image[0])
         }
         off()
