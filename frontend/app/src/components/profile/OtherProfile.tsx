@@ -11,7 +11,7 @@ import {
   JoinGameAsSpectatorButton,
 } from './userActions'
 
-import { PongSocketContext } from 'router/Main'
+import { ChatSocketContext, PongSocketContext } from 'router/Main'
 import { useNavigate } from 'react-router-dom'
 import { getAuthHeader } from 'hook/getAuthHeader'
 import axios from 'axios'
@@ -22,6 +22,7 @@ import {
   refreshUsers,
   removeFriendMutation,
   unblockMutation,
+  useApiQuery,
 } from 'hook'
 
 type userStatus = 'DEFAULT' | 'BLOCKED' | 'FRIEND'
@@ -45,8 +46,10 @@ const Actions = ({
   isInGame: boolean
 }) => {
   const pongSocket = useContext(PongSocketContext)
+  const chatSocket = useContext(ChatSocketContext)
+  const me = useApiQuery<User>(['user', 'me'])
+  const otherUser = useApiQuery<User>(['user', selfUid])
   const navigate = useNavigate()
-  const { headers } = getAuthHeader()
   const [block, unblock, addFriend, removeFriend] = [
     blockMutation(),
     unblockMutation(),
@@ -65,7 +68,20 @@ const Actions = ({
         <AddFriendButton onClick={() => addFriend.mutate(selfUid)} />
       )}
       <BlockButton onClick={() => block.mutate(selfUid)} />
-      <MessageButton onClick={() => alert('pressed direct message button')} />
+      {chatSocket && otherUser && me ? (
+        <MessageButton
+          onClick={() => {
+            const title = `${me}${otherUser}`
+            chatSocket.emit('CREATE', { title, type: 'DM' }, (res) => {
+              if (res.status !== 200) {
+                alert('Error creating chat')
+              } else {
+                navigate('/chat')
+              }
+            })
+          }}
+        />
+      ) : null}
       {isInGame ? (
         <JoinGameAsSpectatorButton
           onClick={() => {
