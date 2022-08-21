@@ -62,3 +62,16 @@ export const renameMutation = () => {
     { onSuccess: () => queryClient.invalidateQueries(['user', 'me']) },
   )
 }
+
+export const avatarChangeMutation = () => {
+  const { headers } = getAuthHeader()
+
+  return useMutation(
+    (avatar: File) => {
+      const formData = new FormData()
+      formData.append('file', avatar)
+      return axios.post('/api/avatar/change', { avatar }, { headers })
+    },
+    { onSuccess: () => queryClient.invalidateQueries(['user', 'me']) },
+  )
+}

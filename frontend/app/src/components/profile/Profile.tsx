@@ -7,14 +7,19 @@ import {
   Paper,
   TextField,
   Typography,
+  Avatar,
+  inputAdornmentClasses,
+  Tooltip,
+  IconButton,
 } from '@mui/material'
-import { ChangeAvatarButton, ChangeNickNameButton } from './userActions'
+import { ChangeAvatarButton } from './userActions'
 import { ReactNode } from 'react'
-import { AvatarWithStatus } from 'components'
+import { AvatarWithStatus, IconButtonWrap } from 'components'
 import { renameMutation, useToggles } from 'hook'
 import { ButtonGroup, Container } from '@mui/material'
 import { FormContainer, TextFieldElement } from 'react-hook-form-mui'
 import { useForm } from 'react-hook-form'
+import { DriveFileRenameOutline, PhotoCamera } from '@mui/icons-material'
 
 const StatDisplay = ({ stat }: { stat?: Stat }) => {
   if (!stat) {
@@ -75,38 +80,49 @@ export const modalStyle = {
   padding: '2em',
   transform: 'translate(-50%, -50%)',
 }
+
 interface FormProps {
   off: () => void
 }
 const RenameForm = ({ off }: FormProps) => {
-  const formContext = useForm<{ nickname: string }>()
+  const formContext = useForm<{ nickname?: string; image?: FileList }>()
+  const { register, watch } = formContext
+
   const rename = renameMutation()
+  const watchImage = watch('image')
+  const preview =
+    watchImage && watchImage[0] ? URL.createObjectURL(watchImage[0]) : ''
 
   return (
     <FormContainer
       formContext={formContext}
       onSuccess={(data) => {
+        console.log(data)
         if (data.nickname) {
           rename.mutate(data.nickname)
         }
+        if (data.image) {
+        }
+        off()
       }}
     >
+      <Avatar alt="preview" src={preview} sx={{ width: 100, height: 100 }} />
+      <Button variant="outlined" component="label" endIcon={<PhotoCamera />}>
+        Upload Avatar
+        <input {...register('image')} hidden accept="image/*" type="file" />
+      </Button>
+      <br />
       <TextFieldElement
         name="nickname"
         label="nickname"
-        required
-        fullWidth
         validation={{ pattern: /^[A-Za-z]+$/i, minLength: 1, maxLength: 30 }}
       />
       <br />
-      <Grid container justifyContent="right">
-        <ButtonGroup variant="text">
-          <Button type={'submit'} color={'primary'}>
-            Submit
-          </Button>
-          <Button onClick={off}>Close</Button>
-        </ButtonGroup>
-      </Grid>
+      <ButtonGroup variant="contained">
+        <Button type={'submit'} color={'primary'}>
+          Update Profile
+        </Button>
+      </ButtonGroup>
     </FormContainer>
   )
 }
@@ -118,6 +134,7 @@ export const MyProfile = ({ user }: Props) => {
     <>
       <Modal open={open} onClose={off}>
         <Paper sx={modalStyle}>
+          <Typography variant="h2">Update Profile</Typography>
           <RenameForm off={off} />
         </Paper>
       </Modal>
@@ -125,8 +142,11 @@ export const MyProfile = ({ user }: Props) => {
       <ProfileActions
         actions={
           <ButtonGroup>
-            <ChangeNickNameButton onClick={on} />
-            <ChangeAvatarButton onClick={() => null} />
+            <IconButtonWrap
+              title="프로필 변경"
+              icon={<DriveFileRenameOutline />}
+              onClick={on}
+            />
           </ButtonGroup>
         }
       />
