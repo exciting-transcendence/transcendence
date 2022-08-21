@@ -21,8 +21,8 @@ export const blockMutation = () => {
   const { headers } = getAuthHeader()
 
   return useMutation(
-    (uid: number) =>
-      axios.post('/api/user/block', { targetUid: uid }, { headers }),
+    (targetUid: number) =>
+      axios.post('/api/user/block', { targetUid }, { headers }),
     { onSuccess: refreshUsers },
   )
 }
@@ -50,5 +50,15 @@ export const removeFriendMutation = () => {
         data: { targetUid: uid },
       }),
     { onSuccess: refreshUsers },
+  )
+}
+
+export const renameMutation = () => {
+  const { headers } = getAuthHeader()
+
+  return useMutation(
+    (nickname: string) =>
+      axios.post('/api/user/nickname', { nickname }, { headers }),
+    { onSuccess: () => queryClient.invalidateQueries(['user', 'me']) },
   )
 }
