@@ -373,6 +373,13 @@ export class ChatGateway {
     return { status: 200 }
   }
 
+  @AsyncApiPub({
+    channel: chatEvent.MUTE,
+    summary: 'uid를 muteSec초동안 mute시킴',
+    description:
+      'admin이 아닐 땐 403 리턴, uid가 보낸 메시지는 roomId내에서 muteSec초동안 아무에게도 전달되지 않음',
+    message: { name: 'ChatMuteUserDto', payload: { type: ChatMuteUserDto } },
+  })
   @SubscribeMessage(chatEvent.MUTE)
   async onMuteUser(
     @ConnectedSocket() client: Socket,
@@ -392,6 +399,13 @@ export class ChatGateway {
     return { status: 200 }
   }
 
+  @AsyncApiPub({
+    channel: chatEvent.UNMUTE,
+    summary: 'uid의 mute 상태를 해제',
+    description:
+      'admin이 아닐 땐 403 리턴, uid가 보낸 메시지를 roomId의 모든 참여자가 수신할 수 있음',
+    message: { name: 'ChatMuteUserDto', payload: { type: ChatMuteUserDto } },
+  })
   @SubscribeMessage(chatEvent.UNMUTE)
   async onUnmuteUser(
     @ConnectedSocket() client: Socket,
