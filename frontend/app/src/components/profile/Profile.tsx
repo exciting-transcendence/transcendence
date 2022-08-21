@@ -85,14 +85,14 @@ interface FormProps {
   off: () => void
 }
 const RenameForm = ({ off }: FormProps) => {
-  const formContext = useForm<{ nickname?: string; image?: FileList }>()
+  const formContext = useForm<{ nickname?: string; images?: FileList }>()
   const { register, watch } = formContext
 
   const rename = renameMutation()
   const changeAvatar = avatarChangeMutation()
-  const watchImage = watch('image')
+  const watchImages = watch('images')
   const preview =
-    watchImage && watchImage[0] ? URL.createObjectURL(watchImage[0]) : ''
+    watchImages && watchImages[0] ? URL.createObjectURL(watchImages[0]) : ''
 
   return (
     <FormContainer
@@ -102,8 +102,8 @@ const RenameForm = ({ off }: FormProps) => {
         if (data.nickname) {
           rename.mutate(data.nickname)
         }
-        if (data.image && data.image[0]) {
-          changeAvatar.mutate(data.image[0])
+        if (data.images && data.images[0]) {
+          changeAvatar.mutate(data.images[0])
         }
         off()
       }}
@@ -111,7 +111,7 @@ const RenameForm = ({ off }: FormProps) => {
       <Avatar alt="preview" src={preview} sx={{ width: 100, height: 100 }} />
       <Button variant="outlined" component="label" endIcon={<PhotoCamera />}>
         Upload Avatar
-        <input {...register('image')} hidden accept="image/*" type="file" />
+        <input {...register('images')} hidden accept="image/*" type="file" />
       </Button>
       <br />
       <TextFieldElement
