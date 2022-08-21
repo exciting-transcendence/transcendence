@@ -14,7 +14,7 @@ type Messages = {
   [roomId: number]: Message[]
 }
 
-export const ChatView = ({ socket }: { socket: ChatSocket | undefined }) => {
+export const ChatView = ({ socket }: { socket?: ChatSocket }) => {
   const [modal, setModal] = useState(false)
   const [messages, setMessages] = useState<Messages>({})
   const [showChat, setShowChat] = useState({
