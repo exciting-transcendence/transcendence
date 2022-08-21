@@ -70,7 +70,7 @@ const Actions = ({
     return <UnblockButton onClick={() => unblock.mutate(selfUid)} />
   }
   return (
-    <ButtonGroup>
+    <>
       {status === 'FRIEND' ? (
         <RemoveFriendButton onClick={() => removeFriend.mutate(selfUid)} />
       ) : (
@@ -99,15 +99,16 @@ const Actions = ({
           }}
         />
       ) : null}
-    </ButtonGroup>
+    </>
   )
 }
 
 interface Props {
   user: OtherUser
   refUser: User
+  buttons?: JSX.Element
 }
-export const OtherProfile = ({ user, refUser }: Props) => {
+export const OtherProfile = ({ user, refUser, buttons }: Props) => {
   const status = getStatus(user, refUser)
 
   return (
@@ -115,11 +116,14 @@ export const OtherProfile = ({ user, refUser }: Props) => {
       <Profile user={user} />
       <Typography align="center">{`status: ${status}`}</Typography>
       <Grid container justifyContent="right">
-        <Actions
-          status={status}
-          isInGame={user.status === 'GAME'}
-          selfUid={user.uid}
-        />
+        <ButtonGroup>
+          {buttons}
+          <Actions
+            status={status}
+            isInGame={user.status === 'GAME'}
+            selfUid={user.uid}
+          />
+        </ButtonGroup>
       </Grid>
     </>
   )
