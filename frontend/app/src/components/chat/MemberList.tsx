@@ -1,4 +1,4 @@
-import { Card, List, Modal, Container } from '@mui/material'
+import { Card, List, Modal, Container, Box } from '@mui/material'
 import { OtherUser, User } from 'data'
 import { useToggles } from 'hook'
 import { partition } from 'utility'
@@ -24,6 +24,16 @@ export const Section = ({ title, users, onClick }: SectionProps) => (
     ))}
   </>
 )
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '30vw',
+  height: '20vw',
+}
+
 interface Props {
   // TODO: ChatUser 배열을 받아 추가 정보 표시?
   /** 모든 사용자 */
@@ -47,15 +57,15 @@ export const MemberList = ({ users, refUser }: Props) => {
   return (
     <List>
       <Modal open={open} onClose={off}>
-        <Container>
-          <Card sx={{ maxWidth: '25vw' }}>
+        <Box sx={style}>
+          <Card sx={{ padding: '2vw' }}>
             <ProfileDisplay
               users={users as User[]}
               refUser={refUser}
               uid={id}
             />
           </Card>
-        </Container>
+        </Box>
       </Modal>
 
       <Section
