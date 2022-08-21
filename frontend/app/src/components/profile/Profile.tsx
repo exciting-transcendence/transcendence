@@ -5,7 +5,10 @@ import { ChangeAvatarButton, ChangeNickNameButton } from './userActions'
 import { ReactNode } from 'react'
 import { AvatarWithStatus } from 'components'
 
-const StatDisplay = ({ stat }: { stat: Stat }) => {
+const StatDisplay = ({ stat }: { stat?: Stat }) => {
+  if (!stat) {
+    return <Typography>정보 없음</Typography>
+  }
   return (
     <>
       {Object.entries(stat).map(([key, value]) => (
