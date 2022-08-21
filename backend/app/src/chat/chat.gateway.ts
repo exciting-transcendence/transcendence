@@ -23,6 +23,9 @@ import { Status } from 'user/status.enum'
 import { ChatInviteDto } from 'dto/chatInvite.dto'
 import { ChatPasswordDto } from 'dto/chatRoomPassword.dto'
 import { RoomPasswordCommand } from './roomPasswordCommand.enum'
+import { ChatInviteDMDto } from 'dto/chatInviteDM.dto'
+import { RoomType } from './roomtype.enum'
+import { ChatMuteUserDto } from 'dto/chatMuteUser.dto'
 
 @AsyncApiService()
 @UsePipes(new WSValidationPipe())
@@ -317,7 +320,7 @@ export class ChatGateway {
     if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
       return new ForbiddenException('You are not admin')
     // check if target is owner
-    if ((await this.chatService.isOwner(uid, roomId)) === false)
+    if ((await this.chatService.isOwner(uid, roomId)) === true)
       return new ForbiddenException('Owner cannot be banned')
     // add user to banned list
     try {
@@ -336,10 +339,11 @@ export class ChatGateway {
     // let user out from room
     const sockets = await this.chatService.getSocketByUid(this.server, uid)
     sockets.forEach(async (el) => {
-      console.log(`${el.data.uid} will be banned`)
+      console.log(`${el.data.uid} will be banned from ${roomId}`)
       // el.emit(chatEvent.NOTICE, msg)
       el.leave(roomId.toString())
     })
+    // await this.chatService.removeUserFromRoom(uid, roomId)
     return { status: 200 }
   }
 
@@ -366,6 +370,58 @@ export class ChatGateway {
       return error
     }
     console.log(`chat: ${uid} is unbanned from ${roomId}`)
+    return { status: 200 }
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.MUTE,
+    summary: 'uid를 muteSec초동안 mute시킴',
+    description:
+      'admin이 아닐 땐 403 리턴, uid가 보낸 메시지는 roomId내에서 muteSec초동안 아무에게도 전달되지 않음',
+    message: { name: 'ChatMuteUserDto', payload: { type: ChatMuteUserDto } },
+  })
+  @SubscribeMessage(chatEvent.MUTE)
+  async onMuteUser(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: ChatMuteUserDto,
+  ) {
+    const { roomId, muteSec } = data
+    const target = data.uid
+    // check if client is admin
+    if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
+      return new ForbiddenException('You are not admin')
+    try {
+      await this.chatService.addMuteUser(target, roomId, muteSec)
+    } catch (error) {
+      return error
+    }
+    console.log(`${target} in is muted for ${muteSec} seconds in ${roomId}`)
+    return { status: 200 }
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.UNMUTE,
+    summary: 'uid의 mute 상태를 해제',
+    description:
+      'admin이 아닐 땐 403 리턴, uid가 보낸 메시지를 roomId의 모든 참여자가 수신할 수 있음',
+    message: { name: 'ChatMuteUserDto', payload: { type: ChatMuteUserDto } },
+  })
+  @SubscribeMessage(chatEvent.UNMUTE)
+  async onUnmuteUser(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: ChatMuteUserDto,
+  ) {
+    const roomId = data.roomId
+    const target = data.uid
+    // check if client is admin
+    if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
+      return new ForbiddenException('You are not admin')
+    try {
+      await this.chatService.addMuteUser(target, roomId, 0)
+    } catch (error) {
+      return error
+    }
+    console.log(`${target} in is unmuted in ${roomId}`)
     return { status: 200 }
   }
 
@@ -404,6 +460,50 @@ export class ChatGateway {
     console.log(`chat: ${invitee} has entered to ${roomId}`)
     // room의 모두에게 NOTICE 전송
     this.emitNotice(invitee, roomId, 'join')
+  }
+
+  @AsyncApiPub({
+    channel: chatEvent.INVITE_DM,
+    summary: 'invitee와의 DM방 생성',
+    description:
+      'dm방을 새로 만들고 sender와 invitee를 집어넣음. sender와 invitee에게 "join"을 NOTICE',
+    message: { name: 'ChatInviteDMDto', payload: { type: ChatInviteDMDto } },
+  })
+  @SubscribeMessage(chatEvent.INVITE_DM)
+  async onInviteDM(
+    @ConnectedSocket() client,
+    @MessageBody() data: ChatInviteDMDto,
+  ) {
+    const inviter = client.data.uid
+    const { title, invitee } = data
+    // TODO: inviter, invitee 둘이 속한 DM방이 있는지 확인
+    // TODO: title 서버에서 생성
+    // TODO: inviter가 나가도 채팅방 폭파시키지 않기
+
+    // create new DM room
+    let newRoom: ChatRoom
+    try {
+      newRoom = await this.chatService.createChatroom(
+        inviter,
+        title,
+        RoomType.DM,
+      )
+    } catch (error) {
+      return error
+    }
+    client.join(newRoom.id.toString())
+    console.log(`chat: ${inviter} has entered to ${newRoom.id}`)
+
+    this.chatService.addUserToRoom(invitee, newRoom.id)
+    const sockets = await this.chatService.getSocketByUid(this.server, invitee)
+    sockets.forEach(async (el) => {
+      el.join(newRoom.id.toString())
+    })
+    console.log(`chat: ${invitee} has entered to ${newRoom.id}`)
+
+    this.emitNotice(inviter, newRoom.id, 'join')
+    this.emitNotice(invitee, newRoom.id, 'join')
+    return { status: 200 }
   }
 
   @AsyncApiPub({
