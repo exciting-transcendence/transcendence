@@ -29,7 +29,7 @@ import { ChatMuteUserDto } from 'dto/chatMuteUser.dto'
 
 @AsyncApiService()
 @UsePipes(new WSValidationPipe())
-@WebSocketGateway({ namespace: 'api/chat', cors: true })
+@WebSocketGateway({ namespace: 'api/chat', transports: ['websocket'] })
 export class ChatGateway {
   constructor(private readonly chatService: ChatService) {}
   @WebSocketServer()
