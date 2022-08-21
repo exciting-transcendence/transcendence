@@ -412,7 +412,8 @@ export class ChatGateway {
   @AsyncApiPub({
     channel: chatEvent.INVITE_DM,
     summary: 'invitee와의 DM방 생성',
-    description: 'dm방이 만들어지면 sender와 invitee에게 "join"을 NOTICE',
+    description:
+      'dm방을 새로 만들고 sender와 invitee를 집어넣음. sender와 invitee에게 "join"을 NOTICE',
     message: { name: 'ChatInviteDMDto', payload: { type: ChatInviteDMDto } },
   })
   @SubscribeMessage(chatEvent.INVITE_DM)
