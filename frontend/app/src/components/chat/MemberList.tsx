@@ -1,4 +1,4 @@
-import { Card, List, Modal, Container, Box } from '@mui/material'
+import { Card, List, Modal, Container, Box, Button } from '@mui/material'
 import { OtherUser, User } from 'data'
 import { useToggles } from 'hook'
 import { partition } from 'utility'
@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { ListSubheader } from '@mui/material'
 import { ProfileListItem } from 'components'
 import { MyProfile, OtherProfile } from 'components'
+import { MemberListOption } from '../../view/MemberListOption'
 
 interface SectionProps {
   title: string
@@ -68,6 +69,7 @@ export const MemberList = ({ users, refUser }: Props) => {
             ) : otherUser ? (
               <OtherProfile user={otherUser} refUser={refUser} />
             ) : null}
+            <MemberListOption />
           </Card>
         </Box>
       </Modal>
