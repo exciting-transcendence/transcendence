@@ -7,6 +7,7 @@ import { io, Socket } from 'socket.io-client'
 import { usePongSocket, useChatSocket } from 'hook'
 
 import { ChatSocket } from 'data'
+import axios from 'axios'
 
 export const PongSocketContext = createContext<Socket | undefined>(undefined)
 export const ChatSocketContext = createContext<ChatSocket | undefined>(
@@ -15,7 +16,7 @@ export const ChatSocketContext = createContext<ChatSocket | undefined>(
 export const MainRouter = () => {
   const pongData = usePongSocket()
   const chatSocket = useChatSocket()
-
+  axios.get('api/auth/test/2').then((res) => console.log(res))
   return (
     <div>
       <Nav />

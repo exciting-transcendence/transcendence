@@ -19,7 +19,7 @@ export const MemberListOption = ({ user, refUser, roomInfo }: Props) => {
   const [adminMsg, setAdminMsg] = useState('관리자 지정')
   const socket = useContext(ChatSocketContext)
   const isMuted: boolean = new Date(user.endOfMute) > new Date()
-  const [muteSec, setMuteSec] = useState<string>('')
+  // const [muteSec, setMuteSec] = useState<string>('')
   const [banSec, setBanSec] = useState<string>('')
   let muteText = 'MUTE'
   if (isMuted) muteText = 'UNMUTE'
@@ -49,11 +49,11 @@ export const MemberListOption = ({ user, refUser, roomInfo }: Props) => {
     }
   }
   const handleMute = () => {
-    if (muteSec && isMuted === false) {
+    if (isMuted === false) {
       socket.emit('MUTE', {
         roomId: roomInfo.roomId,
         uid: user.user.uid,
-        muteSec: parseInt(muteSec),
+        muteSec: 1000,
       })
     } else if (isMuted === true)
       socket.emit('UNMUTE', {
@@ -89,14 +89,14 @@ export const MemberListOption = ({ user, refUser, roomInfo }: Props) => {
         {me !== 'Nothing' && other !== 'Owner' ? (
           <Box sx={{ display: 'flex' }} justifyContent="center">
             <Button variant="outlined" size="small" onClick={handleMute}>
-              {isMuted ? (
+              {/* {isMuted ? (
                 <></>
               ) : (
                 <Input
                   onChange={(e) => setMuteSec(e.target.value)}
                   placeholder="초"
                 />
-              )}
+              )} */}
               {muteText}
             </Button>
             <Button variant="outlined" size="small" onClick={handleBan}>
