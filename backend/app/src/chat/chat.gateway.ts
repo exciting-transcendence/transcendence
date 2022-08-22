@@ -258,6 +258,8 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: ChatCreateRoomDto,
   ) {
+    if (data.type === RoomType.DM)
+      return new BadRequestException('DM room should be created by INVITE_DM')
     let newRoom: ChatRoom
     try {
       newRoom = await this.chatService.createChatroom(
@@ -499,7 +501,8 @@ export class ChatGateway {
     const { invitee } = data
     let { title } = data
     if (title === undefined) title = `DM_with_${inviter}_and_${invitee}`
-    // TODO: inviter, invitee 둘이 속한 DM방이 있는지 확인
+
+    // inviter, invitee 둘이 속한 DM방이 있는지 확인
     const room = await this.chatService.getRoomDmByUid(inviter, invitee)
     if (room) {
       return new BadRequestException(
@@ -507,23 +510,16 @@ export class ChatGateway {
       )
     }
 
-    // TODO: inviter가 나가도 채팅방 폭파시키지 않기
-
     // create new DM room
     let newRoom: ChatRoom
     try {
-      newRoom = await this.chatService.createChatroom(
-        inviter,
-        title,
-        RoomType.DM,
-      )
+      newRoom = await this.chatService.createDmRoom(inviter, invitee, title)
     } catch (error) {
       return error
     }
     client.join(newRoom.id.toString())
     console.log(`chat: ${inviter} has entered to ${newRoom.id}`)
 
-    this.chatService.addUserToRoom(invitee, newRoom.id)
     const sockets = await this.chatService.getSocketByUid(this.server, invitee)
     sockets.forEach(async (el) => {
       el.join(newRoom.id.toString())
