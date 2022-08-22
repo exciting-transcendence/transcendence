@@ -8,12 +8,12 @@ interface Props {
   user: ChatUser
   /** 로그인한 사용자 */
   refUser: ChatUser | undefined
-  roomId: number
+  roomInfo: { bool: boolean; roomId: number; roomType: string }
 }
 
 type UserType = 'Nothing' | 'Admin' | 'Owner'
 
-export const MemberListOption = ({ user, refUser, roomId }: Props) => {
+export const MemberListOption = ({ user, refUser, roomInfo }: Props) => {
   const [me, setMe] = useState<UserType>('Nothing')
   const [other, setOther] = useState<UserType>('Nothing')
   const [adminMsg, setAdminMsg] = useState('관리자 지정')
@@ -40,77 +40,89 @@ export const MemberListOption = ({ user, refUser, roomId }: Props) => {
   console.log(refUser, user, me, other, isMuted)
   const handleAdmin = () => {
     if (other === 'Admin')
-      socket.emit('REMOVE_ADMIN', { roomId: roomId, uid: user.user.uid })
+      socket.emit('REMOVE_ADMIN', {
+        roomId: roomInfo.roomId,
+        uid: user.user.uid,
+      })
     else if (other === 'Nothing') {
-      socket.emit('ADD_ADMIN', { roomId: roomId, uid: user.user.uid })
+      socket.emit('ADD_ADMIN', { roomId: roomInfo.roomId, uid: user.user.uid })
     }
   }
   const handleMute = () => {
     if (muteSec && isMuted === false) {
       socket.emit('MUTE', {
-        roomId: roomId,
+        roomId: roomInfo.roomId,
         uid: user.user.uid,
         muteSec: parseInt(muteSec),
       })
     } else if (isMuted === true)
       socket.emit('UNMUTE', {
-        roomId: roomId,
+        roomId: roomInfo.roomId,
         uid: user.user.uid,
       })
   }
   const handleBan = () => {
     if (!banSec || banSec === '0')
       socket.emit('BAN', {
-        roomId: roomId,
+        roomId: roomInfo.roomId,
         uid: user.user.uid,
         banSec: 0,
       })
     else if (banSec)
       socket.emit('BAN', {
-        roomId: roomId,
+        roomId: roomInfo.roomId,
         uid: user.user.uid,
         banSec: parseInt(banSec),
       })
   }
-
-  return (
-    <>
-      {me !== 'Nothing' && other !== 'Owner' ? (
-        <Box sx={{ display: 'flex' }} justifyContent="center">
-          <Button variant="outlined" size="small" onClick={handleMute}>
-            {isMuted ? (
-              <></>
-            ) : (
-              <Input
-                onChange={(e) => setMuteSec(e.target.value)}
-                placeholder="초"
-              />
-            )}
-            {muteText}
-          </Button>
-          <Button variant="outlined" size="small" onClick={handleBan}>
-            <Input
-              onChange={(e) => setBanSec(e.target.value)}
-              placeholder="초"
-            />
-            BAN
-          </Button>
-        </Box>
-      ) : (
-        <></>
-      )}
+  if (roomInfo.roomType === 'DM')
+    return (
       <Box sx={{ display: 'flex' }} justifyContent="center">
-        {me !== 'Nothing' && other !== 'Owner' ? (
-          <Button variant="outlined" size="small" onClick={handleAdmin}>
-            {adminMsg}
-          </Button>
-        ) : (
-          <></>
-        )}
         <Button variant="outlined" size="small">
           게임초대
         </Button>
       </Box>
-    </>
-  )
+    )
+  else {
+    return (
+      <>
+        {me !== 'Nothing' && other !== 'Owner' ? (
+          <Box sx={{ display: 'flex' }} justifyContent="center">
+            <Button variant="outlined" size="small" onClick={handleMute}>
+              {isMuted ? (
+                <></>
+              ) : (
+                <Input
+                  onChange={(e) => setMuteSec(e.target.value)}
+                  placeholder="초"
+                />
+              )}
+              {muteText}
+            </Button>
+            <Button variant="outlined" size="small" onClick={handleBan}>
+              <Input
+                onChange={(e) => setBanSec(e.target.value)}
+                placeholder="초"
+              />
+              BAN
+            </Button>
+          </Box>
+        ) : (
+          <></>
+        )}
+        <Box sx={{ display: 'flex' }} justifyContent="center">
+          {me !== 'Nothing' && other !== 'Owner' ? (
+            <Button variant="outlined" size="small" onClick={handleAdmin}>
+              {adminMsg}
+            </Button>
+          ) : (
+            <></>
+          )}
+          <Button variant="outlined" size="small">
+            게임초대
+          </Button>
+        </Box>
+      </>
+    )
+  }
 }
