@@ -344,12 +344,11 @@ export class ChatService {
     const room = await this.chatRoomRepository
       .createQueryBuilder('chatRoom')
       .where('chatRoom.roomtype = :roomtype', { roomtype: RoomType.DM })
-      .andWhere('user.uid = :uid', { uid1 })
-      .andWhere('user.uid = :uid', { uid2 })
+      .andWhere('user.uid = :uid', { uid: uid1 })
+      .andWhere('user.uid = :uid', { uid: uid2 })
       .leftJoin('chatRoom.chatUser', 'chatUser')
       .leftJoin('chatUser.user', 'user')
       .getOne()
-    if (!room) throw new NotFoundException('Dm not found')
     return room
   }
 }
