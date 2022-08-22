@@ -495,6 +495,12 @@ export class ChatGateway {
     let { title } = data
     if (title === undefined) title = `DM_with_${inviter}_and_${invitee}`
     // TODO: inviter, invitee 둘이 속한 DM방이 있는지 확인
+    const room = await this.chatService.getRoomDmByUid(inviter, invitee)
+    if (room) {
+      return new BadRequestException(
+        `DM for ${inviter} and ${invitee} already exists(roomId ${room.id})`,
+      )
+    }
 
     // TODO: inviter가 나가도 채팅방 폭파시키지 않기
 
