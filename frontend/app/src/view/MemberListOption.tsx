@@ -18,8 +18,9 @@ export const MemberListOption = ({ user, refUser, roomId }: Props) => {
   const [other, setOther] = useState<UserType>('Nothing')
   const [adminMsg, setAdminMsg] = useState('관리자 지정')
   const socket = useContext(ChatSocketContext)
-  const input = useRef<HTMLInputElement>()
-  const isMuted: boolean = user.endOfMute > new Date()
+  const isMuted: boolean = new Date(user.endOfMute) > new Date()
+  const [muteSec, setMuteSec] = useState<string>('')
+  const [banSec, setBanSec] = useState<string>('')
   let muteText = 'MUTE'
   if (isMuted) muteText = 'UNMUTE'
   if (refUser === undefined || socket === undefined) return <></>
@@ -36,55 +37,80 @@ export const MemberListOption = ({ user, refUser, roomId }: Props) => {
       setOther('Nothing')
     }
   })
-  console.log(user)
+  console.log(refUser, user, me, other, isMuted)
   const handleAdmin = () => {
     if (other === 'Admin')
-      socket.emit('REMOVE_ADMIN', { roomId: roomId, uid: user.id })
-    else if (other === 'Nothing')
-      socket.emit('ADD_ADMIN', { roomId: roomId, uid: user.id })
+      socket.emit('REMOVE_ADMIN', { roomId: roomId, uid: user.user.uid })
+    else if (other === 'Nothing') {
+      socket.emit('ADD_ADMIN', { roomId: roomId, uid: user.user.uid })
+    }
   }
   const handleMute = () => {
-    if (input.current?.value && isMuted === false)
+    if (muteSec && isMuted === false) {
       socket.emit('MUTE', {
         roomId: roomId,
-        uid: user.id,
-        muteSec: parseInt(input.current.value),
+        uid: user.user.uid,
+        muteSec: parseInt(muteSec),
       })
-    else if (isMuted === true)
+    } else if (isMuted === true)
       socket.emit('UNMUTE', {
         roomId: roomId,
-        uid: user.id,
+        uid: user.user.uid,
       })
   }
+  const handleBan = () => {
+    if (!banSec || banSec === '0')
+      socket.emit('BAN', {
+        roomId: roomId,
+        uid: user.user.uid,
+        banSec: 0,
+      })
+    else if (banSec)
+      socket.emit('BAN', {
+        roomId: roomId,
+        uid: user.user.uid,
+        banSec: parseInt(banSec),
+      })
+  }
+
   return (
-    <Box sx={{ display: 'flex' }} justifyContent="center">
+    <>
       {me !== 'Nothing' && other !== 'Owner' ? (
-        <>
-          <Button variant="outlined" size="small">
+        <Box sx={{ display: 'flex' }} justifyContent="center">
+          <Button variant="outlined" size="small" onClick={handleMute}>
             {isMuted ? (
               <></>
             ) : (
-              <Input ref={input} placeholder="초" onClick={handleMute} />
+              <Input
+                onChange={(e) => setMuteSec(e.target.value)}
+                placeholder="초"
+              />
             )}
             {muteText}
           </Button>
-          <Button variant="outlined" size="small">
+          <Button variant="outlined" size="small" onClick={handleBan}>
+            <Input
+              onChange={(e) => setBanSec(e.target.value)}
+              placeholder="초"
+            />
             BAN
           </Button>
-        </>
+        </Box>
       ) : (
         <></>
       )}
-      {me !== 'Nothing' && other === 'Nothing' ? (
-        <Button variant="outlined" size="small" onClick={handleAdmin}>
-          {adminMsg}
+      <Box sx={{ display: 'flex' }} justifyContent="center">
+        {me !== 'Nothing' && other !== 'Owner' ? (
+          <Button variant="outlined" size="small" onClick={handleAdmin}>
+            {adminMsg}
+          </Button>
+        ) : (
+          <></>
+        )}
+        <Button variant="outlined" size="small">
+          게임초대
         </Button>
-      ) : (
-        <></>
-      )}
-      <Button variant="outlined" size="small">
-        게임초대
-      </Button>
-    </Box>
+      </Box>
+    </>
   )
 }

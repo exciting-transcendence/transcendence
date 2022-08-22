@@ -1,12 +1,12 @@
 import { Grid, Button, Tooltip, Typography, Paper, Box } from '@mui/material'
 import { Message, ChatSocket, User, ChatUser } from 'data'
 import { ChatInput, ChatList, MemberList } from 'components'
-import { useApiQuery } from 'hook'
+import { useApiQuery, useChatUsersQuery, useUserQuery, queryClient } from 'hook'
 import { Logout } from '@mui/icons-material'
 import { InviteUser } from './InviteUser'
 import { MemberView } from './MemberView'
 import { PwdSetOption } from './PwdSetModal'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // TODO: 나가기 누를 때 한 번 더 확인하기
 const LeaveButton = ({ onClick }: { onClick: () => void }) => {
@@ -26,8 +26,8 @@ interface ExtraOptionProps {
 
 const ExtraOptionPerRoom = ({ socket, roomInfo }: ExtraOptionProps) => {
   const [isOwner, setIsOwner] = useState(false)
-  const { data: me, isSuccess: meOk } = useApiQuery<User>(['user', 'me'])
-  const { data: users, isSuccess: usersOk } = useApiQuery<ChatUser[]>(
+  const { data: me, isSuccess: meOk } = useUserQuery(['user', 'me'])
+  const { data: users, isSuccess: usersOk } = useChatUsersQuery(
     ['chat', roomInfo.roomId, 'list'],
     { enabled: meOk },
   )
@@ -67,14 +67,26 @@ export const ChatPanel = ({
     console.log(`sent msg: ${msg}`)
   }
 
-  const { data: me, isSuccess: meOk } = useApiQuery<User>(['user', 'me'])
+  const { data: me, isSuccess: meOk } = useUserQuery(['user', 'me'])
   const { data: chatusers, isSuccess: usersOk } = useApiQuery<ChatUser[]>([
     'chat',
     roomInfo.roomId,
     'list',
   ])
   const mydata = chatusers?.find((user) => user.user.uid === me?.uid)
-
+  useEffect(() => {
+    if (socket === undefined) {
+      return
+    }
+    socket.on('CHATUSER_STATUS', (res) => {
+      console.log(res)
+      queryClient.invalidateQueries(['user', 'me'])
+      queryClient.invalidateQueries(['chat', roomInfo.roomId, 'list'])
+    })
+    return () => {
+      socket.removeAllListeners('CHATUSER_STATUS')
+    }
+  }, [socket])
   return (
     <Grid container justifyContent="space-between">
       <Grid item xs={8}>
