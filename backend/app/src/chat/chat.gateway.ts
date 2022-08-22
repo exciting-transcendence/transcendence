@@ -487,9 +487,11 @@ export class ChatGateway {
     @MessageBody() data: ChatInviteDMDto,
   ) {
     const inviter = client.data.uid
-    const { title, invitee } = data
+    const { invitee } = data
+    let { title } = data
+    if (title === undefined) title = `DM_with_${inviter}_and_${invitee}`
     // TODO: inviter, invitee 둘이 속한 DM방이 있는지 확인
-    // TODO: title 서버에서 생성
+
     // TODO: inviter가 나가도 채팅방 폭파시키지 않기
 
     // create new DM room
