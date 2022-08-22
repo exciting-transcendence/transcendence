@@ -248,6 +248,7 @@ export class ChatGateway {
   @AsyncApiPub({
     channel: chatEvent.CREATE,
     summary: '새로운 채팅방 생성',
+    description: 'DM type은 CREATE로 만들 수 없고, INVITE_DM을 써야 함',
     message: {
       name: 'ChatCreateRoomDto',
       payload: { type: ChatCreateRoomDto },
@@ -499,8 +500,7 @@ export class ChatGateway {
   ) {
     const inviter = client.data.uid
     const { invitee } = data
-    let { title } = data
-    if (title === undefined) title = `DM_with_${inviter}_and_${invitee}`
+    const title = `DM_with_${inviter}_and_${invitee}`
 
     // inviter, invitee 둘이 속한 DM방이 있는지 확인
     const room = await this.chatService.getRoomDmByUid(inviter, invitee)
