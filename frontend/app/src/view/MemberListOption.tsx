@@ -9,11 +9,12 @@ interface Props {
   /** 로그인한 사용자 */
   refUser: ChatUser | undefined
   roomInfo: { bool: boolean; roomId: number; roomType: string }
+  off: () => void
 }
 
 type UserType = 'Nothing' | 'Admin' | 'Owner'
 
-export const MemberListOption = ({ user, refUser, roomInfo }: Props) => {
+export const MemberListOption = ({ user, refUser, roomInfo, off }: Props) => {
   const [me, setMe] = useState<UserType>('Nothing')
   const [other, setOther] = useState<UserType>('Nothing')
   const [adminMsg, setAdminMsg] = useState('관리자 지정')
@@ -62,18 +63,15 @@ export const MemberListOption = ({ user, refUser, roomInfo }: Props) => {
       })
   }
   const handleBan = () => {
-    if (!banSec || banSec === '0')
-      socket.emit('BAN', {
-        roomId: roomInfo.roomId,
-        uid: user.user.uid,
-        banSec: 0,
-      })
-    else if (banSec)
+    if (!banSec) return
+    else if (banSec) {
       socket.emit('BAN', {
         roomId: roomInfo.roomId,
         uid: user.user.uid,
         banSec: parseInt(banSec),
       })
+      off()
+    }
   }
   if (roomInfo.roomType === 'DM')
     return (

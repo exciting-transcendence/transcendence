@@ -16,7 +16,7 @@ export const ChatSocketContext = createContext<ChatSocket | undefined>(
 export const MainRouter = () => {
   const pongData = usePongSocket()
   const chatSocket = useChatSocket()
-  axios.get('api/auth/test/2').then((res) => console.log(res))
+
   return (
     <div>
       <Nav />
