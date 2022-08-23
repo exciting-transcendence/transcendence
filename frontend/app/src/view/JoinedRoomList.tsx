@@ -17,7 +17,10 @@ export const ChatRoomAvatars = ({ id }: { id: number }) => {
 
   if (!chatUsers || !me) return <Avatar />
 
-  const users = chatUsers.map((u) => u.user).filter((u) => u.uid !== me.uid)
+  const users = chatUsers
+    .map((u) => u.user)
+    .filter((u) => u.uid !== me.uid)
+    .slice(0, 6)
 
   return (
     <AvatarGroup total={users.length}>
