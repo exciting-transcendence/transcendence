@@ -336,7 +336,7 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: ChatBanUserDto,
   ) {
-    const { uid, roomId, banSec } = data
+    const { uid, roomId } = data
     // check if client is admin
     if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
       return new ForbiddenException('You are not admin')
@@ -385,7 +385,7 @@ export class ChatGateway {
       return new ForbiddenException('You are not admin')
     // delete user from banned list
     try {
-      await this.chatService.addBannedUser(uid, roomId)
+      await this.chatService.deleteBannedUser(uid, roomId)
     } catch (error) {
       return error
     }
