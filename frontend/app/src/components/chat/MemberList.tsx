@@ -56,7 +56,9 @@ export const MemberList = ({
   const users = chatusers.map(({ user }) => user)
   const otherUser = chatusers.find((user) => user.user.uid === id)
   const isMe = id === refUser.uid
-  const meForOption = chatusers.find((user) => user.user.uid === refUser.uid)
+  const meForOption: ChatUser | undefined = chatusers.find(
+    (user) => user.user.uid === refUser.uid,
+  )
   const openModal = (uid: number) => {
     on()
     setId(uid)
@@ -87,12 +89,15 @@ export const MemberList = ({
                 />
               </>
             ) : bannedUser ? (
-              <OptionForBanned
-                user={bannedUser}
-                refUser={meForOption}
-                roomInfo={roomInfo}
-                off={off}
-              />
+              <>
+                <OtherProfile user={bannedUser.user} refUser={refUser} />
+                <OptionForBanned
+                  user={bannedUser}
+                  refUser={meForOption}
+                  roomInfo={roomInfo}
+                  off={off}
+                />
+              </>
             ) : null}
           </Card>
         </Box>
