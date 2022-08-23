@@ -8,6 +8,7 @@ export interface Message {
   msgContent: string
   roomId: number
   createdAt: Date
+  inviteUid?: number
 }
 export interface ChatJoinRoom {
   roomId: number
