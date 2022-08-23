@@ -345,7 +345,7 @@ export class ChatGateway {
       return new ForbiddenException('Owner cannot be banned')
     // add user to banned list
     try {
-      await this.chatService.addBannedUser(uid, roomId, banSec)
+      await this.chatService.addBannedUser(uid, roomId)
     } catch (error) {
       return error
     }
@@ -385,7 +385,7 @@ export class ChatGateway {
       return new ForbiddenException('You are not admin')
     // delete user from banned list
     try {
-      await this.chatService.addBannedUser(uid, roomId, 0)
+      await this.chatService.addBannedUser(uid, roomId)
     } catch (error) {
       return error
     }
