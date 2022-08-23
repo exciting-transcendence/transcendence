@@ -336,7 +336,7 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: ChatBanUserDto,
   ) {
-    const { uid, roomId, banSec } = data
+    const { uid, roomId } = data
     // check if client is admin
     if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
       return new ForbiddenException('You are not admin')
@@ -345,7 +345,7 @@ export class ChatGateway {
       return new ForbiddenException('Owner cannot be banned')
     // add user to banned list
     try {
-      await this.chatService.addBannedUser(uid, roomId, banSec)
+      await this.chatService.addBannedUser(uid, roomId)
     } catch (error) {
       return error
     }
@@ -385,7 +385,7 @@ export class ChatGateway {
       return new ForbiddenException('You are not admin')
     // delete user from banned list
     try {
-      await this.chatService.addBannedUser(uid, roomId, 0)
+      await this.chatService.deleteBannedUser(uid, roomId)
     } catch (error) {
       return error
     }
@@ -519,12 +519,6 @@ export class ChatGateway {
     }
     client.join(newRoom.id.toString())
     console.log(`chat: ${inviter} has entered to ${newRoom.id}`)
-
-    try {
-      await this.chatService.addUserToRoom(invitee, newRoom.id)
-    } catch (error) {
-      return error
-    }
 
     const sockets = await this.chatService.getSocketByUid(this.server, invitee)
     sockets.forEach(async (el) => {
