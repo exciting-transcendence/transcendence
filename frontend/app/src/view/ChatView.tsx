@@ -47,9 +47,7 @@ export const ChatView = ({
 
   const updateRoom = () => {
     queryClient.invalidateQueries(['chat', 'joinlist'])
-    setShowChat((showChat: ChatViewOption) => {
-      return { ...showChat, bool: false }
-    })
+    setShowChat((showChat) => ({ ...showChat, bool: false }))
   }
 
   useEffect(() => {
@@ -62,9 +60,7 @@ export const ChatView = ({
       if (res.senderUid === uid) {
         queryClient.invalidateQueries(['chat', 'me'])
         if (res.msgContent === 'banned')
-          setShowChat((showChat: ChatViewOption) => {
-            return { ...showChat, bool: false }
-          })
+          setShowChat((showChat) => ({ ...showChat, bool: false }))
       }
       queryClient.invalidateQueries(['chat'])
     })
@@ -104,9 +100,7 @@ export const ChatView = ({
     socket.on('DESTROYED', () => {
       queryClient.invalidateQueries(['chat', 'me'])
       queryClient.invalidateQueries(['chat', 'joinlist'])
-      setShowChat((showChat: ChatViewOption) => {
-        return { ...showChat, bool: false }
-      })
+      setShowChat((showChat: ChatViewOption) => ({ ...showChat, bool: false }))
     })
     return () => {
       socket.removeAllListeners('DESTROYED')
