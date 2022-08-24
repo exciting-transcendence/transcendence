@@ -29,6 +29,7 @@ const Item = styled(Paper)(({ theme }) => ({
 type Messages = {
   [roomId: number]: Message[]
 }
+
 export const PongSocketContext = createContext<Socket | undefined>(undefined)
 export const ChatSocketContext = createContext<ChatSocket | undefined>(
   undefined,
@@ -55,68 +56,70 @@ export const MainRouter = () => {
     }
   }
   return (
-    <>
-      <Chip label={chiptxt} onClick={changeMode} />
-      <MainGrid
-        left={
-          <Item>
-            <Routes>
-              <Route
-                path="/chat"
-                element={
-                  <ChatView
-                    messages={messages}
-                    setMessages={setMessages}
-                    showChat={showChat}
-                    setShowChat={setShowChat}
-                  />
-                }
-              />
-              <Route
-                path="/game"
-                element={
-                  <GamePannel
-                    requestMatch={(matchData: any) => {
-                      pongData.socket?.emit('match', matchData)
-                      pongData.setGameState('findMatch')
-                    }}
-                    setState={pongData.setGameState}
-                  />
-                }
-              />
-            </Routes>
-          </Item>
-        }
-        middle={
-          <Item>
-            <Routes>
-              <Route path="/" element={<MainProfileView id={profileId} />} />
-              <Route
-                path="/friend"
-                element={<MainProfileView id={profileId} />}
-              />
-              <Route
-                path="/chat"
-                element={
-                  <MainChatView
-                    messages={messages}
-                    setMessages={setMessages}
-                    showChat={showChat}
-                    setShowChat={setShowChat}
-                  />
-                }
-              />
-              <Route path="/game" element={<GameView {...pongData} />} />
-            </Routes>
-          </Item>
-        }
-        right={
-          <Item onClick={() => navigate('/friend')}>
-            <FriendView setProfileId={setProfileId} />
-          </Item>
-        }
-      />
-    </>
+    <PongSocketContext.Provider value={pongData.socket}>
+      <ChatSocketContext.Provider value={chatSocket.socket}>
+        <Chip label={chiptxt} onClick={changeMode} />
+        <MainGrid
+          left={
+            <Item>
+              <Routes>
+                <Route
+                  path="/chat"
+                  element={
+                    <ChatView
+                      messages={messages}
+                      setMessages={setMessages}
+                      showChat={showChat}
+                      setShowChat={setShowChat}
+                    />
+                  }
+                />
+                <Route
+                  path="/game"
+                  element={
+                    <GamePannel
+                      requestMatch={(matchData: any) => {
+                        pongData.socket?.emit('match', matchData)
+                        pongData.setGameState('findMatch')
+                      }}
+                      setState={pongData.setGameState}
+                    />
+                  }
+                />
+              </Routes>
+            </Item>
+          }
+          middle={
+            <Item>
+              <Routes>
+                <Route path="/" element={<MainProfileView id={profileId} />} />
+                <Route
+                  path="/friend"
+                  element={<MainProfileView id={profileId} />}
+                />
+                <Route
+                  path="/chat"
+                  element={
+                    <MainChatView
+                      messages={messages}
+                      setMessages={setMessages}
+                      showChat={showChat}
+                      setShowChat={setShowChat}
+                    />
+                  }
+                />
+                <Route path="/game" element={<GameView {...pongData} />} />
+              </Routes>
+            </Item>
+          }
+          right={
+            <Item onClick={() => navigate('/friend')}>
+              <FriendView setProfileId={setProfileId} />
+            </Item>
+          }
+        />
+      </ChatSocketContext.Provider>
+    </PongSocketContext.Provider>
   )
 }
 // ;<Routes>
