@@ -6,10 +6,10 @@ import {
 } from 'hook'
 
 import { MemberList } from 'components'
-import { ChatUser, User } from 'data'
+import { ChatUser, RoomType, User } from 'data'
 
 interface Props {
-  roomInfo: { bool: boolean; roomId: number; roomType: string }
+  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
 }
 export const MemberView = ({ roomInfo }: Props) => {
   console.log(`roomId: ${roomInfo.roomId}`)

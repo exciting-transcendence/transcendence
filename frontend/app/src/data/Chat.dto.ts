@@ -16,9 +16,10 @@ export interface ChatJoinRoom {
   roomId: number
   password?: string
 }
+export type RoomType = 'PUBLIC' | 'PRIVATE' | 'PROTECTED' | 'DM'
 export interface ChatCreateRoom {
   title: string
-  type: 'PUBLIC' | 'PRIVATE' | 'PROTECTED' | 'DM'
+  type: RoomType
   password?: string
 }
 export interface UserInRoom {
@@ -110,13 +111,13 @@ export type ChatSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 export interface JoinedRoom {
   id: number
   name: string
-  roomtype: string
+  roomtype: RoomType
 }
 
 export interface Room {
   id: number
   name: string
-  roomtype: string
+  roomtype: RoomType
   password: string
   bannedIds: number[]
   mutedIds: number[]

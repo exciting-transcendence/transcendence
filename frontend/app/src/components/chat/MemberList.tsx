@@ -1,5 +1,5 @@
 import { Card, List, Modal, Container, Box, Button } from '@mui/material'
-import { OtherUser, User, ChatUser, BanUser } from 'data'
+import { OtherUser, User, ChatUser, BanUser, RoomType } from 'data'
 import { useToggles } from 'hook'
 import { partition } from 'utility'
 import { ProfileDisplay } from 'components'
@@ -42,7 +42,7 @@ interface Props {
   chatusers: ChatUser[]
   /** 로그인한 사용자 */
   refUser: User
-  roomInfo: { bool: boolean; roomId: number; roomType: string }
+  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
   banusers: BanUser[]
 }
 export const MemberList = ({

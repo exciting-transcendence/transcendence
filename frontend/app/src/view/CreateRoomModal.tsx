@@ -10,7 +10,7 @@ import {
   Modal,
 } from '@mui/material'
 import { Socket } from 'socket.io-client'
-import { Message } from 'data'
+import { Message, RoomType } from 'data'
 import { queryClient } from 'hook'
 
 const style = {
@@ -27,7 +27,7 @@ const style = {
 
 export const RoomOptionSecond = (prop: {
   setPassword: (value: string) => void
-  roomType: string
+  roomType: RoomType
 }) => {
   const [pwd, setPwd] = useState('false')
   if (prop.roomType === 'PUBLIC') {
@@ -75,7 +75,7 @@ export const BasicModal = (prop: {
   setModal: (value: boolean) => void
   socket: any
 }) => {
-  const [roomType, setRoomType] = useState<string>('PUBLIC')
+  const [roomType, setRoomType] = useState<RoomType>('PUBLIC')
   const [password, setPassword] = useState('')
   const input = useRef<HTMLInputElement>()
   const handleClose = () => prop.setModal(false)
@@ -114,9 +114,7 @@ export const BasicModal = (prop: {
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
             value={roomType}
-            onChange={(e) => {
-              setRoomType(e.target.value)
-            }}
+            onChange={(e) => setRoomType(e.target.value as RoomType)}
           >
             <FormControlLabel
               value="PUBLIC"

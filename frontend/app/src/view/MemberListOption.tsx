@@ -1,5 +1,5 @@
 import { Box, Button, Input } from '@mui/material'
-import { OtherUser, User, ChatUser, BanUser } from 'data'
+import { OtherUser, User, ChatUser, BanUser, RoomType } from 'data'
 import { useContext, useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChatSocketContext, PongSocketContext } from '../router/Main'
@@ -9,7 +9,7 @@ interface Props {
   user: ChatUser
   /** 로그인한 사용자 */
   refUser: ChatUser | undefined
-  roomInfo: { bool: boolean; roomId: number; roomType: string }
+  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
   off: () => void
 }
 
@@ -17,7 +17,7 @@ interface BanProps {
   user: BanUser
   /** 로그인한 사용자 */
   refUser: ChatUser | undefined
-  roomInfo: { bool: boolean; roomId: number; roomType: string }
+  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
   off: () => void
 }
 type UserType = 'Nothing' | 'Admin' | 'Owner'

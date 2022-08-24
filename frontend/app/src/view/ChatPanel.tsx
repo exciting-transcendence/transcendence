@@ -1,5 +1,5 @@
 import { Grid, Button, Tooltip, Typography, Paper, Box } from '@mui/material'
-import { Message, ChatSocket, User, ChatUser } from 'data'
+import { Message, ChatSocket, User, ChatUser, RoomType } from 'data'
 import { ChatInput, ChatList, MemberList } from 'components'
 import { useApiQuery, useChatUsersQuery, useUserQuery, queryClient } from 'hook'
 import { Logout } from '@mui/icons-material'
@@ -21,7 +21,7 @@ const LeaveButton = ({ onClick }: { onClick: () => void }) => {
 
 interface ExtraOptionProps {
   socket: ChatSocket
-  roomInfo: { bool: boolean; roomId: number; roomType: string }
+  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
 }
 
 const ExtraOptionPerRoom = ({ socket, roomInfo }: ExtraOptionProps) => {
@@ -49,7 +49,7 @@ const ExtraOptionPerRoom = ({ socket, roomInfo }: ExtraOptionProps) => {
 interface PanelProps {
   chats: Message[]
   socket: ChatSocket
-  roomInfo: { bool: boolean; roomId: number; roomType: string }
+  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
   leaveRoom: (roomId: number) => void
 }
 export const ChatPanel = ({

@@ -10,7 +10,7 @@ import { ChatRoomList } from './ChatRoomList'
 import { JoinedRoomList } from './JoinedRoomList'
 import { Grid, Divider, Typography, Button, Chip } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
-import { JoinedRoom, Room, Message, ChatSocket, User } from 'data'
+import { JoinedRoom, Room, Message, ChatSocket, User, RoomType } from 'data'
 import { ChatPanel } from './ChatPanel'
 import { getAuthHeader } from 'hook/getAuthHeader'
 import { queryClient, useApiQuery, useUserQuery } from 'hook'
@@ -24,14 +24,14 @@ type Messages = {
 export type ChatViewOption = {
   bool: boolean
   roomId: number
-  roomType: string
+  roomType: RoomType
 }
 export interface Props {
   messages: Messages
   setMessages: (value: any) => void
   showChat: ChatViewOption
   setShowChat: Dispatch<
-    SetStateAction<{ bool: boolean; roomId: number; roomType: string }>
+    SetStateAction<{ bool: boolean; roomId: number; roomType: RoomType }>
   >
 }
 export const ChatView = ({
