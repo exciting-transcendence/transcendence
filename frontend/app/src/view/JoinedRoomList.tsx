@@ -8,7 +8,7 @@ import {
   ListItemText,
   Stack,
 } from '@mui/material'
-import { ChatUser, JoinedRoom, User } from 'data'
+import { ChatUser, JoinedRoom, RoomType, User } from 'data'
 import { useChatUsersQuery } from 'hook'
 import { Dispatch, SetStateAction } from 'react'
 import { ChatViewOption } from './ChatView'
@@ -31,7 +31,7 @@ export const ChatRoomAvatars = ({ id }: { id: number }) => {
 
 interface ItemProps {
   chatRoom: JoinedRoom
-  changeView: (id: number, roomType: string) => void
+  changeView: (id: number, roomType: RoomType) => void
 }
 export const JoinedRoomItem = ({ chatRoom, changeView }: ItemProps) => {
   return (
@@ -52,8 +52,8 @@ interface Props {
   setShowChat: Dispatch<SetStateAction<ChatViewOption>>
 }
 export const JoinedRoomList = ({ room, setShowChat }: Props) => {
-  const changeView = (id: number, roomType: string) => {
-    setShowChat({ bool: true, roomId: id, roomType: roomType })
+  const changeView = (roomId: number, roomType: RoomType) => {
+    setShowChat({ bool: true, roomId, roomType })
   }
   return (
     <List>

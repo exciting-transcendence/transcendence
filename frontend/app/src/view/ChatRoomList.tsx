@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { Box, Paper, Stack } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { Room } from 'data'
+import { Room, RoomType } from 'data'
 import { PwdModal } from './EnterPwdModal'
 import LockIcon from '@mui/icons-material/Lock'
 import { ChatViewOption } from './ChatView'
@@ -30,11 +30,11 @@ export const ChatRoomList = (prop: {
   setShowChat: Dispatch<SetStateAction<ChatViewOption>>
 }) => {
   const [modal, setModal] = useState(false)
-  const joinRoom = (room: number, type: string) => {
-    prop.socket.emit('JOIN', { roomId: room }, (res: any) => {
-      if (res.status === 200)
-        prop.setShowChat({ bool: true, roomId: room, roomType: type })
-      else if (res.status === 400) return
+  const joinRoom = (roomId: number, roomType: RoomType) => {
+    prop.socket.emit('JOIN', { roomId }, (res: { status: number }) => {
+      if (res.status === 200) {
+        prop.setShowChat({ bool: true, roomId, roomType })
+      }
     })
   }
 
