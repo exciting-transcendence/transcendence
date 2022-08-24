@@ -1,26 +1,25 @@
 import {
-  useApiQuery,
   useUserQuery,
   useChatUsersQuery,
   useBanUsersQuery,
+  selectedChatState,
 } from 'hook'
 
 import { MemberList } from 'components'
-import { ChatUser, RoomType, User } from 'data'
-import { ChatViewOption } from './ChatView'
+import { useRecoilValue } from 'recoil'
 
-interface Props {}
-export const MemberView = ({ selectedChat }: Props) => {
-  console.log(`roomId: ${selectedChat.roomId}`)
+export const MemberView = () => {
+  const { roomId } = useRecoilValue(selectedChatState)
+  console.log(`roomId: ${roomId}`)
   const { data: me, isSuccess: meOk } = useUserQuery(['user', 'me'])
   const { data: chatusers, isSuccess: usersOk } = useChatUsersQuery([
     'chat',
-    selectedChat.roomId,
+    roomId,
     'list',
   ])
   const { data: banusers, isSuccess: banOK } = useBanUsersQuery([
     'chat',
-    selectedChat.roomId,
+    roomId,
     'ban',
     'list',
   ])
