@@ -42,11 +42,7 @@ export const MainRouter = () => {
   const [chiptxt, setChiptxt] = useState('Game')
   const [profileId, setProfileId] = useState<number>(0)
   const [messages, setMessages] = useState<Messages>({})
-  const [showChat, setShowChat] = useState<ChatViewOption>({
-    bool: false,
-    roomId: 0,
-    roomType: 'PUBLIC',
-  })
+
   const changeMode = () => {
     if (chiptxt === 'Game') {
       navigate('/game')
@@ -67,12 +63,7 @@ export const MainRouter = () => {
                 <Route
                   path="/chat"
                   element={
-                    <ChatView
-                      messages={messages}
-                      setMessages={setMessages}
-                      showChat={showChat}
-                      setShowChat={setShowChat}
-                    />
+                    <ChatView messages={messages} setMessages={setMessages} />
                   }
                 />
                 <Route
@@ -104,8 +95,6 @@ export const MainRouter = () => {
                     <MainChatView
                       messages={messages}
                       setMessages={setMessages}
-                      showChat={showChat}
-                      setShowChat={setShowChat}
                     />
                   }
                 />

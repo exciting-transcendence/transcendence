@@ -9,8 +9,9 @@ import {
   Stack,
 } from '@mui/material'
 import { ChatUser, JoinedRoom, RoomType, User } from 'data'
-import { useChatUsersQuery } from 'hook'
+import { useChatUsersQuery, selectedChatState } from 'hook'
 import { Dispatch, SetStateAction } from 'react'
+import { useRecoilState } from 'recoil'
 import { ChatViewOption } from './ChatView'
 
 export const ChatRoomAvatars = ({ id }: { id: number }) => {
@@ -35,10 +36,7 @@ interface ItemProps {
 }
 export const JoinedRoomItem = ({ chatRoom, changeView }: ItemProps) => {
   return (
-    <ListItem
-      key={chatRoom.id}
-      onClick={() => changeView(chatRoom.id, chatRoom.roomtype)}
-    >
+    <ListItem onClick={() => changeView(chatRoom.id, chatRoom.roomtype)}>
       <ListItemAvatar>
         <ChatRoomAvatars id={chatRoom.id} />
       </ListItemAvatar>
@@ -49,11 +47,11 @@ export const JoinedRoomItem = ({ chatRoom, changeView }: ItemProps) => {
 
 interface Props {
   room: JoinedRoom[]
-  setShowChat: Dispatch<SetStateAction<ChatViewOption>>
 }
-export const JoinedRoomList = ({ room, setShowChat }: Props) => {
+export const JoinedRoomList = ({ room }: Props) => {
+  const [_, setSelectedChat] = useRecoilState(selectedChatState)
   const changeView = (roomId: number, roomType: RoomType) => {
-    setShowChat({ bool: true, roomId, roomType })
+    setSelectedChat({ bool: true, roomId, roomType })
   }
   return (
     <List>
