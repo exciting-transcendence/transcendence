@@ -30,9 +30,7 @@ export interface Props {
   messages: Messages
   setMessages: (value: any) => void
   showChat: ChatViewOption
-  setShowChat: Dispatch<
-    SetStateAction<{ bool: boolean; roomId: number; roomType: RoomType }>
-  >
+  setShowChat: Dispatch<SetStateAction<ChatViewOption>>
 }
 export const ChatView = ({
   messages,

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Box, Input, Button, Typography, Modal } from '@mui/material'
 import { ChatSocket, User, ChatUser, RoomType } from 'data'
+import { ChatViewOption } from './ChatView'
 
 const style = {
   position: 'absolute',
@@ -16,7 +17,7 @@ const style = {
 
 interface ExtraOptionProps {
   socket: ChatSocket
-  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
+  roomInfo: ChatViewOption
 }
 interface PwdSetModalProps extends ExtraOptionProps {
   setModal: (value: boolean) => void

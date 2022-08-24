@@ -7,9 +7,10 @@ import {
 
 import { MemberList } from 'components'
 import { ChatUser, RoomType, User } from 'data'
+import { ChatViewOption } from './ChatView'
 
 interface Props {
-  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
+  roomInfo: ChatViewOption
 }
 export const MemberView = ({ roomInfo }: Props) => {
   console.log(`roomId: ${roomInfo.roomId}`)

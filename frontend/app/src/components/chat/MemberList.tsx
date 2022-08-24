@@ -8,6 +8,7 @@ import { ListSubheader } from '@mui/material'
 import { ProfileListItem } from 'components'
 import { MyProfile, OtherProfile } from 'components'
 import { MemberListOption, OptionForBanned } from '../../view/MemberListOption'
+import { ChatViewOption } from 'view'
 
 interface SectionProps {
   title: string
@@ -42,7 +43,7 @@ interface Props {
   chatusers: ChatUser[]
   /** 로그인한 사용자 */
   refUser: User
-  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
+  roomInfo: ChatViewOption
   banusers: BanUser[]
 }
 export const MemberList = ({

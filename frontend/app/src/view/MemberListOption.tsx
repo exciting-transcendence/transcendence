@@ -3,24 +3,21 @@ import { OtherUser, User, ChatUser, BanUser, RoomType } from 'data'
 import { useContext, useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChatSocketContext, PongSocketContext } from '../router/Main'
+import { ChatViewOption } from './ChatView'
 interface Props {
   // TODO: ChatUser 배열을 받아 추가 정보 표시?
   /** 모든 사용자 */
   user: ChatUser
   /** 로그인한 사용자 */
   refUser: ChatUser | undefined
-  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
+  roomInfo: ChatViewOption
   off: () => void
 }
 
-interface BanProps {
+interface BanProps extends Omit<Props, 'user'> {
   user: BanUser
-  /** 로그인한 사용자 */
-  refUser: ChatUser | undefined
-  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
-  off: () => void
 }
-type UserType = 'Nothing' | 'Admin' | 'Owner'
+export type UserType = 'Nothing' | 'Admin' | 'Owner'
 
 export const OptionForBanned = ({ user, refUser, roomInfo, off }: BanProps) => {
   const socket = useContext(ChatSocketContext)

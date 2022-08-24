@@ -7,6 +7,7 @@ import { InviteUser } from './InviteUser'
 import { MemberView } from './MemberView'
 import { PwdSetOption } from './PwdSetModal'
 import { useState, useEffect } from 'react'
+import { ChatViewOption } from './ChatView'
 
 // TODO: 나가기 누를 때 한 번 더 확인하기
 const LeaveButton = ({ onClick }: { onClick: () => void }) => {
@@ -21,7 +22,7 @@ const LeaveButton = ({ onClick }: { onClick: () => void }) => {
 
 interface ExtraOptionProps {
   socket: ChatSocket
-  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
+  roomInfo: ChatViewOption
 }
 
 const ExtraOptionPerRoom = ({ socket, roomInfo }: ExtraOptionProps) => {
@@ -49,7 +50,7 @@ const ExtraOptionPerRoom = ({ socket, roomInfo }: ExtraOptionProps) => {
 interface PanelProps {
   chats: Message[]
   socket: ChatSocket
-  roomInfo: { bool: boolean; roomId: number; roomType: RoomType }
+  roomInfo: ChatViewOption
   leaveRoom: (roomId: number) => void
 }
 export const ChatPanel = ({
