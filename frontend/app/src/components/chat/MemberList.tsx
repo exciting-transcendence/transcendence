@@ -8,7 +8,6 @@ import { ListSubheader } from '@mui/material'
 import { ProfileListItem } from 'components'
 import { MyProfile, OtherProfile } from 'components'
 import { MemberListOption, OptionForBanned } from '../../view/MemberListOption'
-import { ChatViewOption } from 'view'
 
 interface SectionProps {
   title: string
@@ -43,15 +42,9 @@ interface Props {
   chatusers: ChatUser[]
   /** 로그인한 사용자 */
   refUser: User
-
   banusers: BanUser[]
 }
-export const MemberList = ({
-  chatusers,
-  refUser,
-  selectedChat,
-  banusers,
-}: Props) => {
+export const MemberList = ({ chatusers, refUser, banusers }: Props) => {
   const [id, setId] = useState(refUser.uid)
   const [open, { on, off }] = useToggles(false)
   const users = chatusers.map(({ user }) => user)
@@ -76,9 +69,7 @@ export const MemberList = ({
         <Box sx={style}>
           <Card sx={{ padding: '2vw' }}>
             {isMe ? (
-              <>
-                <MyProfile user={refUser} />
-              </>
+              <MyProfile user={refUser} />
             ) : otherUser ? (
               <>
                 <OtherProfile user={otherUser.user} refUser={refUser} />
