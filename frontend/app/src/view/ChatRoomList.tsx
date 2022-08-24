@@ -6,12 +6,15 @@ import {
   useRef,
   useContext,
   Fragment,
+  Dispatch,
+  SetStateAction,
 } from 'react'
 import { Box, Paper, Stack } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { Room } from 'data'
 import { PwdModal } from './EnterPwdModal'
 import LockIcon from '@mui/icons-material/Lock'
+import { ChatViewOption } from './ChatView'
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -24,7 +27,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export const ChatRoomList = (prop: {
   list: Room[]
   socket: any
-  setShowChat: any
+  setShowChat: Dispatch<SetStateAction<ChatViewOption>>
 }) => {
   const [modal, setModal] = useState(false)
   const joinRoom = (room: number, type: string) => {

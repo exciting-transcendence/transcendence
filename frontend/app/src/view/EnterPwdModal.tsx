@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 import {
   Box,
   Input,
@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import { Socket } from 'socket.io-client'
 import { Message } from 'data'
+import { ChatViewOption } from './ChatView'
 
 const style = {
   position: 'absolute',
@@ -27,7 +28,7 @@ const style = {
 export const PwdModal = (prop: {
   modal: boolean
   setModal: (value: boolean) => void
-  setShowChat: any
+  setShowChat: Dispatch<SetStateAction<ChatViewOption>>
   socket: any
   roomId: number
 }) => {
