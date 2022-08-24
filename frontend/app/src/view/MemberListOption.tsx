@@ -1,7 +1,9 @@
 import { Box, Button, Input } from '@mui/material'
-import { OtherUser, User, ChatUser, BanUser, RoomType } from 'data'
+import { OtherUser, User, ChatUser, BanUser, RoomType, ChatSocket } from 'data'
+import { selectedChatState } from 'hook'
 import { useContext, useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { ChatSocketContext, PongSocketContext } from '../router/Main'
 import { ChatViewOption } from './ChatView'
 interface Props {
@@ -10,7 +12,6 @@ interface Props {
   user: ChatUser
   /** 로그인한 사용자 */
   refUser: ChatUser | undefined
-
   off: () => void
 }
 
@@ -19,43 +20,43 @@ interface BanProps extends Omit<Props, 'user'> {
 }
 export type UserType = 'Nothing' | 'Admin' | 'Owner'
 
-export const OptionForBanned = ({
-  user,
-  refUser,
-  selectedChat,
-  off,
-}: BanProps) => {
+export const OptionForBanned = ({ user, refUser, off }: BanProps) => {
+  const { roomId } = useRecoilValue(selectedChatState)
   const socket = useContext(ChatSocketContext)
-  if (refUser === undefined || socket === undefined) return <></>
-  const handleBan = () => {
+  const handleBan = (socket: ChatSocket) => {
     socket.emit('UNBAN', {
-      roomId: selectedChat.roomId,
+      roomId,
       uid: user.user.uid,
     })
     off()
   }
-  return (
-    <>
-      <Box sx={{ display: 'flex' }} justifyContent="center">
-        <Button variant="outlined" size="small" onClick={handleBan}>
-          UNBAN
-        </Button>
-      </Box>
-    </>
-  )
+
+  if (refUser && socket) {
+    return (
+      <>
+        <Box sx={{ display: 'flex' }} justifyContent="center">
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => handleBan(socket)}
+          >
+            UNBAN
+          </Button>
+        </Box>
+      </>
+    )
+  } else {
+    return null
+  }
 }
 
-export const MemberListOption = ({
-  user,
-  refUser,
-  selectedChat,
-  off,
-}: Props) => {
+export const MemberListOption = ({ user, refUser, off }: Props) => {
   const [me, setMe] = useState<UserType>('Nothing')
   const [other, setOther] = useState<UserType>('Nothing')
   const [adminMsg, setAdminMsg] = useState('관리자 지정')
   const socket = useContext(ChatSocketContext)
   const isMuted: boolean = new Date(user.endOfMute) > new Date()
+  const { roomId, roomType } = useRecoilValue(selectedChatState)
   // const [muteSec, setMuteSec] = useState<string>('')
   // const [banSec, setBanSec] = useState<string>('')
   let muteText = 'MUTE'
@@ -78,12 +79,12 @@ export const MemberListOption = ({
   const handleAdmin = () => {
     if (other === 'Admin')
       socket.emit('REMOVE_ADMIN', {
-        roomId: selectedChat.roomId,
+        roomId,
         uid: user.user.uid,
       })
     else if (other === 'Nothing') {
       socket.emit('ADD_ADMIN', {
-        roomId: selectedChat.roomId,
+        roomId,
         uid: user.user.uid,
       })
     }
@@ -91,30 +92,30 @@ export const MemberListOption = ({
   const handleMute = () => {
     if (isMuted === false) {
       socket.emit('MUTE', {
-        roomId: selectedChat.roomId,
+        roomId,
         uid: user.user.uid,
         muteSec: 1000,
       })
     } else if (isMuted === true)
       socket.emit('UNMUTE', {
-        roomId: selectedChat.roomId,
+        roomId,
         uid: user.user.uid,
       })
   }
   const handleBan = () => {
     socket.emit('BAN', {
-      roomId: selectedChat.roomId,
+      roomId,
       uid: user.user.uid,
     })
     off()
   }
-  if (selectedChat.roomType === 'DM')
+  if (roomType === 'DM')
     return (
       <Box sx={{ display: 'flex' }} justifyContent="center">
         <InviteGameButton
           user={user.user}
           refUser={refUser.user}
-          roomId={selectedChat.roomId}
+          roomId={roomId}
         />
       </Box>
     )
@@ -148,7 +149,7 @@ export const MemberListOption = ({
           <InviteGameButton
             user={user.user}
             refUser={refUser.user}
-            roomId={selectedChat.roomId}
+            roomId={roomId}
           />
         </Box>
       </>

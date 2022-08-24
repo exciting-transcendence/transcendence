@@ -100,10 +100,7 @@ export const ChatView = ({ messages, setMessages }: Props) => {
     socket.on('DESTROYED', () => {
       queryClient.invalidateQueries(['chat', 'me'])
       queryClient.invalidateQueries(['chat', 'joinlist'])
-      setSelectedChat(() => ({
-        ...selectedChat,
-        bool: false,
-      }))
+      setSelectedChat((prev) => ({ ...prev, bool: false }))
     })
     return () => {
       socket.removeAllListeners('DESTROYED')
