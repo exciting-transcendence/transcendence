@@ -48,7 +48,7 @@ const Star = styled.div<{ r1: number; r2: number }>`
   background: white;
   border-radius: 5px;
   animation: ${s} ${(props) => props.r1 + 10}s linear
-    ${(props) => props.r2 * 5}s infinite;
+    ${(props) => props.r2 * 2}s infinite;
 `
 export const GenStars = () => {
   return (
