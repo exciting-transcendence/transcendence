@@ -1,7 +1,7 @@
 import { atom } from 'recoil'
 import { ChatViewOption } from 'view'
 
-export const useChatViewState = atom<ChatViewOption | undefined>({
+export const chatRoomState = atom<ChatViewOption>({
   key: 'useChatViewState',
   default: {
     bool: false,
