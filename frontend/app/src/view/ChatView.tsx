@@ -13,9 +13,15 @@ import { BasicModal } from './CreateRoomModal'
 import { JoinedRoom, Room, Message, ChatSocket, User, RoomType } from 'data'
 import { ChatPanel } from './ChatPanel'
 import { getAuthHeader } from 'hook/getAuthHeader'
-import { queryClient, useApiQuery, useUserQuery } from 'hook'
+import {
+  queryClient,
+  selectedChatState as selectedChatState,
+  useApiQuery,
+  useUserQuery,
+} from 'hook'
 import { useMutation } from '@tanstack/react-query'
 import { ChatSocketContext } from '../router/Main'
+import { useRecoilState } from 'recoil'
 
 type Messages = {
   [roomId: number]: Message[]
@@ -29,17 +35,11 @@ export type ChatViewOption = {
 export interface Props {
   messages: Messages
   setMessages: (value: any) => void
-  showChat: ChatViewOption
-  setShowChat: Dispatch<SetStateAction<ChatViewOption>>
 }
-export const ChatView = ({
-  messages,
-  setMessages,
-  showChat,
-  setShowChat,
-}: Props) => {
+export const ChatView = ({ messages, setMessages }: Props) => {
   const socket = useContext(ChatSocketContext)
   const [modal, setModal] = useState(false)
+  const [_, setSelectedChat] = useRecoilState(selectedChatState)
 
   const { data: me, isSuccess } = useUserQuery(['user', 'me'])
   const { data: chatRoomList } = useApiQuery<Room[]>(['chat', 'joinlist'])
@@ -47,7 +47,7 @@ export const ChatView = ({
 
   const updateRoom = () => {
     queryClient.invalidateQueries(['chat', 'joinlist'])
-    setShowChat((showChat) => ({ ...showChat, bool: false }))
+    setSelectedChat((selectedChat) => ({ ...selectedChat, bool: false }))
   }
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export const ChatView = ({
       if (res.senderUid === uid) {
         queryClient.invalidateQueries(['chat', 'me'])
         if (res.msgContent === 'banned')
-          setShowChat((showChat) => ({ ...showChat, bool: false }))
+          setSelectedChat((selectedChat) => ({ ...selectedChat, bool: false }))
       }
       queryClient.invalidateQueries(['chat'])
     })
@@ -100,7 +100,10 @@ export const ChatView = ({
     socket.on('DESTROYED', () => {
       queryClient.invalidateQueries(['chat', 'me'])
       queryClient.invalidateQueries(['chat', 'joinlist'])
-      setShowChat((showChat: ChatViewOption) => ({ ...showChat, bool: false }))
+      setSelectedChat(() => ({
+        ...selectedChat,
+        bool: false,
+      }))
     })
     return () => {
       socket.removeAllListeners('DESTROYED')
@@ -127,7 +130,7 @@ export const ChatView = ({
             참여 중인 채팅 리스트
           </Typography>
           {joinedRoomList ? (
-            <JoinedRoomList setShowChat={setShowChat} room={joinedRoomList} />
+            <JoinedRoomList room={joinedRoomList} />
           ) : (
             <Typography>Loading...</Typography>
           )}
@@ -137,12 +140,8 @@ export const ChatView = ({
   )
 }
 
-export const MainChatView = ({
-  messages,
-  setMessages,
-  showChat,
-  setShowChat,
-}: Props) => {
+export const MainChatView = ({ messages, setMessages }: Props) => {
+  const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState)
   const socket = useContext(ChatSocketContext)
   const { data: chatRoomList } = useApiQuery<Room[]>(['chat', 'joinlist'])
   if (socket === undefined) return null
@@ -150,20 +149,19 @@ export const MainChatView = ({
   const leaveRoom = (roomId: number) => {
     socket?.emit('LEAVE', { roomId }, () => {
       queryClient.invalidateQueries(['chat', 'me'])
-      setShowChat((showChat: ChatViewOption) => {
-        return { ...showChat, bool: false }
-      })
+      setSelectedChat((current) => ({ ...current, bool: false }))
     })
     // const newJoinedRoom = joinedRoomList.filter((el) => el.id !== roomId)
     // setJoinedRoomList(newJoinedRoom)
   }
   return (
     <Grid item xs={12} padding="100px">
-      {showChat.bool ? (
+      {selectedChat.bool ? (
         <ChatPanel
-          chats={messages[showChat.roomId] ? messages[showChat.roomId] : []}
+          chats={
+            messages[selectedChat.roomId] ? messages[selectedChat.roomId] : []
+          }
           socket={socket}
-          roomInfo={showChat}
           leaveRoom={leaveRoom}
         />
       ) : (
@@ -173,11 +171,7 @@ export const MainChatView = ({
               <Typography variant="h6" padding="1rem" textAlign="center">
                 참여 가능한 채팅 리스트
               </Typography>
-              <ChatRoomList
-                list={chatRoomList}
-                socket={socket}
-                setShowChat={setShowChat}
-              />
+              <ChatRoomList list={chatRoomList} socket={socket} />
             </>
           ) : chatRoomList ? (
             <Typography>참여 가능한 채팅방이 없습니다</Typography>

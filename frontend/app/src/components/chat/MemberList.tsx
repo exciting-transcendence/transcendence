@@ -43,13 +43,13 @@ interface Props {
   chatusers: ChatUser[]
   /** 로그인한 사용자 */
   refUser: User
-  roomInfo: ChatViewOption
+
   banusers: BanUser[]
 }
 export const MemberList = ({
   chatusers,
   refUser,
-  roomInfo,
+  selectedChat,
   banusers,
 }: Props) => {
   const [id, setId] = useState(refUser.uid)
@@ -85,7 +85,6 @@ export const MemberList = ({
                 <MemberListOption
                   user={otherUser}
                   refUser={meForOption}
-                  roomInfo={roomInfo}
                   off={off}
                 />
               </>
@@ -95,7 +94,6 @@ export const MemberList = ({
                 <OptionForBanned
                   user={bannedUser}
                   refUser={meForOption}
-                  roomInfo={roomInfo}
                   off={off}
                 />
               </>

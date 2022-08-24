@@ -10,7 +10,7 @@ interface Props {
   user: ChatUser
   /** 로그인한 사용자 */
   refUser: ChatUser | undefined
-  roomInfo: ChatViewOption
+
   off: () => void
 }
 
@@ -19,12 +19,17 @@ interface BanProps extends Omit<Props, 'user'> {
 }
 export type UserType = 'Nothing' | 'Admin' | 'Owner'
 
-export const OptionForBanned = ({ user, refUser, roomInfo, off }: BanProps) => {
+export const OptionForBanned = ({
+  user,
+  refUser,
+  selectedChat,
+  off,
+}: BanProps) => {
   const socket = useContext(ChatSocketContext)
   if (refUser === undefined || socket === undefined) return <></>
   const handleBan = () => {
     socket.emit('UNBAN', {
-      roomId: roomInfo.roomId,
+      roomId: selectedChat.roomId,
       uid: user.user.uid,
     })
     off()
@@ -40,7 +45,12 @@ export const OptionForBanned = ({ user, refUser, roomInfo, off }: BanProps) => {
   )
 }
 
-export const MemberListOption = ({ user, refUser, roomInfo, off }: Props) => {
+export const MemberListOption = ({
+  user,
+  refUser,
+  selectedChat,
+  off,
+}: Props) => {
   const [me, setMe] = useState<UserType>('Nothing')
   const [other, setOther] = useState<UserType>('Nothing')
   const [adminMsg, setAdminMsg] = useState('관리자 지정')
@@ -68,40 +78,43 @@ export const MemberListOption = ({ user, refUser, roomInfo, off }: Props) => {
   const handleAdmin = () => {
     if (other === 'Admin')
       socket.emit('REMOVE_ADMIN', {
-        roomId: roomInfo.roomId,
+        roomId: selectedChat.roomId,
         uid: user.user.uid,
       })
     else if (other === 'Nothing') {
-      socket.emit('ADD_ADMIN', { roomId: roomInfo.roomId, uid: user.user.uid })
+      socket.emit('ADD_ADMIN', {
+        roomId: selectedChat.roomId,
+        uid: user.user.uid,
+      })
     }
   }
   const handleMute = () => {
     if (isMuted === false) {
       socket.emit('MUTE', {
-        roomId: roomInfo.roomId,
+        roomId: selectedChat.roomId,
         uid: user.user.uid,
         muteSec: 1000,
       })
     } else if (isMuted === true)
       socket.emit('UNMUTE', {
-        roomId: roomInfo.roomId,
+        roomId: selectedChat.roomId,
         uid: user.user.uid,
       })
   }
   const handleBan = () => {
     socket.emit('BAN', {
-      roomId: roomInfo.roomId,
+      roomId: selectedChat.roomId,
       uid: user.user.uid,
     })
     off()
   }
-  if (roomInfo.roomType === 'DM')
+  if (selectedChat.roomType === 'DM')
     return (
       <Box sx={{ display: 'flex' }} justifyContent="center">
         <InviteGameButton
           user={user.user}
           refUser={refUser.user}
-          roomId={roomInfo.roomId}
+          roomId={selectedChat.roomId}
         />
       </Box>
     )
@@ -135,7 +148,7 @@ export const MemberListOption = ({ user, refUser, roomInfo, off }: Props) => {
           <InviteGameButton
             user={user.user}
             refUser={refUser.user}
-            roomId={roomInfo.roomId}
+            roomId={selectedChat.roomId}
           />
         </Box>
       </>

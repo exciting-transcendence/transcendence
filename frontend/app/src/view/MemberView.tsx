@@ -10,19 +10,19 @@ import { ChatUser, RoomType, User } from 'data'
 import { ChatViewOption } from './ChatView'
 
 interface Props {
-  roomInfo: ChatViewOption
+
 }
-export const MemberView = ({ roomInfo }: Props) => {
-  console.log(`roomId: ${roomInfo.roomId}`)
+export const MemberView = ({ selectedChat }: Props) => {
+  console.log(`roomId: ${selectedChat.roomId}`)
   const { data: me, isSuccess: meOk } = useUserQuery(['user', 'me'])
   const { data: chatusers, isSuccess: usersOk } = useChatUsersQuery([
     'chat',
-    roomInfo.roomId,
+    selectedChat.roomId,
     'list',
   ])
   const { data: banusers, isSuccess: banOK } = useBanUsersQuery([
     'chat',
-    roomInfo.roomId,
+    selectedChat.roomId,
     'ban',
     'list',
   ])
@@ -33,7 +33,7 @@ export const MemberView = ({ roomInfo }: Props) => {
       <MemberList
         chatusers={chatusers}
         refUser={me}
-        roomInfo={roomInfo}
+
         banusers={banusers}
       />
     )
