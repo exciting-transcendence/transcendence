@@ -78,6 +78,7 @@ export const MainRouter = () => {
                     />
                   }
                 />
+                <Route path="*" element={null} />
               </Routes>
             </Item>
           }
