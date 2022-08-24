@@ -21,7 +21,7 @@ type Messages = {
   [roomId: number]: Message[]
 }
 
-type ChatViewOption = {
+export type ChatViewOption = {
   bool: boolean
   roomId: number
   roomType: string

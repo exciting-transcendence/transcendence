@@ -17,6 +17,7 @@ import { MainChatView } from 'view/ChatView'
 import { GamePannel } from 'view'
 import { useNavigate } from 'react-router-dom'
 import { MainGrid } from 'components'
+import { ChatViewOption } from 'view/ChatView'
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -41,7 +42,7 @@ export const MainRouter = () => {
   const [chiptxt, setChiptxt] = useState('Game')
   const [profileId, setProfileId] = useState<number>(0)
   const [messages, setMessages] = useState<Messages>({})
-  const [showChat, setShowChat] = useState({
+  const [showChat, setShowChat] = useState<ChatViewOption>({
     bool: false,
     roomId: 0,
     roomType: 'PUBLIC',
