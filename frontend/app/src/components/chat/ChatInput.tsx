@@ -12,11 +12,10 @@ interface Props {
 export const ChatInput = ({ me }: Props) => {
   const [text, setText] = useState('')
   const socket = useContext(ChatSocketContext)
+  const { roomId } = useRecoilValue(selectedChatState)
 
   const sendMsg = (socket: ChatSocket, msgContent: string) => {
     if (!msgContent) return
-
-    const { roomId } = useRecoilValue(selectedChatState)
 
     socket.emit('SEND', {
       roomId,
