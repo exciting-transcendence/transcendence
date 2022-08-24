@@ -27,11 +27,7 @@ const LeaveButton = ({ onClick }: { onClick: () => void }) => {
   )
 }
 
-interface ExtraOptionProps {
-  socket: ChatSocket
-}
-
-const ExtraOptionPerRoom = ({ socket }: ExtraOptionProps) => {
+const ExtraOptionPerRoom = () => {
   const { roomId, roomType } = useRecoilValue(selectedChatState)
   const [isOwner, setIsOwner] = useState(false)
   const { data: me, isSuccess: meOk } = useUserQuery(['user', 'me'])
@@ -39,15 +35,15 @@ const ExtraOptionPerRoom = ({ socket }: ExtraOptionProps) => {
     ['chat', roomId, 'list'],
     { enabled: meOk },
   )
-  if (usersOk && meOk && isOwner === false) {
+  if (!isOwner && usersOk && meOk) {
     users.forEach((el) => {
       if (el.user.uid === me.uid && el.isOwner) setIsOwner(true)
     })
   }
-  if ((roomType === 'PUBLIC' || roomType === 'PROTECTED') && isOwner) {
-    return <PwdSetOption socket={socket} />
+  if (isOwner && (roomType === 'PUBLIC' || roomType === 'PROTECTED')) {
+    return <PwdSetOption />
   } else if (roomType === 'PRIVATE') {
-    return <InviteUser socket={socket} roomId={roomId} />
+    return <InviteUser roomId={roomId} />
   } else return null
 }
 
@@ -96,7 +92,7 @@ export const ChatPanel = ({ chats, socket, leaveRoom }: PanelProps) => {
         </Box>
       </Grid>
       <Grid item xs={4}>
-        <ExtraOptionPerRoom socket={socket} />
+        <ExtraOptionPerRoom />
         <MemberView />
       </Grid>
       <ChatInput sendMsg={sendMsg} me={mydata} />
