@@ -12,9 +12,10 @@ import { Logout } from '@mui/icons-material'
 import { InviteUser } from './InviteUser'
 import { MemberView } from './MemberView'
 import { PwdSetOption } from './PwdSetModal'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { ChatViewOption } from './ChatView'
 import { useRecoilValue } from 'recoil'
+import { ChatSocketContext } from 'router'
 
 // TODO: 나가기 누를 때 한 번 더 확인하기
 const LeaveButton = ({ onClick }: { onClick: () => void }) => {
@@ -49,20 +50,11 @@ const ExtraOptionPerRoom = () => {
 
 interface PanelProps {
   chats: Message[]
-  socket: ChatSocket
   leaveRoom: (roomId: number) => void
 }
-export const ChatPanel = ({ chats, socket, leaveRoom }: PanelProps) => {
+export const ChatPanel = ({ chats, leaveRoom }: PanelProps) => {
+  const socket = useContext(ChatSocketContext)
   const { roomId } = useRecoilValue(selectedChatState)
-
-  const sendMsg = (msg: string) => {
-    socket.emit('SEND', {
-      roomId,
-      msgContent: msg,
-      createdAt: new Date(),
-    } as Message)
-    console.log(`sent msg: ${msg}`)
-  }
 
   const { data: me, isSuccess: meOk } = useUserQuery(['user', 'me'])
   const { data: chatusers, isSuccess: usersOk } = useApiQuery<ChatUser[]>([
@@ -95,7 +87,7 @@ export const ChatPanel = ({ chats, socket, leaveRoom }: PanelProps) => {
         <ExtraOptionPerRoom />
         <MemberView />
       </Grid>
-      <ChatInput sendMsg={sendMsg} me={mydata} />
+      <ChatInput me={mydata} />
       <LeaveButton onClick={() => leaveRoom(roomId)} />
     </Grid>
   )

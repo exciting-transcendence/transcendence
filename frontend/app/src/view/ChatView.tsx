@@ -158,7 +158,6 @@ export const MainChatView = ({ messages, setMessages }: Props) => {
           chats={
             messages[selectedChat.roomId] ? messages[selectedChat.roomId] : []
           }
-          socket={socket}
           leaveRoom={leaveRoom}
         />
       ) : (
@@ -168,7 +167,7 @@ export const MainChatView = ({ messages, setMessages }: Props) => {
               <Typography variant="h6" padding="1rem" textAlign="center">
                 참여 가능한 채팅 리스트
               </Typography>
-              <ChatRoomList list={chatRoomList} socket={socket} />
+              <ChatRoomList rooms={chatRoomList} />
             </>
           ) : chatRoomList ? (
             <Typography>참여 가능한 채팅방이 없습니다</Typography>

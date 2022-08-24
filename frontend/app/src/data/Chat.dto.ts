@@ -81,7 +81,7 @@ type cb = (res: Response) => void
 export type Chat = Omit<Message, 'roomId'>
 export type MessageHandler = (message: Message, fn?: cb) => void
 export type UserHandler = (user: UserInRoom, fn?: cb) => void
-export type StatusHandler = (status: userStatus) => void
+export type StatusHandler = (status: userStatus, fn?: cb) => void
 // TODO: response dto 작성
 interface ClientToServerEvents {
   SEND: MessageHandler
