@@ -10,7 +10,7 @@ import {
   Modal,
 } from '@mui/material'
 import { Socket } from 'socket.io-client'
-import { Message, RoomType } from 'data'
+import { ChatSocket, Message, RoomType } from 'data'
 import { queryClient } from 'hook'
 
 const style = {
@@ -73,7 +73,7 @@ export const RoomOptionSecond = (prop: {
 export const BasicModal = (prop: {
   modal: boolean
   setModal: (value: boolean) => void
-  socket: any
+  socket: ChatSocket
 }) => {
   const [roomType, setRoomType] = useState<RoomType>('PUBLIC')
   const [password, setPassword] = useState('')
@@ -83,17 +83,20 @@ export const BasicModal = (prop: {
 
   const createRoom = () => {
     const roomName = input.current?.value
-    if (roomName && roomName.search(/^\w{2,30}$/) === -1) {
-      setErrMsg('방 제목은 2~30자 영문으로 만들어주세요')
+    if (!roomName) {
+      setErrMsg('방 이름을 입력해주세요')
       return
     }
-    if (password)
+    if (roomName.search(/^\w{2,30}$/) === -1) {
+      setErrMsg('방 제목은 2~30자 영문으로 만들어주세요')
+      return
+    } else if (password) {
       prop.socket.emit('CREATE', {
         title: roomName,
         type: 'PROTECTED',
         password: password,
       })
-    else prop.socket.emit('CREATE', { title: roomName, type: roomType })
+    } else prop.socket.emit('CREATE', { title: roomName, type: roomType })
     handleClose()
   }
   return (

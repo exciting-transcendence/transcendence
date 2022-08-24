@@ -10,7 +10,7 @@ import {
   Modal,
 } from '@mui/material'
 import { Socket } from 'socket.io-client'
-import { Message } from 'data'
+import { ChatSocket, Message } from 'data'
 import { ChatViewOption } from './ChatView'
 
 const style = {
@@ -29,7 +29,7 @@ export const PwdModal = (prop: {
   modal: boolean
   setModal: (value: boolean) => void
   setShowChat: Dispatch<SetStateAction<ChatViewOption>>
-  socket: any
+  socket: ChatSocket
   roomId: number
 }) => {
   const input = useRef<HTMLInputElement>()
@@ -50,7 +50,11 @@ export const PwdModal = (prop: {
         } else if (res.status === 200) {
           setErrMsg('OK')
           handleClose()
-          prop.setShowChat({ bool: true, roomId: prop.roomId })
+          prop.setShowChat((prevState) => ({
+            ...prevState,
+            bool: true,
+            roomId: prop.roomId,
+          }))
         }
       },
     )

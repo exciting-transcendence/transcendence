@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { Box, Paper, Stack } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { Room, RoomType } from 'data'
+import { ChatSocket, Room, RoomType } from 'data'
 import { PwdModal } from './EnterPwdModal'
 import LockIcon from '@mui/icons-material/Lock'
 import { ChatViewOption } from './ChatView'
@@ -26,12 +26,12 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export const ChatRoomList = (prop: {
   list: Room[]
-  socket: any
+  socket: ChatSocket
   setShowChat: Dispatch<SetStateAction<ChatViewOption>>
 }) => {
   const [modal, setModal] = useState(false)
   const joinRoom = (roomId: number, roomType: RoomType) => {
-    prop.socket.emit('JOIN', { roomId }, (res: { status: number }) => {
+    prop.socket.emit('JOIN', { roomId }, (res) => {
       if (res.status === 200) {
         prop.setShowChat({ bool: true, roomId, roomType })
       }
