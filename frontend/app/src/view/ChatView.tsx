@@ -9,7 +9,7 @@ import {
 import { ChatRoomList } from './ChatRoomList'
 import { JoinedRoomList } from './JoinedRoomList'
 import { Grid, Divider, Typography, Button, Chip } from '@mui/material'
-import { BasicModal } from './CreateRoomModal'
+import { CreateRoomModal } from './CreateRoomModal'
 import {
   JoinedRoom,
   Room,
@@ -120,7 +120,7 @@ export const ChatView = () => {
           <Button fullWidth={true} onClick={() => setModal(true)}>
             방만들기
           </Button>
-          <BasicModal setModal={setModal} modal={modal} socket={socket} />
+          <CreateRoomModal setModal={setModal} modal={modal} socket={socket} />
           <Button fullWidth={true} onClick={updateRoom}>
             참여 가능한 방
           </Button>
