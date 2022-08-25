@@ -4,6 +4,7 @@ import { useAuthSocket } from 'hook'
 import {
   queryClient,
   useUserQuery,
+  onlineUsersState,
   selectedChatState,
   messageRecordState,
 } from 'hook'
@@ -14,6 +15,7 @@ export const useChatSocket = () => {
   const socket = useAuthSocket<ChatSocket>('/api/chat')
   const [messages, setMessages] = useRecoilState(messageRecordState)
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState)
+  const [onlineUsers, setOnlineUsers] = useRecoilState(onlineUsersState)
   const { roomId } = selectedChat
 
   const { data: me, isSuccess } = useUserQuery(['user', 'me'])
@@ -37,8 +39,8 @@ export const useChatSocket = () => {
     if (socket === undefined) {
       return
     }
-    socket.on('STATUS', (res) => {
-      console.log('STATUS: ', res)
+    socket.on('STATUS', ({ uid, status }) => {
+      setOnlineUsers((prev) => ({ ...prev, [uid]: status }))
       queryClient.invalidateQueries(['user', 'me'])
       queryClient.invalidateQueries(['chat'])
     })
@@ -89,14 +91,10 @@ export const useChatSocket = () => {
         ...res,
         createdAt: new Date(res.createdAt),
       }
-      console.log('incoming message')
-      console.debug(msg)
-      setMessages((prev) => {
-        return {
-          ...prev,
-          [id]: prev[id] ? [...prev[id], msg] : [msg],
-        }
-      })
+      setMessages((prev) => ({
+        ...prev,
+        [id]: prev[id] ? [...prev[id], msg] : [msg],
+      }))
     })
     return () => {
       socket.removeAllListeners('RECEIVE')
