@@ -26,6 +26,7 @@ const Item = muiStyled(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary,
   height: '80vh',
+  padding: '0.5rem'
 }))
 
 const FixedDiv = styled.div`
