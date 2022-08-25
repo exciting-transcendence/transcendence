@@ -87,11 +87,11 @@ export const MainChatView = () => {
   const { data: chatRoomList } = useApiQuery<Room[]>(['chat', 'joinlist'])
 
   return (
-    <Grid item xs={12} padding="100px">
+    <>
       {selectedChat.bool ? (
         <ChatPanel />
       ) : (
-        <>
+        <Grid container padding="1rem">
           {chatRoomList && chatRoomList.length ? (
             <>
               <Typography variant="h6" padding="1rem" textAlign="center">
@@ -104,8 +104,8 @@ export const MainChatView = () => {
           ) : (
             <Typography>Loading...</Typography>
           )}
-        </>
+        </Grid>
       )}
-    </Grid>
+    </>
   )
 }
