@@ -37,7 +37,21 @@ export const useChatSocket = () => {
     if (socket === undefined) {
       return
     }
+    socket.on('STATUS', (res) => {
+      console.log('STATUS: ', res)
+      queryClient.invalidateQueries(['user', 'me'])
+      queryClient.invalidateQueries(['chat'])
+    })
+    return () => {
+      socket.removeAllListeners('CHATUSER_STATUS')
+    }
+  }, [socket])
+  useEffect(() => {
+    if (socket === undefined) {
+      return
+    }
     socket.on('CHATUSER_STATUS', (res) => {
+      console.log('CHATUSER_STATUS: ', res)
       queryClient.invalidateQueries(['user', 'me'])
       queryClient.invalidateQueries(['chat'])
     })
