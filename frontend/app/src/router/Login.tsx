@@ -25,7 +25,7 @@ const VerticalAlignedDiv = styled.div`
 `
 
 const CenterAlignedDiv = styled.div`
-position: absolute;
+  position: absolute;
   display: flex;
   width: 100%;
   height: 100%;
