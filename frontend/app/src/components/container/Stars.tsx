@@ -1,5 +1,7 @@
 import styled, { keyframes } from 'styled-components'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
+import { useEffect } from 'react'
+import { useWindowSize } from 'react-use'
 
 export const theme = createTheme({
   typography: {
@@ -52,9 +54,13 @@ const Star = styled.div<{ r1: number; r2: number; r3: number; r4: number }>`
     infinite;
 `
 export const GenStars = () => {
+  const { width, height } = useWindowSize()
+  const amount = Math.round(width * height * 0.001)
+  console.log(`amount: ${amount}`)
+
   return (
     <>
-      {Array.from(Array(100).keys()).map((i) => (
+      {Array.from(Array(amount).keys()).map((i) => (
         <Star
           r1={Math.random()}
           r2={Math.random()}
