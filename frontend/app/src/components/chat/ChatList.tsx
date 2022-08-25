@@ -36,10 +36,7 @@ export const ChatList = () => {
   return (
     <List>
       {groupedMessages.map((group) => (
-        <WrappedChatListItem
-          key={group[0].createdAt.toISOString()}
-          group={group}
-        />
+        <WrappedChatListItem key={`${group[0].createdAt}`} group={group} />
       ))}
     </List>
   )

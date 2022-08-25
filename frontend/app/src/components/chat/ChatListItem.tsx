@@ -14,10 +14,10 @@ import { useNavigate } from 'react-router-dom'
 import { useRecoilValue } from 'recoil'
 
 interface TextProps {
+  messages: string[]
   primary?: string
 }
-const ChatText = ({ primary }: TextProps) => {
-  const messages = useRecoilValue(currentMessagesState)
+const ChatText = ({ messages, primary }: TextProps) => {
   return (
     <ListItemText
       primary={primary || 'Unknown User'}
@@ -38,7 +38,7 @@ export const ChatListItem = ({ user, messages, onClick }: Props) => {
         <ListItemAvatar>
           <Avatar />
         </ListItemAvatar>
-        <ChatText />
+        <ChatText messages={messages} />
       </ListItem>
     )
   }
@@ -49,7 +49,7 @@ export const ChatListItem = ({ user, messages, onClick }: Props) => {
       <ListItemAvatar>
         <AvatarWithStatus status={status} avatar={avatar} />
       </ListItemAvatar>
-      <ChatText primary={`${nickname}#${uid}`} />
+      <ChatText messages={messages} primary={`${nickname}#${uid}`} />
     </ListItem>
   )
 }
