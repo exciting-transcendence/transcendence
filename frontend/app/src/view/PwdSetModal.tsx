@@ -36,7 +36,7 @@ export const PwdSetModal = ({ open, off, socket }: Props) => {
       password: inputAdd.current?.value,
       command: 'ADD',
     })
-    setSelectedChat({ bool: true, roomId: roomId, roomType: 'PROTECTED' })
+    setSelectedChat({ bool: true, roomId, roomType: 'PROTECTED' })
     off()
   }
   const removePwd = () => {
