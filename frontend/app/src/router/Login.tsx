@@ -25,7 +25,7 @@ function LoginButton() {
   return (
     <>
       <Typography variant="h2" align="center" paddingTop="100px">
-        Pong Game
+        Exciting PONG
       </Typography>
       <CenterAlignedDiv>
         <Button variant="outlined" color="error">
