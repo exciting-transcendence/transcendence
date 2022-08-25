@@ -1,15 +1,25 @@
 import styled, { keyframes } from 'styled-components'
-import { createTheme } from '@mui/material'
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 
 export const theme = createTheme({
   typography: {
     fontFamily: "'Press Start 2P', cursive",
   },
+  palette: {
+    background: { default: '#000000' },
+    text: { primary: '#ffffff' },
+  },
 })
-export const Div = styled.div`
-  background: black;
-  color: white;
-`
+
+export const Background = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <GenStars />
+      {children}
+    </ThemeProvider>
+  )
+}
 const s = keyframes`
 0% {
   transform: scale(1, 1);
@@ -44,13 +54,13 @@ const Star = styled.div<{ r1: number; r2: number; r3: number; r4: number }>`
 export const GenStars = () => {
   return (
     <>
-      {[...Array(100)].map((index) => (
+      {Array.from(Array(100).keys()).map((i) => (
         <Star
           r1={Math.random()}
           r2={Math.random()}
           r3={Math.random() * 5 + 5}
           r4={Math.random() * 5}
-          key={index}
+          key={i}
         />
       ))}
     </>

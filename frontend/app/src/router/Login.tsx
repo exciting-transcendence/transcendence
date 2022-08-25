@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import { Typography } from '@mui/material'
 import { ThemeProvider } from '@mui/material'
 import './Login.css'
-import { Div, GenStars, theme } from './Stars'
+import { Background } from 'components'
 
 const CenterAlignedDiv = styled.div`
   display: flex;
@@ -24,24 +24,21 @@ const CenterAlignedDiv = styled.div`
 
 function LoginButton() {
   return (
-    <Div>
-      <GenStars />
-      <ThemeProvider theme={theme}>
-        <Typography variant="h2" align="center" paddingTop="100px">
-          Pong Game
-        </Typography>
-        <CenterAlignedDiv>
-          <Button variant="outlined" color="error">
-            <a
-              href="/api/auth/ft"
-              style={{ textDecoration: 'none', color: '#fff' }}
-            >
-              Login with 42Intra
-            </a>
-          </Button>
-        </CenterAlignedDiv>
-      </ThemeProvider>
-    </Div>
+    <Background>
+      <Typography variant="h2" align="center" paddingTop="100px">
+        Pong Game
+      </Typography>
+      <CenterAlignedDiv>
+        <Button variant="outlined" color="error">
+          <a
+            href="/api/auth/ft"
+            style={{ textDecoration: 'none', color: '#fff' }}
+          >
+            Login with 42Intra
+          </a>
+        </Button>
+      </CenterAlignedDiv>
+    </Background>
   )
 }
 function ProcessLogin(props: { setIsLoggedIn: (value: boolean) => void }) {
