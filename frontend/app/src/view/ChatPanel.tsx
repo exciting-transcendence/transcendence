@@ -37,9 +37,9 @@ const ExtraOptionPerRoom = () => {
     { enabled: meOk },
   )
   if (!isOwner && usersOk && meOk) {
-    users.forEach((el) => {
-      if (el.user.uid === me.uid && el.isOwner) setIsOwner(true)
-    })
+    if (users.filter((el) => el.user.uid === me.uid).find((el) => el.isOwner)) {
+      setIsOwner(true)
+    }
   }
   if (isOwner && (roomType === 'PUBLIC' || roomType === 'PROTECTED')) {
     return <PwdSetOption />
@@ -53,12 +53,8 @@ export const ChatPanel = () => {
   const { roomId } = useRecoilValue(selectedChatState)
   const [_, setSelectedChat] = useRecoilState(selectedChatState)
 
-  const { data: me, isSuccess: meOk } = useUserQuery(['user', 'me'])
-  const { data: chatusers, isSuccess: usersOk } = useApiQuery<ChatUser[]>([
-    'chat',
-    roomId,
-    'list',
-  ])
+  const { data: me } = useUserQuery(['user', 'me'])
+  const { data: chatusers } = useApiQuery<ChatUser[]>(['chat', roomId, 'list'])
 
   const leaveRoom = (roomId: number) => {
     socket?.emit('LEAVE', { roomId }, () => {
