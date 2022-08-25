@@ -12,6 +12,10 @@ export interface Message {
   /** 초대할 사용자 uid */
   inviteUid?: number
 }
+export type Messages = {
+  [roomId: number]: Message[]
+}
+
 export interface ChatJoinRoom {
   roomId: number
   password?: string

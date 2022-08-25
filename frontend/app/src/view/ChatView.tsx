@@ -10,10 +10,19 @@ import { ChatRoomList } from './ChatRoomList'
 import { JoinedRoomList } from './JoinedRoomList'
 import { Grid, Divider, Typography, Button, Chip } from '@mui/material'
 import { BasicModal } from './CreateRoomModal'
-import { JoinedRoom, Room, Message, ChatSocket, User, RoomType } from 'data'
+import {
+  JoinedRoom,
+  Room,
+  Message,
+  ChatSocket,
+  User,
+  RoomType,
+  Messages,
+} from 'data'
 import { ChatPanel } from './ChatPanel'
 import { getAuthHeader } from 'hook/getAuthHeader'
 import {
+  messagesState,
   queryClient,
   selectedChatState as selectedChatState,
   useApiQuery,
@@ -21,23 +30,15 @@ import {
 } from 'hook'
 import { useMutation } from '@tanstack/react-query'
 import { ChatSocketContext } from '../router/Main'
-
-import { useRecoilState } from 'recoil'
-
-type Messages = {
-  [roomId: number]: Message[]
-}
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 export type ChatViewOption = {
   bool: boolean
   roomId: number
   roomType: RoomType
 }
-export interface Props {
-  messages: Messages
-  setMessages: (value: any) => void
-}
-export const ChatView = ({ messages, setMessages }: Props) => {
+export const ChatView = () => {
+  const [messages, setMessages] = useRecoilState(messagesState)
   const socket = useContext(ChatSocketContext)
   const [modal, setModal] = useState(false)
   const [_, setSelectedChat] = useRecoilState(selectedChatState)
@@ -82,10 +83,10 @@ export const ChatView = ({ messages, setMessages }: Props) => {
       }
       console.log('incoming message')
       console.debug(msg)
-      setMessages((messages: Messages) => {
+      setMessages((prev) => {
         return {
-          ...messages,
-          [id]: messages[id] ? [...messages[id], msg] : [msg],
+          ...prev,
+          [id]: prev[id] ? [...prev[id], msg] : [msg],
         }
       })
     })
@@ -138,7 +139,8 @@ export const ChatView = ({ messages, setMessages }: Props) => {
   )
 }
 
-export const MainChatView = ({ messages, setMessages }: Props) => {
+export const MainChatView = () => {
+  const messages = useRecoilValue(messagesState)
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState)
   const socket = useContext(ChatSocketContext)
   const { data: chatRoomList } = useApiQuery<Room[]>(['chat', 'joinlist'])
@@ -147,7 +149,7 @@ export const MainChatView = ({ messages, setMessages }: Props) => {
   const leaveRoom = (roomId: number) => {
     socket?.emit('LEAVE', { roomId }, () => {
       queryClient.invalidateQueries(['chat', 'me'])
-      setSelectedChat((current) => ({ ...current, bool: false }))
+      setSelectedChat((prev) => ({ ...prev, bool: false }))
     })
     // const newJoinedRoom = joinedRoomList.filter((el) => el.id !== roomId)
     // setJoinedRoomList(newJoinedRoom)
