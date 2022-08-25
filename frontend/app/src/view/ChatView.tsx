@@ -17,12 +17,12 @@ import {
   ChatSocket,
   User,
   RoomType,
-  Messages,
+  MessageRecord,
 } from 'data'
 import { ChatPanel } from './ChatPanel'
 import { getAuthHeader } from 'hook/getAuthHeader'
 import {
-  messagesState,
+  messageRecordState,
   queryClient,
   selectedChatState as selectedChatState,
   useApiQuery,
@@ -38,7 +38,7 @@ export type ChatViewOption = {
   roomType: RoomType
 }
 export const ChatView = () => {
-  const [messages, setMessages] = useRecoilState(messagesState)
+  const [messages, setMessages] = useRecoilState(messageRecordState)
   const socket = useContext(ChatSocketContext)
   const [modal, setModal] = useState(false)
   const [_, setSelectedChat] = useRecoilState(selectedChatState)
@@ -140,29 +140,14 @@ export const ChatView = () => {
 }
 
 export const MainChatView = () => {
-  const messages = useRecoilValue(messagesState)
+  const messageRecord = useRecoilValue(messageRecordState)
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState)
-  const socket = useContext(ChatSocketContext)
   const { data: chatRoomList } = useApiQuery<Room[]>(['chat', 'joinlist'])
-  if (socket === undefined) return null
 
-  const leaveRoom = (roomId: number) => {
-    socket?.emit('LEAVE', { roomId }, () => {
-      queryClient.invalidateQueries(['chat', 'me'])
-      setSelectedChat((prev) => ({ ...prev, bool: false }))
-    })
-    // const newJoinedRoom = joinedRoomList.filter((el) => el.id !== roomId)
-    // setJoinedRoomList(newJoinedRoom)
-  }
   return (
     <Grid item xs={12} padding="100px">
       {selectedChat.bool ? (
-        <ChatPanel
-          chats={
-            messages[selectedChat.roomId] ? messages[selectedChat.roomId] : []
-          }
-          leaveRoom={leaveRoom}
-        />
+        <ChatPanel chats={messageRecord[selectedChat.roomId] ?? []} />
       ) : (
         <>
           {chatRoomList && chatRoomList.length ? (

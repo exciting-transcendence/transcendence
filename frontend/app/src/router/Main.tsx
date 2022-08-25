@@ -7,7 +7,7 @@ import { io, Socket } from 'socket.io-client'
 import { usePongSocket, useChatSocket } from 'hook'
 import { useUserQuery, useUsersQuery } from 'hook'
 
-import { ChatSocket, Messages } from 'data'
+import { ChatSocket, MessageRecord } from 'data'
 import { Grid, Paper, Chip } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import axios from 'axios'

@@ -1,18 +1,18 @@
-import { Message, Messages } from 'data'
+import { Message, MessageRecord } from 'data'
 import { atom, selector } from 'recoil'
 import { selectedChatState } from './selectedChatState'
 
-export const messagesState = atom<Messages>({
-  key: 'messagesState',
+export const messageRecordState = atom<MessageRecord>({
+  key: 'messageRecord',
   default: {},
 })
 
 export const currentMessagesState = selector({
   key: 'currentMessagesState',
   get: ({ get }) => {
-    const messages = get(messagesState)
+    const messageRecord = get(messageRecordState)
     const selectedChat = get(selectedChatState)
 
-    return messages[selectedChat.roomId] || []
+    return messageRecord[selectedChat.roomId] ?? []
   },
 })
