@@ -147,7 +147,7 @@ export const MainChatView = () => {
   return (
     <Grid item xs={12} padding="100px">
       {selectedChat.bool ? (
-        <ChatPanel chats={messageRecord[selectedChat.roomId] ?? []} />
+        <ChatPanel />
       ) : (
         <>
           {chatRoomList && chatRoomList.length ? (

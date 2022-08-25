@@ -1,5 +1,6 @@
 import { Message, MessageRecord } from 'data'
 import { atom, selector } from 'recoil'
+import { groupBySerial } from 'utility'
 import { selectedChatState } from './selectedChatState'
 
 export const messageRecordState = atom<MessageRecord>({
@@ -14,5 +15,14 @@ export const currentMessagesState = selector({
     const selectedChat = get(selectedChatState)
 
     return messageRecord[selectedChat.roomId] ?? []
+  },
+})
+
+export const currentGroupedMessagesState = selector({
+  key: 'currentGroupedMessagesState',
+  get: ({ get }) => {
+    const messages = get(currentMessagesState)
+
+    return groupBySerial(messages, (messages) => messages.senderUid)
   },
 })

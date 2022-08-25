@@ -1,6 +1,6 @@
 import { Grid, Button, Tooltip, Typography, Paper, Box } from '@mui/material'
 import { Message, ChatSocket, User, ChatUser, RoomType } from 'data'
-import { ChatInput, ChatList, MemberList } from 'components'
+import { ChatInput, ChatList, ChatListItem, MemberList } from 'components'
 import {
   useApiQuery,
   useChatUsersQuery,
@@ -48,10 +48,7 @@ const ExtraOptionPerRoom = () => {
   } else return null
 }
 
-interface PanelProps {
-  chats: Message[]
-}
-export const ChatPanel = ({ chats }: PanelProps) => {
+export const ChatPanel = () => {
   const socket = useContext(ChatSocketContext)
   const { roomId } = useRecoilValue(selectedChatState)
   const [_, setSelectedChat] = useRecoilState(selectedChatState)
@@ -89,7 +86,7 @@ export const ChatPanel = ({ chats }: PanelProps) => {
     <Grid container justifyContent="space-between">
       <Grid item xs={8}>
         <Box style={{ overflow: 'auto' }}>
-          <ChatList chats={chats} />
+          <ChatList />
         </Box>
       </Grid>
       <Grid item xs={4}>
