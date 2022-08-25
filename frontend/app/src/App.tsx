@@ -7,6 +7,7 @@ import styled, { keyframes } from 'styled-components'
 import { Typography } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material'
 import './App.css'
+import { RecoilRoot } from 'recoil'
 
 const theme = createTheme({
   typography: {
@@ -94,8 +95,10 @@ export const Context = () => {
 export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <Context />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <RecoilRoot>
+        <Context />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </RecoilRoot>
     </QueryClientProvider>
   )
 }
