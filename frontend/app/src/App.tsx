@@ -39,22 +39,28 @@ const s = keyframes`
 }
 `
 
-const Star = styled.div<{ r1: number; r2: number }>`
+const Star = styled.div<{ r1: number; r2: number; r3: number; r4: number }>`
   position: absolute;
-  top: ${(props) => (props.r1 / 3) * window.innerHeight}px;
-  left: ${(props) => (props.r2 / 3) * window.innerWidth}px;
+  top: ${(props) => props.r1 * window.innerHeight}px;
+  left: ${(props) => props.r2 * window.innerWidth}px;
   width: 3px;
   height: 3px;
   background: white;
   border-radius: 5px;
-  animation: ${s} ${(props) => props.r1 + 10}s linear
-    ${(props) => props.r2 * 2}s infinite;
+  animation: ${s} ${(props) => props.r3}s linear ${(props) => props.r4}s
+    infinite;
 `
 export const GenStars = () => {
   return (
     <>
       {[...Array(100)].map((n, index) => (
-        <Star r1={Math.random() * 3} r2={Math.random() * 3} key={index} />
+        <Star
+          r1={Math.random()}
+          r2={Math.random()}
+          r3={Math.random() * 5 + 5}
+          r4={Math.random() * 5}
+          key={index}
+        />
       ))}
     </>
   )
