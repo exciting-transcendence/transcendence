@@ -68,19 +68,6 @@ export const ChatPanel = () => {
   }
 
   const mydata = chatusers?.find((user) => user.user.uid === me?.uid)
-  useEffect(() => {
-    if (socket === undefined) {
-      return
-    }
-    socket.on('CHATUSER_STATUS', (res) => {
-      console.log(res)
-      queryClient.invalidateQueries(['user', 'me'])
-      queryClient.invalidateQueries(['chat', roomId, 'list'])
-    })
-    return () => {
-      socket.removeAllListeners('CHATUSER_STATUS')
-    }
-  }, [socket])
 
   return (
     <Grid container justifyContent="space-between">
