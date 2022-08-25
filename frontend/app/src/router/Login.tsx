@@ -13,7 +13,6 @@ import styled from 'styled-components'
 import { Typography } from '@mui/material'
 import { ThemeProvider } from '@mui/material'
 import './Login.css'
-import { Background } from 'components'
 
 const CenterAlignedDiv = styled.div`
   display: flex;
@@ -24,7 +23,7 @@ const CenterAlignedDiv = styled.div`
 
 function LoginButton() {
   return (
-    <Background>
+    <>
       <Typography variant="h2" align="center" paddingTop="100px">
         Pong Game
       </Typography>
@@ -38,7 +37,7 @@ function LoginButton() {
           </a>
         </Button>
       </CenterAlignedDiv>
-    </Background>
+    </>
   )
 }
 function ProcessLogin(props: { setIsLoggedIn: (value: boolean) => void }) {
