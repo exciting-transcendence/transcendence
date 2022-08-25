@@ -4,7 +4,7 @@ import { GameView, FriendView, ChatView, ProfileView } from 'view'
 import { createContext, useState, useReducer } from 'react'
 import { io, Socket } from 'socket.io-client'
 
-import { usePongSocket, useChatSocket } from 'hook'
+import { usePongSocket, useChatSocket, useToggles } from 'hook'
 import { useUserQuery, useUsersQuery } from 'hook'
 
 import { ChatSocket, MessageRecord } from 'data'
@@ -18,7 +18,6 @@ import { GamePannel } from 'view'
 import { useNavigate } from 'react-router-dom'
 import { MainGrid } from 'components'
 import { ChatViewOption } from 'view/ChatView'
-import { useToggle } from 'react-use'
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -37,13 +36,12 @@ export const MainRouter = () => {
   const pongData = usePongSocket()
   const chatSocket = useChatSocket()
   const [profileId, setProfileId] = useState<number>(0)
-  const [toGame, toggle] = useToggle(true)
+  const [toGame, { toggle }] = useToggles(true)
 
   return (
     <PongSocketContext.Provider value={pongData.socket}>
       <ChatSocketContext.Provider value={chatSocket.socket}>
         <Chip
-          color={toGame ? 'secondary' : 'success'}
           label={toGame ? 'Game' : 'Chat'}
           onClick={() => {
             navigate(toGame ? '/game' : '/chat')
