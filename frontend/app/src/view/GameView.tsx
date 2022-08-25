@@ -7,13 +7,6 @@ import { usePongSocket } from 'hook'
 import { MatchingView } from './MatchingView'
 import { MatchHistory } from './MatchHistory'
 
-const _theme = createTheme({
-  palette: {
-    primary: {
-      main: '#000000',
-    },
-  },
-})
 type PongState =
   | 'selectMode'
   | 'findMatch'
@@ -91,7 +84,7 @@ export const GameView = ({
         //     setGameState('findMatch')
         //   }}
         // />
-        <Typography marginTop="10%">게임 모드를 선택해주세요</Typography>
+        <Typography>게임 모드를 선택해주세요</Typography>
       )
 
     case 'findMatch':
