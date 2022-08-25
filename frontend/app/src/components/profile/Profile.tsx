@@ -50,7 +50,7 @@ interface Props {
 }
 export const Profile = ({ user }: Props) => {
   const { uid, stat, avatar, nickname } = user
-  const status = useRecoilValue(onlineUsersState)[uid]
+  const status = useRecoilValue(onlineUsersState)[uid] ?? 'UNKNOWN'
 
   return (
     <>
