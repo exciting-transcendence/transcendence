@@ -94,6 +94,7 @@ export const MainRouter = () => {
             <Item
               onClick={() => {
                 queryClient.invalidateQueries(['user', 'me'])
+                queryClient.invalidateQueries(['user'])
                 navigate('/friend')
               }}
             >
