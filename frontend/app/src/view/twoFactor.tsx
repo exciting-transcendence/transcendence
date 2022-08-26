@@ -67,6 +67,11 @@ export const InputCode = (props: {
           id="standard-basic"
           label={notice}
           variant="standard"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+            }
+          }}
         />
       </Box>
       <Button variant="outlined" onClick={handleOtpCheck}>
