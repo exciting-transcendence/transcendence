@@ -11,12 +11,12 @@ import { MemberListOption, OptionForBanned } from '../../view/MemberListOption'
 
 interface SectionProps {
   title: string
-  users: User[]
+  users: (User | OtherUser)[]
   onClick: (uid: number) => void
 }
 export const Section = ({ title, users, onClick }: SectionProps) => (
   <>
-    <ListSubheader>{title}</ListSubheader>
+    <ListSubheader>{`${title} - ${users.length}`}</ListSubheader>
     {users.map((user) => (
       <ProfileListItem
         key={user.uid}
@@ -64,7 +64,7 @@ export const MemberList = ({ chatusers, refUser, banusers }: Props) => {
     (user) => user.status !== 'OFFLINE',
   )
   return (
-    <List>
+    <>
       <Modal open={open} onClose={off}>
         <Box sx={style}>
           <Card sx={{ padding: '2vw' }}>
@@ -93,21 +93,9 @@ export const MemberList = ({ chatusers, refUser, banusers }: Props) => {
         </Box>
       </Modal>
 
-      <Section
-        title={`온라인 - ${onlineUsers.length}`}
-        users={onlineUsers as User[]}
-        onClick={openModal}
-      />
-      <Section
-        title={`오프라인 - ${offlineUsers.length}`}
-        users={offlineUsers as User[]}
-        onClick={openModal}
-      />
-      <Section
-        title={`밴유저 - ${bannedUsers.length}`}
-        users={bannedUsers as User[]}
-        onClick={openModal}
-      />
-    </List>
+      <Section title="온라인" users={onlineUsers} onClick={openModal} />
+      <Section title="오프라인" users={offlineUsers} onClick={openModal} />
+      <Section title="밴유저" users={bannedUsers} onClick={openModal} />
+    </>
   )
 }
