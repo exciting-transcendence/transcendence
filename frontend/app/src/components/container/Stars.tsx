@@ -59,7 +59,6 @@ const Star = styled.div<{
 export const GenStars = () => {
   const { width, height } = useWindowSize()
   const amount = Math.round(width * height * 0.0001)
-  console.log(`amount: ${amount}`)
 
   return (
     <>
