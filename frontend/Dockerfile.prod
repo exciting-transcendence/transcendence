@@ -2,18 +2,12 @@ FROM node:lts-alpine3.15
 
 RUN apk add nginx
 
+COPY app /app
 COPY nginx.conf /etc/nginx/http.d/app.conf
 
 WORKDIR /app
 
-COPY app/*.yml /app/
-COPY app/*.json /app/
-
 RUN npm ci
-
-COPY app/public /app/public/
-
-COPY app/src /app/src/
 
 RUN npm run build
 
