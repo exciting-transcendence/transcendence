@@ -20,8 +20,8 @@ export class ChatUser {
   @Column({ default: false })
   isOwner: boolean
 
-  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  endOfMute: Date
+  @Column()
+  isMuted: boolean
 
   @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.chatUser, {
     onDelete: 'CASCADE',

@@ -231,7 +231,7 @@ export class ChatService {
         'chatRoom.id',
         'chatUser.isAdmin',
         'chatUser.isOwner',
-        'chatUser.endOfMute',
+        'chatUser.isMuted',
         'user.uid',
         'user.nickname',
         'user.avatar',
@@ -284,15 +284,15 @@ export class ChatService {
     return rooms
   }
 
-  async addMuteUser(uid: number, roomId: number, muteTimeSec: number) {
+  async addMuteUser(uid: number, roomId: number) {
     const room = await this.chatRoomRepository.findOne({
       select: ['chatUser'],
       where: { id: roomId, chatUser: { user: { uid } } },
       relations: ['chatUser', 'chatUser.user'],
     })
     if (!room) throw new NotFoundException('Room not found or User not in room')
-    room.chatUser[0].endOfMute = new Date(Date.now() + muteTimeSec * 1000)
-    return this.chatUserRepository.save(room.chatUser[0]).catch(() => {
+    room.chatUser[0].isMuted = true
+    return await this.chatUserRepository.save(room.chatUser[0]).catch(() => {
       throw new InternalServerErrorException('mutetime not set')
     })
   }
@@ -324,6 +324,19 @@ export class ChatService {
     })
     return await this.chatUserRepository.delete(chatuser.id).catch(() => {
       throw new InternalServerErrorException('chatuser not deleted')
+    })
+  }
+
+  async deleteMuteUser(uid: number, roomId: number) {
+    const room = await this.chatRoomRepository.findOne({
+      select: ['chatUser'],
+      where: { id: roomId, chatUser: { user: { uid } } },
+      relations: ['chatUser', 'chatUser.user'],
+    })
+    if (!room) throw new NotFoundException('Room not found or User not in room')
+    room.chatUser[0].isMuted = false
+    return await this.chatUserRepository.save(room.chatUser[0]).catch(() => {
+      throw new InternalServerErrorException('mutetime not set')
     })
   }
 
@@ -366,8 +379,7 @@ export class ChatService {
       relations: ['chatUser', 'chatUser.user'],
     })
     if (!room) false
-    if (room.chatUser[0].endOfMute > new Date()) return true
-    return false
+    return room.chatUser[0].isMuted
   }
 
   async findOneByuid(uid: number): Promise<User> {

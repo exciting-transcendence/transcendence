@@ -10,8 +10,4 @@ export class ChatMuteUserDto {
   @IsNumber()
   uid: number
 
-  @ApiProperty({ description: 'uid를 mute할 시간(초)' })
-  @IsNumber()
-  @IsOptional()
-  muteSec?: number
 }
