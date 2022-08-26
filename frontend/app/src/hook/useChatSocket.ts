@@ -12,31 +12,16 @@ import { Message } from 'data'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 export const useChatSocket = () => {
-  const socket = useAuthSocket<ChatSocket>('/api/chat')
+  const [socket, isSocketReady] = useAuthSocket<ChatSocket>('/api/chat')
   const [messages, setMessages] = useRecoilState(messageRecordState)
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState)
   const [onlineUsers, setOnlineUsers] = useRecoilState(onlineUsersState)
   const { roomId } = selectedChat
 
   const { data: me, isSuccess } = useUserQuery(['user', 'me'])
-  useEffect(() => {
-    if (socket === undefined) {
-      return
-    }
 
-    socket.on('connect', () => {
-      console.log('socket server connected.')
-    })
-    socket.on('disconnect', () => {
-      console.log('socket server disconnected.')
-    })
-
-    // return () => {
-    //   socket.disconnect()
-    // }
-  }, [socket])
   useEffect(() => {
-    if (socket === undefined) {
+    if (!isSocketReady) {
       return
     }
     socket.on('STATUS', ({ uid, status }) => {
@@ -47,9 +32,10 @@ export const useChatSocket = () => {
     return () => {
       socket.removeAllListeners('CHATUSER_STATUS')
     }
-  }, [socket])
+  }, [isSocketReady])
+
   useEffect(() => {
-    if (socket === undefined) {
+    if (!isSocketReady) {
       return
     }
     socket.on('CHATUSER_STATUS', (res) => {
@@ -60,10 +46,10 @@ export const useChatSocket = () => {
     return () => {
       socket.removeAllListeners('CHATUSER_STATUS')
     }
-  }, [socket])
+  }, [isSocketReady])
 
   useEffect(() => {
-    if (!isSuccess || socket === undefined) {
+    if (!isSuccess || !isSocketReady) {
       return
     }
     const { uid } = me
@@ -79,10 +65,10 @@ export const useChatSocket = () => {
     return () => {
       socket.removeAllListeners('NOTICE')
     }
-  }, [me, socket])
+  }, [me, isSuccess, isSocketReady])
 
   useEffect(() => {
-    if (socket === undefined) {
+    if (!isSocketReady) {
       return
     }
     socket.on('RECEIVE', (res: Message) => {
@@ -99,10 +85,10 @@ export const useChatSocket = () => {
     return () => {
       socket.removeAllListeners('RECEIVE')
     }
-  }, [socket])
+  }, [isSocketReady])
 
   useEffect(() => {
-    if (socket === undefined) {
+    if (!isSocketReady) {
       return
     }
     socket.on('DESTROYED', () => {
@@ -113,7 +99,7 @@ export const useChatSocket = () => {
     return () => {
       socket.removeAllListeners('DESTROYED')
     }
-  }, [socket])
+  }, [isSocketReady])
 
   return { socket }
 }
