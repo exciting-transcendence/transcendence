@@ -23,7 +23,7 @@ export interface ChatUser {
   id: number
   isAdmin: boolean
   isOwner: boolean
-  endOfMute: Date
+  isMuted: boolean
   user: OtherUser
 }
 

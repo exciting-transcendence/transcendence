@@ -60,7 +60,6 @@ export interface adminSetting {
 export interface Mutesetting {
   roomId: number
   uid: number
-  muteSec: number
 }
 export interface Unmutesetting {
   roomId: number
