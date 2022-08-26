@@ -20,7 +20,7 @@ export class ChatUser {
   @Column({ default: false })
   isOwner: boolean
 
-  @Column()
+  @Column({ default: false })
   isMuted: boolean
 
   @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.chatUser, {
