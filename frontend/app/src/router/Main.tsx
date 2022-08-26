@@ -49,13 +49,15 @@ export const MainRouter = () => {
   return (
     <PongSocketContext.Provider value={pongData.socket}>
       <ChatSocketContext.Provider value={chatSocket.socket}>
-        <Chip
-          label={toGame ? 'Game' : 'Chat'}
-          onClick={() => {
-            navigate(toGame ? '/game' : '/chat')
-            toggle()
-          }}
-        />
+        <FixedDiv>
+          <Chip
+            label={toGame ? 'Game' : 'Chat'}
+            onClick={() => {
+              navigate(toGame ? '/game' : '/chat')
+              toggle()
+            }}
+          />
+        </FixedDiv>
         <MainGrid
           left={
             <Item>
