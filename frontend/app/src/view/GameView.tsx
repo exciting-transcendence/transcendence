@@ -49,9 +49,9 @@ export const GameView = ({
       const height = node.getBoundingClientRect().height
       const width = node.getBoundingClientRect().width
       if (height < width) {
-        setHeight(height - 300)
+        setHeight(height - 100)
       } else {
-        const remainSpace = 300 - (height - width)
+        const remainSpace = 100 - (height - width)
         if (remainSpace > 0) {
           setHeight(width - remainSpace)
         } else {

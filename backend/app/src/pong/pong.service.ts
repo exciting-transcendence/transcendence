@@ -94,23 +94,23 @@ class Ball extends MoveableRect {
 
     if (Math.random() < 0.5) speedX = -speedX
 
-    // super(
-    //   CONSTANTS.WINDOW_WIDTH / 2 - CONSTANTS.BALL_SIZE / 2,
-    //   CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
-    //   CONSTANTS.BALL_SIZE,
-    //   CONSTANTS.BALL_SIZE,
-    //   speedX,
-    //   speedY,
-    // )
-
     super(
       CONSTANTS.WINDOW_WIDTH / 2 - CONSTANTS.BALL_SIZE / 2,
       CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
       CONSTANTS.BALL_SIZE,
       CONSTANTS.BALL_SIZE,
-      speedFactor,
-      0,
+      speedX,
+      speedY,
     )
+
+    // super(
+    //   CONSTANTS.WINDOW_WIDTH / 2 - CONSTANTS.BALL_SIZE / 2,
+    //   CONSTANTS.WINDOW_HEIGHT / 2 - CONSTANTS.BALL_SIZE / 2,
+    //   CONSTANTS.BALL_SIZE,
+    //   CONSTANTS.BALL_SIZE,
+    //   speedFactor,
+    //   0,
+    // )
   }
 }
 
