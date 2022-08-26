@@ -1,9 +1,9 @@
 import { ListItem, ListItemAvatar, ListItemText } from '@mui/material'
-import { OtherUser, User } from 'data'
+import { User } from 'data'
 import { AvatarWithStatus } from 'components'
 
 interface Props {
-  user: User | OtherUser
+  user: User
   onClick?: () => void
 }
 export const ProfileListItem = ({ user, onClick }: Props) => {
