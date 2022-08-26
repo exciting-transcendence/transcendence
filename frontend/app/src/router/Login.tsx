@@ -31,7 +31,7 @@ function LoginButton() {
         paddingTop="100px"
         color="#ffffff"
       >
-        Pong Game
+        Exciting Pong
       </Typography>
       <CenterAlignedDiv>
         <Button variant="outlined" color="error">
