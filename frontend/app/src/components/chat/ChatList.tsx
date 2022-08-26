@@ -13,6 +13,7 @@ export const WrappedChatListItem = ({ group }: ListProps) => {
   const first = group[0]
   const { senderUid: uid } = first
   const { data: user } = useUserQuery(['user', uid])
+  const { data: me } = useApiQuery<User>(['user', 'me'])
   const inviteUid = group
     .map(({ inviteUid }) => inviteUid)
     .find((id) => id !== undefined)
@@ -20,7 +21,7 @@ export const WrappedChatListItem = ({ group }: ListProps) => {
   return (
     <>
       <ChatListItem user={user} messages={group.map((msg) => msg.msgContent)} />
-      {inviteUid ? (
+      {inviteUid && uid !== me?.uid ? (
         <AcceptGame
           matchTarget={uid}
           recieverUid={inviteUid}
