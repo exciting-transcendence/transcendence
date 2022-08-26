@@ -3,19 +3,18 @@ import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import { useEffect } from 'react'
 import { useWindowSize } from 'react-use'
 
-export const theme = createTheme({
+export const mainTheme = createTheme({
   typography: {
     fontFamily: "'Press Start 2P', cursive",
   },
   palette: {
     background: { default: '#000000' },
-    text: { primary: '#ffffff' },
   },
 })
 
 export const Background = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={mainTheme}>
       <CssBaseline />
       <GenStars />
       {children}
@@ -55,7 +54,7 @@ const Star = styled.div<{ r1: number; r2: number; r3: number; r4: number }>`
 `
 export const GenStars = () => {
   const { width, height } = useWindowSize()
-  const amount = Math.round(width * height * 0.001)
+  const amount = Math.round(width * height * 0.0001)
   console.log(`amount: ${amount}`)
 
   return (
