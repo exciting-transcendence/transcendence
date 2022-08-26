@@ -13,7 +13,9 @@ export const ChatInput = ({ me }: Props) => {
   const [text, setText] = useState('')
   const socket = useContext(ChatSocketContext)
   const { roomId } = useRecoilValue(selectedChatState)
-
+  const [isMuted, setIsMuted] = useState(false)
+  if (me && !isMuted && new Date(me.endOfMute) > new Date()) setIsMuted(true)
+  if (me && isMuted && new Date(me.endOfMute) < new Date()) setIsMuted(false)
   const sendMsg = (socket: ChatSocket, msgContent: string) => {
     if (!msgContent) return
 
@@ -25,8 +27,6 @@ export const ChatInput = ({ me }: Props) => {
     console.log(`sent msg: ${msgContent}`)
     setText('')
   }
-  const [isMuted, setIsMuted] = useState(false)
-  if (me && new Date(me.endOfMute) > new Date()) setIsMuted(true)
 
   if (isMuted) {
     return <TextField label="관리자에 의하여 MUTE 중입니다" value={text} />
