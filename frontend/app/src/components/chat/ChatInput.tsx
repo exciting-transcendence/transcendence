@@ -13,9 +13,9 @@ export const ChatInput = ({ me }: Props) => {
   const [text, setText] = useState('')
   const socket = useContext(ChatSocketContext)
   const { roomId } = useRecoilValue(selectedChatState)
-  const [isMuted, setIsMuted] = useState(false)
-  if (me && !isMuted && new Date(me.endOfMute) > new Date()) setIsMuted(true)
-  if (me && isMuted && new Date(me.endOfMute) < new Date()) setIsMuted(false)
+  const mute = me ? me.endOfMute > new Date() : false
+  const isMuted = mute ? true : false
+
   const sendMsg = (socket: ChatSocket, msgContent: string) => {
     if (!msgContent) return
 

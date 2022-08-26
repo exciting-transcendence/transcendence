@@ -71,7 +71,8 @@ export const ChatPanel = () => {
     })
   }
 
-  const mydata = chatusers?.find((user) => user.user.uid === me?.uid)
+  if (!(me && chatusers)) return <></>
+  const mydata = chatusers.find((user) => user.user.uid === me.uid)
 
   return (
     <Grid container padding="1rem">

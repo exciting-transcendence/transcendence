@@ -56,12 +56,12 @@ export const MemberListOption = ({ user, refUser, off }: Props) => {
   const [other, setOther] = useState<UserType>('Nothing')
   const [adminMsg, setAdminMsg] = useState('관리자 지정')
   const socket = useContext(ChatSocketContext)
-  const isMuted: boolean = new Date(user.endOfMute) > new Date()
+  const day = new Date()
+  const isMuted: boolean = user.endOfMute > day
   const { roomId, roomType } = useRecoilValue(selectedChatState)
   // const [muteSec, setMuteSec] = useState<string>('')
   // const [banSec, setBanSec] = useState<string>('')
-  const [muteText, setMuteText] = useState(isMuted ? 'UNMUTE' : 'MUTE')
-
+  const muteText = isMuted ? 'UNMUTE' : 'MUTE'
   if (refUser === undefined || socket === undefined) return null
   useEffect(() => {
     if (refUser.isOwner) setMe('Owner')
@@ -97,13 +97,11 @@ export const MemberListOption = ({ user, refUser, off }: Props) => {
         uid: user.user.uid,
         muteSec: 1000,
       })
-      setMuteText('UNMUTE')
     } else if (isMuted === true) {
       socket.emit('UNMUTE', {
         roomId,
         uid: user.user.uid,
       })
-      setMuteText('MUTE')
     }
   }
   const handleBan = () => {
