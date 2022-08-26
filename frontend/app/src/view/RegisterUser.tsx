@@ -99,7 +99,7 @@ export function RegisterUser(props: {
     formdata.append('file', avatar)
 
     const token = window.localStorage.getItem('temp_token')
-    fetch('http://localhost:3000/api/avatar', {
+    fetch('/api/avatar', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -115,7 +115,7 @@ export function RegisterUser(props: {
         }
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err.status)
       })
   }
 

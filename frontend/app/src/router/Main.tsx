@@ -32,7 +32,7 @@ const Item = muiStyled(Paper)(({ theme }) => ({
 const FixedDiv = styled.div`
   top:5%;
   left:3%;  
-position: absolute;
+  position: absolute;
 `
 
 export const PongSocketContext = createContext<Socket | undefined>(undefined)
