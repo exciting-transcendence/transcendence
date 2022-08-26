@@ -461,19 +461,17 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: ChatMuteUserDto,
   ) {
-    const { roomId, muteSec } = data
+    const { roomId } = data
     const target = data.uid
     // check if client is admin
     if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
       return new ForbiddenException('You are not admin')
-    if (data.muteSec === undefined || data.muteSec === null)
-      return new BadRequestException('muteSec is required')
     try {
-      await this.chatService.addMuteUser(target, roomId, muteSec)
+      await this.chatService.addMuteUser(target, roomId)
     } catch (error) {
       return error
     }
-    console.log(`${target} in is muted for ${muteSec} seconds in ${roomId}`)
+    console.log(`${target} in is muted in ${roomId}`)
     this.onUserUpdateded(roomId, target, ChatUserEvent.MUTED)
     return { status: 200 }
   }
@@ -496,7 +494,7 @@ export class ChatGateway {
     if ((await this.chatService.isAdmin(client.data.uid, roomId)) === false)
       return new ForbiddenException('You are not admin')
     try {
-      await this.chatService.addMuteUser(target, roomId, 0)
+      await this.chatService.deleteMuteUser(target, roomId)
     } catch (error) {
       return error
     }

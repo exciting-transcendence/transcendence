@@ -15,10 +15,10 @@ export const usePongSocket = () => {
   const [player, setPlayer] = useState<any>()
   const [gameInfo, setGameInfo] = useState<any>()
   const [winner, setWinner] = useState<any>()
-  const socket = useAuthSocket('/api/pong')
+  const [socket, isSocketReady] = useAuthSocket('/api/pong')
 
   useEffect(() => {
-    if (socket === undefined) {
+    if (!isSocketReady) {
       return
     }
 
@@ -48,7 +48,7 @@ export const usePongSocket = () => {
       socket.off('render', handleRender)
       socket.off('gameEnd', handleGameEnd)
     }
-  })
+  }, [isSocketReady])
 
   return {
     socket,
