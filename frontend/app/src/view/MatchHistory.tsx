@@ -35,8 +35,8 @@ export const MatchHistory = () => {
         </TableHead>
         <TableBody>
           {matches.map(({ winner, loser, endOfGame }) => (
-            <TableRow>
-              <MatchCell msg={endOfGame as unknown as string} />
+            <TableRow key={endOfGame}>
+              <MatchCell msg={endOfGame} />
               <MatchCell msg={winner.nickname} />
               <MatchCell msg={loser.nickname} />
             </TableRow>

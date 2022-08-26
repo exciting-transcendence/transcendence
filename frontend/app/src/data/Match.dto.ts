@@ -4,5 +4,5 @@ export interface Match {
   id: number
   winner: User
   loser: User
-  endOfGame: Date
+  endOfGame: string
 }
