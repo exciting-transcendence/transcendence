@@ -25,9 +25,8 @@ export const ChatInput = ({ me }: Props) => {
     console.log(`sent msg: ${msgContent}`)
     setText('')
   }
-
-  let isMuted = false
-  if (me) isMuted = new Date(me.endOfMute) > new Date()
+  const [isMuted, setIsMuted] = useState(false)
+  if (me && new Date(me.endOfMute) > new Date()) setIsMuted(true)
 
   if (isMuted) {
     return <TextField label="관리자에 의하여 MUTE 중입니다" value={text} />
