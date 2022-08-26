@@ -52,7 +52,7 @@ export class FtController {
     const ftUser =
       (await this.ftOauthService.findOne(uid)) ||
       (await this.ftOauthService.create(uid))
-
+    console.log(ftUser.user)
     if (ftUser.user) {
       url.searchParams.append(
         'access_token',
@@ -90,9 +90,12 @@ export class FtController {
   @UseGuards(JwtFtGuard)
   async register(@Req() req: any, @Body() body: RegisterUserDto) {
     const { uid } = req.user
-    const user = await this.userService.create(body)
+
     const ftUser = await this.ftOauthService.findOne(uid)
     if (!ftUser) throw new NotFoundException('FtUser not found')
+    const user = await this.userService.create(body)
+
+    ftUser.user = user
     await this.ftOauthService.save(ftUser)
 
     return { access_token: this.userService.issueToken(user, !user.twoFactor) }
