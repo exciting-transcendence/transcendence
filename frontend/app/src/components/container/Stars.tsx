@@ -41,13 +41,17 @@ const s = keyframes`
   transform: scale(1, 1);
 }
 `
-const Star = styled.div<{ r1: number; r2: number; r3: number; r4: number }>`
+const Star = styled.div<{
+  r1: number
+  r2: number
+  r3: number
+  r4: number
+}>`
   position: absolute;
-  top: ${(props) => props.r1 * window.innerHeight}px;
-  left: ${(props) => props.r2 * window.innerWidth}px;
+  top: ${({ r1 }) => r1 * window.innerHeight}px;
+  left: ${({ r2 }) => r2 * window.innerWidth}px;
   width: 3px;
   height: 3px;
-  background: white;
   border-radius: 5px;
   animation: ${s} ${(props) => props.r3}s linear ${(props) => props.r4}s
     infinite;
