@@ -50,19 +50,21 @@ export class UserService {
     user.isActive = true
     user.stat = stat
 
-    // 나중에 지우기!
-    const arr = [1, 2, 3]
-    await Promise.all(
-      arr.map(async (i) => {
-        const dummy = new User()
-        dummy.stat = new Stat()
-        dummy.avatar = `https://picsum.photos/seed/${Math.random()}/200/300`
-        dummy.nickname = `dummy ${userData.nickname} #${i}`
-        dummy.twoFactor = false
-        dummy.isActive = true
-        await this.userRepository.save(dummy)
-      }),
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.log('creating dummies...')
+      const arr = [1, 2, 3]
+      await Promise.all(
+        arr.map(async (i) => {
+          const dummy = new User()
+          dummy.stat = new Stat()
+          dummy.avatar = `https://picsum.photos/seed/${Math.random()}/200/300`
+          dummy.nickname = `dummy ${userData.nickname} #${i}`
+          dummy.twoFactor = false
+          dummy.isActive = true
+          await this.userRepository.save(dummy)
+        }),
+      )
+    }
 
     return await this.userRepository.save(user).catch(() => {
       throw new InternalServerErrorException('User not created')
