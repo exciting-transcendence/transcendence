@@ -52,7 +52,6 @@ export class FtController {
     const ftUser =
       (await this.ftOauthService.findOne(uid)) ||
       (await this.ftOauthService.create(uid))
-    console.log(ftUser.user)
     if (ftUser.user) {
       url.searchParams.append(
         'access_token',
