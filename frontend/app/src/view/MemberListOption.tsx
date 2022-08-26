@@ -60,8 +60,8 @@ export const MemberListOption = ({ user, refUser, off }: Props) => {
   const { roomId, roomType } = useRecoilValue(selectedChatState)
   // const [muteSec, setMuteSec] = useState<string>('')
   // const [banSec, setBanSec] = useState<string>('')
-  let muteText = 'MUTE'
-  if (isMuted) muteText = 'UNMUTE'
+  const [muteText, setMuteText] = useState('MUTE')
+  if (isMuted) setMuteText('UNMUTE')
   if (refUser === undefined || socket === undefined) return null
   useEffect(() => {
     if (refUser.isOwner) setMe('Owner')
@@ -97,11 +97,13 @@ export const MemberListOption = ({ user, refUser, off }: Props) => {
         uid: user.user.uid,
         muteSec: 1000,
       })
+      setMuteText('UNMUTE')
     } else if (isMuted === true)
       socket.emit('UNMUTE', {
         roomId,
         uid: user.user.uid,
       })
+    setMuteText('MUTE')
   }
   const handleBan = () => {
     socket.emit('BAN', {
