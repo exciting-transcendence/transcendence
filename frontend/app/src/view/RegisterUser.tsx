@@ -11,15 +11,11 @@ import {
   Radio,
   FormLabel,
   Box,
+  Avatar,
+  Grid,
 } from '@mui/material'
 
 import { useAvatar } from 'hook/useAvatar'
-
-const Img = styled.img`
-  height: 100px;
-  width: 100px;
-  border-radius: 50%;
-`
 
 const LogWrap = styled.div`
   width: 100%;
@@ -194,9 +190,11 @@ export function RegisterUser(props: {
         <Button variant="outlined" onClick={handleNicknameCheck}>
           중복 확인
         </Button>
-        <div style={{ textAlign: 'center' }}>
-          <Img src={avatar} />
-        </div>
+        <Grid container justifyContent="center">
+          <Grid item>
+            <Avatar src={avatar} sx={{ width: 100, height: 100 }} />
+          </Grid>
+        </Grid>
         <input
           ref={imgInput}
           type="file"
